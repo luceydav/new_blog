@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Dataviz on Redwall Analytics Blogsite</title>
+    <link>/tags/dataviz/</link>
+    <description>Recent content in Dataviz on Redwall Analytics Blogsite</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 12 Oct 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/dataviz/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Replicating Yankee Institute Risk Score Over 15 Years</title>
+      <link>/2019/10/12/replicating-yankee-institute-risk-score-over-15-years/</link>
+      <pubDate>Sat, 12 Oct 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/2019/10/12/replicating-yankee-institute-risk-score-over-15-years/</guid>
+      <description>Warning Signs - Part II As mentioned in part I of this series Connecticut City Unfunded Pension and OPEB Liabilities Over Time, we intend to look at the evolution of city financial vulnerability over time. The metric put forth in the Yankee report used a methodology developed by Marc Joffe of the Reason Foundation in two pieces.
+Mr. Joffe’s first piece Assessing Municipal Bond Default Probabilities looked in depth at the conditions which led to municipal bankruptcies during the Great Depression when they were most common, and the handful of more recent special cases.</description>
+    </item>
+    
+    <item>
+      <title>Connecticut City Unfunded Pension and OPEB Liabilities Over Time</title>
+      <link>/2019/10/11/connecticut-city-unfunded-pension-and-opeb-liabilities-over-time/</link>
+      <pubDate>Fri, 11 Oct 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/2019/10/11/connecticut-city-unfunded-pension-and-opeb-liabilities-over-time/</guid>
+      <description>Introduction - Part I Earlier this year, Reviewing Fairfield County Municipal Fiscal Indicators Since 2001 looked at data from 17 annual Connecticut Municipal Fiscal Indicators reports to better understand the current financial condition of all 169 towns. Those reports included only began including the net pension liability over the last three years and had no OPEB data. It turns out that the same disclosure by the Office of Policy Management includes separate tables for pension and other post employment benefits (OPEB).</description>
+    </item>
+    
+    <item>
+      <title>IRS Data shows Connecticut Taxpayers Also Pay Higher Federal Taxes</title>
+      <link>/2019/03/07/irs-data-shows-connecticut-taxpayers-also-pay-higher-federal-taxes/</link>
+      <pubDate>Thu, 07 Mar 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/2019/03/07/irs-data-shows-connecticut-taxpayers-also-pay-higher-federal-taxes/</guid>
+      <description>Introduction In this post, we will be using the same dataset as our earlier: IRS Data Shows Growth in Number not Income of Highest Earners since 2005. This dataset encompases 2.2 million rows of five brackets for each zip code from 2005-2016. Using actual tax data, we noted that despite the robust political dialogue, income inequality has been declining nationally and in Connecticut since 2007.</description>
+    </item>
+    
+    <item>
+      <title>A Through the Cycle Geo-Spatial Analysis of CT Town Finances</title>
+      <link>/2019/02/11/looking-at-ct-towns-through-the-cycle-with-maps/</link>
+      <pubDate>Mon, 11 Feb 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/2019/02/11/looking-at-ct-towns-through-the-cycle-with-maps/</guid>
+      <description>Introduction In an earlier post, Reviewing Fairfield County Municipal Fiscal Indicators Since 2001, we used 17 years of individual Town Comprehensive Annual Financial Reports (CAFR) aggregated in Connecticut’s Municipal Fiscal Indicator’s to compare 15 Fairfield County towns. The challenge was that the graphs became crowded even with that small number of towns. In this analysis, we will expand our look at the similar variables over all 169 Connecticut towns using Geo-spatial mapping.</description>
+    </item>
+    
+  </channel>
+</rss>

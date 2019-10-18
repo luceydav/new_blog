@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Cteconomy on Redwall Analytics Blogsite</title>
+    <link>/tags/cteconomy/</link>
+    <description>Recent content in Cteconomy on Redwall Analytics Blogsite</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 12 Oct 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/cteconomy/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Replicating Yankee Institute Risk Score Over 15 Years</title>
+      <link>/2019/10/12/replicating-yankee-institute-risk-score-over-15-years/</link>
+      <pubDate>Sat, 12 Oct 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/2019/10/12/replicating-yankee-institute-risk-score-over-15-years/</guid>
+      <description>Warning Signs - Part II As mentioned in part I of this series Connecticut City Unfunded Pension and OPEB Liabilities Over Time, we intend to look at the evolution of city financial vulnerability over time. The metric put forth in the Yankee report used a methodology developed by Marc Joffe of the Reason Foundation in two pieces.
+Mr. Joffe’s first piece Assessing Municipal Bond Default Probabilities looked in depth at the conditions which led to municipal bankruptcies during the Great Depression when they were most common, and the handful of more recent special cases.</description>
+    </item>
+    
+    <item>
+      <title>Connecticut City Unfunded Pension and OPEB Liabilities Over Time</title>
+      <link>/2019/10/11/connecticut-city-unfunded-pension-and-opeb-liabilities-over-time/</link>
+      <pubDate>Fri, 11 Oct 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/2019/10/11/connecticut-city-unfunded-pension-and-opeb-liabilities-over-time/</guid>
+      <description>Introduction - Part I Earlier this year, Reviewing Fairfield County Municipal Fiscal Indicators Since 2001 looked at data from 17 annual Connecticut Municipal Fiscal Indicators reports to better understand the current financial condition of all 169 towns. Those reports included only began including the net pension liability over the last three years and had no OPEB data. It turns out that the same disclosure by the Office of Policy Management includes separate tables for pension and other post employment benefits (OPEB).</description>
+    </item>
+    
+  </channel>
+</rss>

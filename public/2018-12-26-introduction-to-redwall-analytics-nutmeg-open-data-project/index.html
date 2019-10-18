@@ -1,0 +1,2754 @@
+<script src="2018-12-26-introduction-to-redwall-analytics-nutmeg-open-data-project_files/kePrint/kePrint.js"></script>
+
+
+<p>Redwall Analytics has spent the last couple of months gathering data from the State of Connecticut’s relatively new “open data initiative”. In recent months, we have made several posts on LinkedIn describing our explorations and looking at the some of the financial challenges faced by our home state: <a href="https://www.linkedin.com/pulse/quick-review-state-connecticut-spending-r-stats-lucey-cfa-cpa-mba/">Quick Review of State of Connecticut Spending in the R Stats Language</a> and <a href="https://www.linkedin.com/pulse/independent-confirmation-yankee-institute-study-gold-david/">Independent Confirmation of the Yankee Institute Study on Gold Coast Real Estate Assessments</a>. The latter post led to the creation of this Shiny App for anyone who would like to look at patterns of real estate assessment ratios in their own towns <a href="https://luceyda.shinyapps.io/ct_real_assess/">Analysis Comparing Connecticut Real Estate Assessments over Three Revaluation Cycles</a>. In general, the pattern of under-assessing higher relative to lower valued homes is evident across Connecticut and in Fairfield County, though less so than in other towns.</p>
+<p>This will be the first in a series of posts on this blogsite further exploring Connecticut finances from the federal, state and municipal levels and the effect on real estate. The cause of our State’s recent travails are complex, and have been built up over decades under both parties, coming to a head after the Great Recession and the shrinking of the financial sector, the recovery in cities and the rise of the digital economy. The ultimate objective will be create a platform we will call the “Nutmeg Project” for accessing and linking to other sources of data, such as real estate prices, in order to look for patterns which may not have been considered previously.</p>
+<p>The code to access this data using the R Statistical Programming Language can be found at the Github link on our home page. Any contributions of ideas or skills for making the platform more accessible are welcome. Here is a quick introduction to the data available at data.ct.gov and Transparency CT. Although the State is to be commended for its effort to make public data available since 2014, the current disclosures are still not that well organized or annotated. This project intended to try to find and help reduce the friction in accessing the data, and to look for insights which might otherwise be outside of the paths of most busy people. As with all research by Redwall Analytics, the orientation will be non-partisan and open-minded with respect to any insights which may be found.</p>
+<div id="state-employee-compensation-expense-for-fiscal-2010-2018-from-transparency-ct" class="section level2">
+<h2>State Employee Compensation Expense for Fiscal 2010-2018 from Transparency CT</h2>
+<p>Compensation data from Transparency CT began to include fringe benefits in 2017 as shown in Table <a href="#tab:payroll">1</a>. This data came from a download a few months ago, but it appears that data about fringe benefits has subsequently been removed without explanation. It is unfortunate given that these items represents 1/3 of employee compensation and are at the root of the State’s current challenges. It is also not clear why separate disclosures from data.ct.gov (just below) seem show differing amounts of employees and compensation.</p>
+<table class="table table-striped table-condensed" style="margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:payroll">Table 1: </span>Selected Salary &amp; Benefits Items from Transparency CT
+</caption>
+<thead>
+<tr>
+<th style="text-align:right;">
+Fiscal Year
+</th>
+<th style="text-align:left;">
+Salary ($M)
+</th>
+<th style="text-align:left;">
+Fringe ($M)
+</th>
+<th style="text-align:left;">
+Total ($M)
+</th>
+<th style="text-align:left;">
+Total Employees
+</th>
+<th style="text-align:left;">
+Avg Salary ($)
+</th>
+<th style="text-align:left;">
+Avg Fringe ($)
+</th>
+<th style="text-align:left;">
+Avg Total ($)
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+2010
+</td>
+<td style="text-align:left;">
+4,267
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+75,901
+</td>
+<td style="text-align:left;">
+56,220
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2011
+</td>
+<td style="text-align:left;">
+4,374
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+73,329
+</td>
+<td style="text-align:left;">
+59,655
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2012
+</td>
+<td style="text-align:left;">
+4,469
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+73,165
+</td>
+<td style="text-align:left;">
+61,085
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2013
+</td>
+<td style="text-align:left;">
+4,333
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+76,831
+</td>
+<td style="text-align:left;">
+56,392
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2014
+</td>
+<td style="text-align:left;">
+4,508
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+76,328
+</td>
+<td style="text-align:left;">
+59,058
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2015
+</td>
+<td style="text-align:left;">
+4,731
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+75,728
+</td>
+<td style="text-align:left;">
+62,478
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2016
+</td>
+<td style="text-align:left;">
+4,793
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+71,269
+</td>
+<td style="text-align:left;">
+67,250
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2017
+</td>
+<td style="text-align:left;">
+4,619
+</td>
+<td style="text-align:left;">
+1,499
+</td>
+<td style="text-align:left;">
+6,118
+</td>
+<td style="text-align:left;">
+77,903
+</td>
+<td style="text-align:left;">
+59,293
+</td>
+<td style="text-align:left;">
+19,244
+</td>
+<td style="text-align:left;">
+78,536
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2018
+</td>
+<td style="text-align:left;">
+4,471
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+68,572
+</td>
+<td style="text-align:left;">
+65,203
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+0
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="state-employee-compensation-expense-for-fiscal-2015-2019-conflicts-from-ctdata" class="section level2">
+<h2>State Employee Compensation Expense for Fiscal 2015-2019 Conflicts from CTdata</h2>
+<p>Table <a href="#tab:payroll-2">2</a> shows a shorter period and has richer variables including the employees’ age, job description, ethnicity, sex, full/part time, hire date, location, union and agency. It also discloses more categories of compensation. It includes over 102k employees during the full year of 2017 at a slightly lower total compensation of $75k, which is greater than the amount disclosed by Transparency CT. If it is filtered for only full time employees, the number of unique employees falls to 60k, but the average total compensation rises close to $118k. As a general rule, the data is often loaded onto the websites without dictionaries or explanation of context.</p>
+<table class="table table-striped table-condensed" style="margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:payroll-2">Table 2: </span>Selected Expense Items Pertaining to Salary and Benefits from CTdata
+</caption>
+<thead>
+<tr>
+<th style="text-align:right;">
+Fiscal Year
+</th>
+<th style="text-align:left;">
+Salary ($M)
+</th>
+<th style="text-align:left;">
+Fringe ($M)
+</th>
+<th style="text-align:left;">
+Total ($M)
+</th>
+<th style="text-align:left;">
+Employees
+</th>
+<th style="text-align:left;">
+Avg Salary ($)
+</th>
+<th style="text-align:left;">
+Avg Fringe ($)
+</th>
+<th style="text-align:left;">
+Avg Total ($)
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+2015
+</td>
+<td style="text-align:left;">
+2,141
+</td>
+<td style="text-align:left;">
+1,652
+</td>
+<td style="text-align:left;">
+3,793
+</td>
+<td style="text-align:left;">
+88,313
+</td>
+<td style="text-align:left;">
+42,945
+</td>
+<td style="text-align:left;">
+18,707
+</td>
+<td style="text-align:left;">
+42,945
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2016
+</td>
+<td style="text-align:left;">
+4,371
+</td>
+<td style="text-align:left;">
+3,429
+</td>
+<td style="text-align:left;">
+7,800
+</td>
+<td style="text-align:left;">
+97,155
+</td>
+<td style="text-align:left;">
+80,285
+</td>
+<td style="text-align:left;">
+35,292
+</td>
+<td style="text-align:left;">
+80,285
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2017
+</td>
+<td style="text-align:left;">
+4,218
+</td>
+<td style="text-align:left;">
+3,385
+</td>
+<td style="text-align:left;">
+7,603
+</td>
+<td style="text-align:left;">
+102,101
+</td>
+<td style="text-align:left;">
+74,470
+</td>
+<td style="text-align:left;">
+33,157
+</td>
+<td style="text-align:left;">
+74,470
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2018
+</td>
+<td style="text-align:left;">
+4,058
+</td>
+<td style="text-align:left;">
+3,563
+</td>
+<td style="text-align:left;">
+7,621
+</td>
+<td style="text-align:left;">
+100,921
+</td>
+<td style="text-align:left;">
+75,517
+</td>
+<td style="text-align:left;">
+35,303
+</td>
+<td style="text-align:left;">
+75,517
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2019
+</td>
+<td style="text-align:left;">
+2,114
+</td>
+<td style="text-align:left;">
+1,934
+</td>
+<td style="text-align:left;">
+4,048
+</td>
+<td style="text-align:left;">
+89,599
+</td>
+<td style="text-align:left;">
+45,177
+</td>
+<td style="text-align:left;">
+21,584
+</td>
+<td style="text-align:left;">
+45,177
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="pensions-for-state-retirees-since-2010-from-transparency-ct" class="section level2">
+<h2>Pensions for State Retirees since 2010 from Transparency CT</h2>
+<p>Table <a href="#tab:pension">3</a> with all pension data since 2010 was also originally was posted, but subsequently removed from Transparency CT without an explanation. The pension disclosures included employee name, year and total amount is believed to include only State retirees (SERS) and not Municipal Teacher’s as a general rule, our opinion is that the employee name doesn’t need to be disclosed, but the level, years of service, job function and other employee attributes should be disclosed in any of the compensation and pension payments disclosures.</p>
+<table class="table table-striped table-condensed" style="margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:pension">Table 3: </span>State of Connecticut Retiree Pensions for Employees Other Than Teachers
+</caption>
+<thead>
+<tr>
+<th style="text-align:right;">
+Calendar Year
+</th>
+<th style="text-align:left;">
+Total Pensions ($M)
+</th>
+<th style="text-align:left;">
+Total Retirees
+</th>
+<th style="text-align:left;">
+Average Pension ($)
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+2010
+</td>
+<td style="text-align:left;">
+1,314.634
+</td>
+<td style="text-align:left;">
+44,903
+</td>
+<td style="text-align:left;">
+29,277
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2011
+</td>
+<td style="text-align:left;">
+1,390.926
+</td>
+<td style="text-align:left;">
+46,896
+</td>
+<td style="text-align:left;">
+29,660
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2012
+</td>
+<td style="text-align:left;">
+1,480.137
+</td>
+<td style="text-align:left;">
+47,398
+</td>
+<td style="text-align:left;">
+31,228
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2013
+</td>
+<td style="text-align:left;">
+1,550.317
+</td>
+<td style="text-align:left;">
+48,268
+</td>
+<td style="text-align:left;">
+32,119
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2014
+</td>
+<td style="text-align:left;">
+1,623.714
+</td>
+<td style="text-align:left;">
+49,616
+</td>
+<td style="text-align:left;">
+32,726
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2015
+</td>
+<td style="text-align:left;">
+1,702.601
+</td>
+<td style="text-align:left;">
+50,563
+</td>
+<td style="text-align:left;">
+33,673
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2016
+</td>
+<td style="text-align:left;">
+1,807.765
+</td>
+<td style="text-align:left;">
+52,232
+</td>
+<td style="text-align:left;">
+34,610
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2017
+</td>
+<td style="text-align:left;">
+1,833.868
+</td>
+<td style="text-align:left;">
+48,395
+</td>
+<td style="text-align:left;">
+37,894
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="state-spending-database-since-2010" class="section level2">
+<h2>State Spending Database Since 2010</h2>
+<p>The spending database of almost 1 million rows has every payment made by category since 2010. The largest categories are human resources, finance, transportation, and operations. Table <a href="#tab:spending">4</a> shows the data filtered by the largest category human resources which had increased to $13.8 billion from just under $10 billion in 2010. Salaries &amp; wages had barely budged, but 75% of the increase was attributed to pension items (SERS &amp; Pension Payments to Retirees) which togther reached almost half of all human resource relaated expenses.</p>
+<table class="table table-striped table-condensed" style="margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:spending">Table 4: </span>Connecticut Expense Items Pertaining to Employees ($ Millions)
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+account
+</th>
+<th style="text-align:right;">
+2010
+</th>
+<th style="text-align:right;">
+2011
+</th>
+<th style="text-align:right;">
+2012
+</th>
+<th style="text-align:right;">
+2013
+</th>
+<th style="text-align:right;">
+2014
+</th>
+<th style="text-align:right;">
+2015
+</th>
+<th style="text-align:right;">
+2016
+</th>
+<th style="text-align:right;">
+2017
+</th>
+<th style="text-align:right;">
+2018
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Drugs Pharmaceuticals
+</td>
+<td style="text-align:right;">
+19
+</td>
+<td style="text-align:right;">
+41
+</td>
+<td style="text-align:right;">
+60
+</td>
+<td style="text-align:right;">
+72
+</td>
+<td style="text-align:right;">
+89
+</td>
+<td style="text-align:right;">
+98
+</td>
+<td style="text-align:right;">
+102
+</td>
+<td style="text-align:right;">
+103
+</td>
+<td style="text-align:right;">
+119
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Fica
+</td>
+<td style="text-align:right;">
+227
+</td>
+<td style="text-align:right;">
+232
+</td>
+<td style="text-align:right;">
+236
+</td>
+<td style="text-align:right;">
+229
+</td>
+<td style="text-align:right;">
+239
+</td>
+<td style="text-align:right;">
+248
+</td>
+<td style="text-align:right;">
+250
+</td>
+<td style="text-align:right;">
+240
+</td>
+<td style="text-align:right;">
+233
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Medical Insurance
+</td>
+<td style="text-align:right;">
+1,778
+</td>
+<td style="text-align:right;">
+1,671
+</td>
+<td style="text-align:right;">
+1,796
+</td>
+<td style="text-align:right;">
+1,863
+</td>
+<td style="text-align:right;">
+1,918
+</td>
+<td style="text-align:right;">
+2,074
+</td>
+<td style="text-align:right;">
+2,175
+</td>
+<td style="text-align:right;">
+2,304
+</td>
+<td style="text-align:right;">
+2,395
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Medical Program Support Servs
+</td>
+<td style="text-align:right;">
+66
+</td>
+<td style="text-align:right;">
+61
+</td>
+<td style="text-align:right;">
+68
+</td>
+<td style="text-align:right;">
+180
+</td>
+<td style="text-align:right;">
+169
+</td>
+<td style="text-align:right;">
+183
+</td>
+<td style="text-align:right;">
+186
+</td>
+<td style="text-align:right;">
+174
+</td>
+<td style="text-align:right;">
+184
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Pension Payments To Retirees
+</td>
+<td style="text-align:right;">
+3,367
+</td>
+<td style="text-align:right;">
+3,526
+</td>
+<td style="text-align:right;">
+3,764
+</td>
+<td style="text-align:right;">
+4,197
+</td>
+<td style="text-align:right;">
+4,420
+</td>
+<td style="text-align:right;">
+4,643
+</td>
+<td style="text-align:right;">
+4,790
+</td>
+<td style="text-align:right;">
+5,035
+</td>
+<td style="text-align:right;">
+5,452
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Salaries Wagesfull Time
+</td>
+<td style="text-align:right;">
+3,488
+</td>
+<td style="text-align:right;">
+3,565
+</td>
+<td style="text-align:right;">
+3,652
+</td>
+<td style="text-align:right;">
+3,519
+</td>
+<td style="text-align:right;">
+3,666
+</td>
+<td style="text-align:right;">
+3,849
+</td>
+<td style="text-align:right;">
+3,956
+</td>
+<td style="text-align:right;">
+3,786
+</td>
+<td style="text-align:right;">
+3,594
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Salaries Wagespart Time
+</td>
+<td style="text-align:right;">
+246
+</td>
+<td style="text-align:right;">
+242
+</td>
+<td style="text-align:right;">
+246
+</td>
+<td style="text-align:right;">
+230
+</td>
+<td style="text-align:right;">
+228
+</td>
+<td style="text-align:right;">
+235
+</td>
+<td style="text-align:right;">
+243
+</td>
+<td style="text-align:right;">
+243
+</td>
+<td style="text-align:right;">
+236
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sers
+</td>
+<td style="text-align:right;">
+763
+</td>
+<td style="text-align:right;">
+872
+</td>
+<td style="text-align:right;">
+985
+</td>
+<td style="text-align:right;">
+1,118
+</td>
+<td style="text-align:right;">
+1,396
+</td>
+<td style="text-align:right;">
+1,486
+</td>
+<td style="text-align:right;">
+1,651
+</td>
+<td style="text-align:right;">
+1,692
+</td>
+<td style="text-align:right;">
+1,598
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Total
+</td>
+<td style="text-align:right;">
+9,954
+</td>
+<td style="text-align:right;">
+10,209
+</td>
+<td style="text-align:right;">
+10,808
+</td>
+<td style="text-align:right;">
+11,409
+</td>
+<td style="text-align:right;">
+12,125
+</td>
+<td style="text-align:right;">
+12,815
+</td>
+<td style="text-align:right;">
+13,354
+</td>
+<td style="text-align:right;">
+13,576
+</td>
+<td style="text-align:right;">
+13,810
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="state-payments-data-show-the-nuts-and-bolts-of-government-operations" class="section level2">
+<h2>State Payments Data Show the Nuts and Bolts of Government Operations</h2>
+<p>Table <a href="#tab:payments">5</a> is a summary of over 3 million payments filtered for items over $100 million. Payments to the Department of Social Services has always been the largest item, and it has grown at a rapid rate (although this appears to have been reclassified from the grants database (below) so the growth here may be overstated). Transportation and Finance have also been large and gained in signficance. The consolidation of the state universities into the Board of Regents in 2015 is evident. Grants to the University of Connecticut have more than doubled.</p>
+<table class="table table-striped table-condensed" style="margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:payments">Table 5: </span>Selected State of Connecticut Total Payments &gt; $100M (Amounts in $M)
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+agency
+</th>
+<th style="text-align:right;">
+2010
+</th>
+<th style="text-align:right;">
+2011
+</th>
+<th style="text-align:right;">
+2012
+</th>
+<th style="text-align:right;">
+2013
+</th>
+<th style="text-align:right;">
+2014
+</th>
+<th style="text-align:right;">
+2015
+</th>
+<th style="text-align:right;">
+2016
+</th>
+<th style="text-align:right;">
+2017
+</th>
+<th style="text-align:right;">
+2018
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Board Of Regents
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+385
+</td>
+<td style="text-align:right;">
+413
+</td>
+<td style="text-align:right;">
+409
+</td>
+<td style="text-align:right;">
+364
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Connecticut Community Colleges
+</td>
+<td style="text-align:right;">
+110
+</td>
+<td style="text-align:right;">
+145
+</td>
+<td style="text-align:right;">
+111
+</td>
+<td style="text-align:right;">
+126
+</td>
+<td style="text-align:right;">
+129
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Connecticut Innovations Incorporated
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+133
+</td>
+<td style="text-align:right;">
+104
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Connecticut State Universities
+</td>
+<td style="text-align:right;">
+223
+</td>
+<td style="text-align:right;">
+231
+</td>
+<td style="text-align:right;">
+237
+</td>
+<td style="text-align:right;">
+237
+</td>
+<td style="text-align:right;">
+246
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Department Of Administrative Services
+</td>
+<td style="text-align:right;">
+136
+</td>
+<td style="text-align:right;">
+144
+</td>
+<td style="text-align:right;">
+318
+</td>
+<td style="text-align:right;">
+317
+</td>
+<td style="text-align:right;">
+672
+</td>
+<td style="text-align:right;">
+577
+</td>
+<td style="text-align:right;">
+941
+</td>
+<td style="text-align:right;">
+899
+</td>
+<td style="text-align:right;">
+802
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Department Of Children And Families
+</td>
+<td style="text-align:right;">
+565
+</td>
+<td style="text-align:right;">
+560
+</td>
+<td style="text-align:right;">
+553
+</td>
+<td style="text-align:right;">
+543
+</td>
+<td style="text-align:right;">
+537
+</td>
+<td style="text-align:right;">
+535
+</td>
+<td style="text-align:right;">
+538
+</td>
+<td style="text-align:right;">
+540
+</td>
+<td style="text-align:right;">
+550
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Department Of Construction Services
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+275
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Department Of Correction
+</td>
+<td style="text-align:right;">
+261
+</td>
+<td style="text-align:right;">
+260
+</td>
+<td style="text-align:right;">
+257
+</td>
+<td style="text-align:right;">
+244
+</td>
+<td style="text-align:right;">
+259
+</td>
+<td style="text-align:right;">
+261
+</td>
+<td style="text-align:right;">
+253
+</td>
+<td style="text-align:right;">
+230
+</td>
+<td style="text-align:right;">
+231
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Department Of Developmental Services
+</td>
+<td style="text-align:right;">
+710
+</td>
+<td style="text-align:right;">
+718
+</td>
+<td style="text-align:right;">
+755
+</td>
+<td style="text-align:right;">
+769
+</td>
+<td style="text-align:right;">
+809
+</td>
+<td style="text-align:right;">
+841
+</td>
+<td style="text-align:right;">
+818
+</td>
+<td style="text-align:right;">
+839
+</td>
+<td style="text-align:right;">
+847
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Department Of Economic Community Development
+</td>
+<td style="text-align:right;">
+168
+</td>
+<td style="text-align:right;">
+182
+</td>
+<td style="text-align:right;">
+374
+</td>
+<td style="text-align:right;">
+356
+</td>
+<td style="text-align:right;">
+245
+</td>
+<td style="text-align:right;">
+342
+</td>
+<td style="text-align:right;">
+358
+</td>
+<td style="text-align:right;">
+293
+</td>
+<td style="text-align:right;">
+276
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Department Of Environmental Protection
+</td>
+<td style="text-align:right;">
+222
+</td>
+<td style="text-align:right;">
+250
+</td>
+<td style="text-align:right;">
+219
+</td>
+<td style="text-align:right;">
+259
+</td>
+<td style="text-align:right;">
+247
+</td>
+<td style="text-align:right;">
+271
+</td>
+<td style="text-align:right;">
+306
+</td>
+<td style="text-align:right;">
+299
+</td>
+<td style="text-align:right;">
+301
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Department Of Housing
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+257
+</td>
+<td style="text-align:right;">
+253
+</td>
+<td style="text-align:right;">
+337
+</td>
+<td style="text-align:right;">
+345
+</td>
+<td style="text-align:right;">
+334
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Department Of Labor
+</td>
+<td style="text-align:right;">
+764
+</td>
+<td style="text-align:right;">
+877
+</td>
+<td style="text-align:right;">
+963
+</td>
+<td style="text-align:right;">
+963
+</td>
+<td style="text-align:right;">
+935
+</td>
+<td style="text-align:right;">
+909
+</td>
+<td style="text-align:right;">
+908
+</td>
+<td style="text-align:right;">
+873
+</td>
+<td style="text-align:right;">
+824
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Department Of Mental Health And Addiction Services
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+480
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Department Of Mental Heath And Addiction Services
+</td>
+<td style="text-align:right;">
+437
+</td>
+<td style="text-align:right;">
+540
+</td>
+<td style="text-align:right;">
+554
+</td>
+<td style="text-align:right;">
+568
+</td>
+<td style="text-align:right;">
+523
+</td>
+<td style="text-align:right;">
+464
+</td>
+<td style="text-align:right;">
+481
+</td>
+<td style="text-align:right;">
+474
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Department Of Public Health
+</td>
+<td style="text-align:right;">
+199
+</td>
+<td style="text-align:right;">
+199
+</td>
+<td style="text-align:right;">
+186
+</td>
+<td style="text-align:right;">
+216
+</td>
+<td style="text-align:right;">
+253
+</td>
+<td style="text-align:right;">
+234
+</td>
+<td style="text-align:right;">
+223
+</td>
+<td style="text-align:right;">
+229
+</td>
+<td style="text-align:right;">
+235
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Department Of Public Safety
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+124
+</td>
+<td style="text-align:right;">
+211
+</td>
+<td style="text-align:right;">
+140
+</td>
+<td style="text-align:right;">
+109
+</td>
+<td style="text-align:right;">
+143
+</td>
+<td style="text-align:right;">
+113
+</td>
+<td style="text-align:right;">
+102
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Department Of Public Works
+</td>
+<td style="text-align:right;">
+180
+</td>
+<td style="text-align:right;">
+247
+</td>
+<td style="text-align:right;">
+249
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Department Of Social Services
+</td>
+<td style="text-align:right;">
+5,420
+</td>
+<td style="text-align:right;">
+6,046
+</td>
+<td style="text-align:right;">
+6,303
+</td>
+<td style="text-align:right;">
+6,984
+</td>
+<td style="text-align:right;">
+6,652
+</td>
+<td style="text-align:right;">
+6,996
+</td>
+<td style="text-align:right;">
+7,241
+</td>
+<td style="text-align:right;">
+7,839
+</td>
+<td style="text-align:right;">
+8,130
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Department Of Transportation
+</td>
+<td style="text-align:right;">
+1,451
+</td>
+<td style="text-align:right;">
+1,492
+</td>
+<td style="text-align:right;">
+1,582
+</td>
+<td style="text-align:right;">
+1,736
+</td>
+<td style="text-align:right;">
+1,803
+</td>
+<td style="text-align:right;">
+1,841
+</td>
+<td style="text-align:right;">
+2,071
+</td>
+<td style="text-align:right;">
+1,955
+</td>
+<td style="text-align:right;">
+1,961
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Judicial Department
+</td>
+<td style="text-align:right;">
+172
+</td>
+<td style="text-align:right;">
+195
+</td>
+<td style="text-align:right;">
+178
+</td>
+<td style="text-align:right;">
+186
+</td>
+<td style="text-align:right;">
+199
+</td>
+<td style="text-align:right;">
+205
+</td>
+<td style="text-align:right;">
+200
+</td>
+<td style="text-align:right;">
+187
+</td>
+<td style="text-align:right;">
+187
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Office Of Early Childhood
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+137
+</td>
+<td style="text-align:right;">
+268
+</td>
+<td style="text-align:right;">
+353
+</td>
+<td style="text-align:right;">
+357
+</td>
+<td style="text-align:right;">
+309
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Office Of Policy Management
+</td>
+<td style="text-align:right;">
+205
+</td>
+<td style="text-align:right;">
+176
+</td>
+<td style="text-align:right;">
+417
+</td>
+<td style="text-align:right;">
+474
+</td>
+<td style="text-align:right;">
+474
+</td>
+<td style="text-align:right;">
+465
+</td>
+<td style="text-align:right;">
+478
+</td>
+<td style="text-align:right;">
+606
+</td>
+<td style="text-align:right;">
+509
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Office Of The State Treasurer
+</td>
+<td style="text-align:right;">
+1,838
+</td>
+<td style="text-align:right;">
+1,892
+</td>
+<td style="text-align:right;">
+2,049
+</td>
+<td style="text-align:right;">
+2,017
+</td>
+<td style="text-align:right;">
+1,838
+</td>
+<td style="text-align:right;">
+1,962
+</td>
+<td style="text-align:right;">
+2,219
+</td>
+<td style="text-align:right;">
+2,335
+</td>
+<td style="text-align:right;">
+2,500
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+State Comptroller
+</td>
+<td style="text-align:right;">
+875
+</td>
+<td style="text-align:right;">
+859
+</td>
+<td style="text-align:right;">
+746
+</td>
+<td style="text-align:right;">
+658
+</td>
+<td style="text-align:right;">
+665
+</td>
+<td style="text-align:right;">
+1,695
+</td>
+<td style="text-align:right;">
+1,850
+</td>
+<td style="text-align:right;">
+1,876
+</td>
+<td style="text-align:right;">
+1,913
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+State Department Of Education
+</td>
+<td style="text-align:right;">
+3,670
+</td>
+<td style="text-align:right;">
+3,519
+</td>
+<td style="text-align:right;">
+3,616
+</td>
+<td style="text-align:right;">
+3,849
+</td>
+<td style="text-align:right;">
+3,668
+</td>
+<td style="text-align:right;">
+3,987
+</td>
+<td style="text-align:right;">
+3,676
+</td>
+<td style="text-align:right;">
+3,325
+</td>
+<td style="text-align:right;">
+3,230
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Teachers Retirement Board
+</td>
+<td style="text-align:right;">
+2,063
+</td>
+<td style="text-align:right;">
+2,163
+</td>
+<td style="text-align:right;">
+2,410
+</td>
+<td style="text-align:right;">
+2,449
+</td>
+<td style="text-align:right;">
+1,859
+</td>
+<td style="text-align:right;">
+1,836
+</td>
+<td style="text-align:right;">
+2,043
+</td>
+<td style="text-align:right;">
+2,128
+</td>
+<td style="text-align:right;">
+2,171
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Uconn Health Center
+</td>
+<td style="text-align:right;">
+300
+</td>
+<td style="text-align:right;">
+323
+</td>
+<td style="text-align:right;">
+269
+</td>
+<td style="text-align:right;">
+317
+</td>
+<td style="text-align:right;">
+359
+</td>
+<td style="text-align:right;">
+376
+</td>
+<td style="text-align:right;">
+345
+</td>
+<td style="text-align:right;">
+343
+</td>
+<td style="text-align:right;">
+374
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+University Of Connecticut
+</td>
+<td style="text-align:right;">
+297
+</td>
+<td style="text-align:right;">
+320
+</td>
+<td style="text-align:right;">
+314
+</td>
+<td style="text-align:right;">
+381
+</td>
+<td style="text-align:right;">
+401
+</td>
+<td style="text-align:right;">
+487
+</td>
+<td style="text-align:right;">
+590
+</td>
+<td style="text-align:right;">
+622
+</td>
+<td style="text-align:right;">
+839
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Total
+</td>
+<td style="text-align:right;">
+20,266
+</td>
+<td style="text-align:right;">
+21,338
+</td>
+<td style="text-align:right;">
+22,786
+</td>
+<td style="text-align:right;">
+24,139
+</td>
+<td style="text-align:right;">
+23,441
+</td>
+<td style="text-align:right;">
+25,400
+</td>
+<td style="text-align:right;">
+26,784
+</td>
+<td style="text-align:right;">
+27,117
+</td>
+<td style="text-align:right;">
+27,467
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="state-grant-show-the-rise-in-aid-to-troubled-cities" class="section level2">
+<h2>State Grant Show the Rise in Aid to Troubled Cities</h2>
+<p>State Grants shown in Table <a href="#tab:state-grants">6</a> are tax dollars transferred back to municipalities from Hartford. Grants rose rapidly until 2012, and fell back sharply subsequently. Fiscal troubles have led to grants growing rapidly in Hartford and the Capital Region Education Council, New Haven and Bridgeport while declining in most other places. In an upcoming post, this blog will look at the Municipal Fiscal Indicators and some of the challenges will become clear in Hartford and New Haven, where half the Grand Lists are exempt from taxation. The wealthier towns of Fairfield County used to receive considerable Inter-Governmental transfers, but now receive small direct transfers although the state does pick up the full tab for teacher pensions in proportion to salaries.</p>
+<table class="table table-striped table-condensed" style="margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:state-grants">Table 6: </span>Selected State of Connecticut Total Grant Items &gt;$100M (Amounts in $M)
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+vendor
+</th>
+<th style="text-align:right;">
+2010
+</th>
+<th style="text-align:right;">
+2011
+</th>
+<th style="text-align:right;">
+2012
+</th>
+<th style="text-align:right;">
+2013
+</th>
+<th style="text-align:right;">
+2014
+</th>
+<th style="text-align:right;">
+2015
+</th>
+<th style="text-align:right;">
+2016
+</th>
+<th style="text-align:right;">
+2017
+</th>
+<th style="text-align:right;">
+2018
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Capitol Region Education Council
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+173
+</td>
+<td style="text-align:right;">
+105
+</td>
+<td style="text-align:right;">
+128
+</td>
+<td style="text-align:right;">
+139
+</td>
+<td style="text-align:right;">
+142
+</td>
+<td style="text-align:right;">
+144
+</td>
+<td style="text-align:right;">
+146
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+City Of Bridgeport
+</td>
+<td style="text-align:right;">
+191
+</td>
+<td style="text-align:right;">
+192
+</td>
+<td style="text-align:right;">
+429
+</td>
+<td style="text-align:right;">
+237
+</td>
+<td style="text-align:right;">
+249
+</td>
+<td style="text-align:right;">
+265
+</td>
+<td style="text-align:right;">
+273
+</td>
+<td style="text-align:right;">
+257
+</td>
+<td style="text-align:right;">
+248
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+City Of Bristol
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+101
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+City Of Hartford
+</td>
+<td style="text-align:right;">
+274
+</td>
+<td style="text-align:right;">
+279
+</td>
+<td style="text-align:right;">
+618
+</td>
+<td style="text-align:right;">
+340
+</td>
+<td style="text-align:right;">
+354
+</td>
+<td style="text-align:right;">
+372
+</td>
+<td style="text-align:right;">
+368
+</td>
+<td style="text-align:right;">
+372
+</td>
+<td style="text-align:right;">
+358
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+City Of New Haven
+</td>
+<td style="text-align:right;">
+233
+</td>
+<td style="text-align:right;">
+233
+</td>
+<td style="text-align:right;">
+516
+</td>
+<td style="text-align:right;">
+278
+</td>
+<td style="text-align:right;">
+290
+</td>
+<td style="text-align:right;">
+302
+</td>
+<td style="text-align:right;">
+315
+</td>
+<td style="text-align:right;">
+294
+</td>
+<td style="text-align:right;">
+285
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Department Of Developmental Services
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+532
+</td>
+<td style="text-align:right;">
+277
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Department Of Social Services Acct53724
+</td>
+<td style="text-align:right;">
+4,652
+</td>
+<td style="text-align:right;">
+5,198
+</td>
+<td style="text-align:right;">
+11,104
+</td>
+<td style="text-align:right;">
+6,121
+</td>
+<td style="text-align:right;">
+2,930
+</td>
+<td style="text-align:right;">
+2,703
+</td>
+<td style="text-align:right;">
+667
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Dept Of Social Services
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+108
+</td>
+<td style="text-align:right;">
+2,147
+</td>
+<td style="text-align:right;">
+2,886
+</td>
+<td style="text-align:right;">
+3,510
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Meriden Town Treasurer
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+135
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+New Britain City Treasurer
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+193
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+103
+</td>
+<td style="text-align:right;">
+112
+</td>
+<td style="text-align:right;">
+112
+</td>
+<td style="text-align:right;">
+117
+</td>
+<td style="text-align:right;">
+114
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Town Of East Hartford Town Treasurer
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+103
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Waterbury Town Treasurer
+</td>
+<td style="text-align:right;">
+146
+</td>
+<td style="text-align:right;">
+145
+</td>
+<td style="text-align:right;">
+319
+</td>
+<td style="text-align:right;">
+161
+</td>
+<td style="text-align:right;">
+172
+</td>
+<td style="text-align:right;">
+178
+</td>
+<td style="text-align:right;">
+182
+</td>
+<td style="text-align:right;">
+194
+</td>
+<td style="text-align:right;">
+188
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+West Haven Town Treasurer
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+104
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Total
+</td>
+<td style="text-align:right;">
+5,496
+</td>
+<td style="text-align:right;">
+6,047
+</td>
+<td style="text-align:right;">
+13,796
+</td>
+<td style="text-align:right;">
+7,242
+</td>
+<td style="text-align:right;">
+4,225
+</td>
+<td style="text-align:right;">
+4,179
+</td>
+<td style="text-align:right;">
+4,207
+</td>
+<td style="text-align:right;">
+4,797
+</td>
+<td style="text-align:right;">
+5,127
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="federal-grants-have-grown-considerably-primarily-driven-by-medicaid" class="section level2">
+<h2>Federal Grants Have Grown Considerably Primarily Driven By Medicaid</h2>
+<p>If the growth in the Medicaid Federal Share which commenced with Affordable Health were removed, Federal Grants would have been flat as shown in Table <a href="#tab:federal-grants">7</a>. Most other items have remained relatively stable.</p>
+<table class="table table-striped table-condensed" style="margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:federal-grants">Table 7: </span>Selected Federal Total Grant Items &gt; $100M (Amounts in $M)
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+program_descr
+</th>
+<th style="text-align:right;">
+2012
+</th>
+<th style="text-align:right;">
+2013
+</th>
+<th style="text-align:right;">
+2014
+</th>
+<th style="text-align:right;">
+2015
+</th>
+<th style="text-align:right;">
+2016
+</th>
+<th style="text-align:right;">
+2017
+</th>
+<th style="text-align:right;">
+2018
+</th>
+<th style="text-align:right;">
+2019
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Federal Transit Formual Grants
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+102
+</td>
+<td style="text-align:right;">
+157
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Fedtransit Capitl Invest Grnts
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+119
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+114
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Hwy Planning Construction
+</td>
+<td style="text-align:right;">
+461
+</td>
+<td style="text-align:right;">
+453
+</td>
+<td style="text-align:right;">
+441
+</td>
+<td style="text-align:right;">
+449
+</td>
+<td style="text-align:right;">
+519
+</td>
+<td style="text-align:right;">
+492
+</td>
+<td style="text-align:right;">
+506
+</td>
+<td style="text-align:right;">
+120
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Individualsdisabilities Idea
+</td>
+<td style="text-align:right;">
+134
+</td>
+<td style="text-align:right;">
+135
+</td>
+<td style="text-align:right;">
+131
+</td>
+<td style="text-align:right;">
+134
+</td>
+<td style="text-align:right;">
+126
+</td>
+<td style="text-align:right;">
+130
+</td>
+<td style="text-align:right;">
+127
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Medicaid Federal Share
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+2,993
+</td>
+<td style="text-align:right;">
+3,483
+</td>
+<td style="text-align:right;">
+3,604
+</td>
+<td style="text-align:right;">
+3,535
+</td>
+<td style="text-align:right;">
+3,561
+</td>
+<td style="text-align:right;">
+940
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Medicare Part B Premiums
+</td>
+<td style="text-align:right;">
+178
+</td>
+<td style="text-align:right;">
+181
+</td>
+<td style="text-align:right;">
+191
+</td>
+<td style="text-align:right;">
+197
+</td>
+<td style="text-align:right;">
+219
+</td>
+<td style="text-align:right;">
+252
+</td>
+<td style="text-align:right;">
+250
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Nat School Lunch Prog Combined
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+103
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+103
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Nonbudgeted Operating Approp
+</td>
+<td style="text-align:right;">
+152
+</td>
+<td style="text-align:right;">
+144
+</td>
+<td style="text-align:right;">
+144
+</td>
+<td style="text-align:right;">
+144
+</td>
+<td style="text-align:right;">
+150
+</td>
+<td style="text-align:right;">
+152
+</td>
+<td style="text-align:right;">
+150
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Title 1 Grants
+</td>
+<td style="text-align:right;">
+106
+</td>
+<td style="text-align:right;">
+106
+</td>
+<td style="text-align:right;">
+104
+</td>
+<td style="text-align:right;">
+111
+</td>
+<td style="text-align:right;">
+115
+</td>
+<td style="text-align:right;">
+120
+</td>
+<td style="text-align:right;">
+120
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Total
+</td>
+<td style="text-align:right;">
+1,030
+</td>
+<td style="text-align:right;">
+1,138
+</td>
+<td style="text-align:right;">
+4,003
+</td>
+<td style="text-align:right;">
+4,632
+</td>
+<td style="text-align:right;">
+4,835
+</td>
+<td style="text-align:right;">
+4,782
+</td>
+<td style="text-align:right;">
+4,973
+</td>
+<td style="text-align:right;">
+1,059
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="concluding-comments" class="section level2">
+<h2>Concluding Comments</h2>
+<p>This has been a less exciting introduction of the project and some of the data which will be used. In the next post, we will look at the Municipal Financial Indicators and specifically compare the towns of Fairfield County during the last ten years.</p>
+</div>

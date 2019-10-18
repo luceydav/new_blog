@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>R Markdown on Redwall Analytics Blogsite</title>
+    <link>/tags/r-markdown/</link>
+    <description>Recent content in R Markdown on Redwall Analytics Blogsite</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 28 Jan 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/r-markdown/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>IRS Data Shows Growth in Number not Income of Highest Earners since 2005</title>
+      <link>/2019/01/28/irs-data-show-growth-in-number-not-income-of-highest-earners-since-2005/</link>
+      <pubDate>Mon, 28 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/2019/01/28/irs-data-show-growth-in-number-not-income-of-highest-earners-since-2005/</guid>
+      <description>Introduction In this study, Redwall Analytics looks at 12 years of adjusted gross income data from over 140 million annual tax returns across the US and compare to Connecticut returns over five income brackets. We find a few suprising trends:
+ Despite being the highest income state, mean income of Connecticut’s &amp;lt;$25k income group is at the bottom of all 50 states (though it had the smallest percentage of taxpayers in that bracket).</description>
+    </item>
+    
+    <item>
+      <title>Analysis of Connecticut Tax Load by Income Bracket</title>
+      <link>/2019/01/09/analysis-of-connecticut-tax-load-by-income-bracket/</link>
+      <pubDate>Wed, 09 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/2019/01/09/analysis-of-connecticut-tax-load-by-income-bracket/</guid>
+      <description>Introduction This brief study finds that Connecticut residents pay $62-63 billion annually in total taxes (including: Federal, State, Municipal Real Estate, Sales, FICA, Medicare) on adjusted gross income of $165-167 billion (an effective tax rate of 37-38%). Some taxes, such as FICA and Medicare, might be considered forms of savings or insurance with a future benefit, and local real estate tax funding education might offset tuition expenses (if the taxpayer’s children can high quality public schools).</description>
+    </item>
+    
+    <item>
+      <title>Reviewing Fairfield County Municipal Fiscal Indicators Since 2001</title>
+      <link>/2018/12/26/fairfield-county-town-level-spending-and-liabilities-gallop-since-2001/</link>
+      <pubDate>Wed, 26 Dec 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/12/26/fairfield-county-town-level-spending-and-liabilities-gallop-since-2001/</guid>
+      <description>Introduction In recent weeks, we have been exploring the State of Connecticut’s municipal oversight infrastructure. Every year, each of the 169 towns files an audited Comprehensive Annual Report (CAFR) and the state aggregates these into the Municipal Fiscal Indicators report Municipal Fiscal Indicators - Fiscal Years Ended 2012-2017. The report is a rich source of information for comparing municipal health.</description>
+    </item>
+    
+  </channel>
+</rss>

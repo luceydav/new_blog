@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Plot R Markdown on Redwall Analytics Blogsite</title>
+    <link>/tags/plot-r-markdown/</link>
+    <description>Recent content in Plot R Markdown on Redwall Analytics Blogsite</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 21 Dec 2018 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/plot-r-markdown/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Introduction to Redwall Analytics Nutmeg Open Data Project</title>
+      <link>/2018/12/21/introduction-to-redwall-analytics-nutmeg-open-data-project/</link>
+      <pubDate>Fri, 21 Dec 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/12/21/introduction-to-redwall-analytics-nutmeg-open-data-project/</guid>
+      <description>Introduction Redwall Analytics has spent the last couple of months gathering data from the State of Connecticut’s relatively new “open data initiative”. In recent months, we have made several posts on LinkedIn describing our explorations and looking at the some of the financial challenges faced by our home state: Quick Review of State of Connecticut Spending in the R Stats Language and Independent Confirmation of the Yankee Institute Study on Gold Coast Real Estate Assessments.</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.52" />
+
+
+<title>IRS Income &amp; Tax Data Show Growth in High Earners, But Rich not Richer - Redwall Analytics Blogsite</title>
+<meta property="og:title" content="IRS Income &amp; Tax Data Show Growth in High Earners, But Rich not Richer - Redwall Analytics Blogsite">
+
+
+
+  
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/css/fonts.css" media="all">
+<link rel="stylesheet" href="/css/main.css" media="all">
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="/" class="nav-logo">
+    <img src="/images/"
+         width="0"
+         height="0"
+         alt="">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="/">Home</a></li>
+    
+    <li><a href="/about/">Redwall Analytics</a></li>
+    
+    <li><a href="/contact/">Contact</a></li>
+    
+    <li><a href="https://linkedin.com/in/david-lucey-cfa-cpa-mba-msba">LinkedIn</a></li>
+    
+    <li><a href="https://twitter.com/lucey_david">Twitter</a></li>
+    
+    <li><a href="https://github.com/luceydav">GitHub</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    <span class="article-duration">5 min read</span>
+    
+
+    <h1 class="article-title">IRS Income &amp; Tax Data Show Growth in High Earners, But Rich not Richer</h1>
+
+    
+    <span class="article-date">2019/01/28</span>
+    
+
+    <div class="article-content">
+      
+
+<h2 id="aggregating-adjusted-gross-income-for-every-zip-code-in-the-united-states-since-2005">Aggregating Adjusted Gross Income for Every Zip Code in the United States since 2005</h2>
+
+<p>In almost every year since 1998 (except strangely not in 2000, 2001 and 2003), the IRS posts Statistics of Income (SOI) spreadsheet showing aggregated tax return data by zip code on its website<a href="https://www.irs.gov/statistics/soi-tax-stats-individual-income-tax-statistics-zip-code-data-soi">SOI Tax Stats - Individual Income Tax Statistics - ZIP Code Data (SOI)</a>. As we discussed in the previous post, <a href="https://redwallanalytics.com/2019/01/09/analysis-of-connecticut-tax-load-by-income-bracket/">Analysis of Connecticut Tax Load by Income Bracket and Type</a> (where we looked at only Connecticut), it is possible to use this same source to compile a granular zip code, town, county or state level picture of income and tax paid by income bracket. Though the disclosure is fantastic and much appreciated, as is often the case with public open data, it can seem like the people who post it may not be frequent users of their own data, because getting it in a usable form can be a painful process.</p>
+
+<p>Fortunately, the National Bureau of Economic Research (NBER) did part of the work moving the SOI from unstructured spreadsheets into a cleaner csv format starting in 2005 <a href="https://www.nber.org/data/soi-tax-stats-individual-income-tax-statistics-zip-code-data-soi.html">SOI Tax Stats - Individual Income Tax Statistics - ZIP Code Data (SOI) Data</a>. Even with this very helpful first step, there was still a lot to be done to get a full 12-year picture:</p>
+
+<ol>
+<li>Income brackets disclosed had changed over time so had to be equalized</li>
+<li>Fields had been corrupted and needed to be cleaned</li>
+<li>factor levels had multiple abbreviations</li>
+<li>new variables had been added over time and new names were used for the same fields</li>
+<li>some data was rounded to differently and needed to be normalized.
+<br /></li>
+</ol>
+
+<p>If anyone is interested in accessing the R code to access the full cleaned dataset, it will be posted on Github by following the link on the homepage of this blog.</p>
+
+<p>In order to protect individual identities, the IRS doesn&rsquo;t disclose zip code income levels when there are less than 10 returns in a bracket for a certain zip code. As a result, the full dataset we are using has between 27-39k zip codes out of all 42k in total. However, our aggregaged data covers pretty much the full US total AGI of $10 trillion paid by 140+ million tax returns, for example in 2015, so we are pretty close to seeing the full picture here. For an independent comparisons, please see the Tax Foundations summaries in Tables 2 and 3 if interested <a href="https://taxfoundation.org/summary-federal-income-tax-data-2017/">Summary of the Latest Federal Income Tax Data, 2017 Update</a>. Please see Table <a href="#fig:aggregate-table">1</a> below for a summary of the almost 2.3 million data points used in this analysis.</p>
+
+<div class="figure">
+<!--html_preserve--><div id="htmlwidget-dd0af51953215a98605d" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-dd0af51953215a98605d">{"x":{"filter":"none","fillContainer":false,"data":[["1","2","3","4","5","6","7","8","9","10","11","12"],["2005","2006","2007","2008","2009","2010","2011","2012","2013","2014","2015","2016"],["7,182,010,295","7,758,164,946","8,379,252,723","7,978,365,298","7,583,514,601","8,034,596,277","8,288,818,507","8,935,571,501","8,957,950,900","9,579,169,731","10,015,212,288","10,113,342,633"],["954,766,937","1,040,638,727","1,070,869,336","987,103,328","881,714,422","969,824,216","1,015,286,559","1,142,928,731","1,180,846,621","1,305,960,651","1,385,945,164","1,389,940,911"],["130,561,332","134,861,328","149,144,659","137,666,151","134,518,673","137,148,399","139,690,240","139,282,040","140,888,270","142,448,550","144,462,320","145,302,140"],[38499,38463,38543,28910,27812,27786,27787,27718,27688,27679,27678,29872]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>year<\/th>\n      <th>Total AGI<\/th>\n      <th>Total Tax<\/th>\n      <th>Total Returns<\/th>\n      <th>Unique Zips<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"columnDefs":[{"className":"dt-right","targets":5},{"orderable":false,"targets":0}],"order":[],"autoWidth":false,"orderClasses":false}},"evals":[],"jsHooks":[]}</script><!--/html_preserve-->
+<p class="caption">Figure 1 Twelve Years of IRS Adjusted Gross Income</p>
+</div>
+
+<h2 id="connecticut-incomes-consistently-highest-average-agi-for-100k-and-lowest-for-25k-brackets">Connecticut Incomes Consistently Highest Average AGI for &gt;$100k and Lowest for &lt;$25k brackets</h2>
+
+<p>Figure <a href="#fig:CT-AGI-versus-States-over-time">2</a>) shows the aggregate state level Adjusted Gross Income per capita for every US zipcode divided into five brackets (&rdquo;&lt;$25k&rdquo;, &ldquo;$25-50k&rdquo;, &ldquo;$50-75k&rdquo;, &ldquo;$75-100k&rdquo;,&ldquo;$100k+&rdquo;) since 2005. More recent SOI disclosures include a &gt;$200k bracket, but this was not available pre 2009, so we merged it with $100-200k. It would be more informative to have more granuarity on the higher brackets because &gt;$200k would behave differently than $100-200k through the economic cycle, but we were constrained by the disclosure.</p>
+
+<div class="figure">
+<img src="/post/2019-01-28-irs-income-tax-data-show-growth-in-high-earners-but-rich-not-richer_files/figure-html/CT-AGI-versus-States-over-time-1.png" alt="Adjusted Gross Income by State - Connecticut in Red" width="100%" />
+<p class="caption">Figure 2 Adjusted Gross Income by State - Connecticut in Red</p>
+</div>
+
+<p>It is not unexpected that mean income Connecticut&rsquo;s &gt;$100k bracket would be the highest in the country between $250-300k in most years. It is interesting that this bracket peaked in 2007 in Connecticut, declined sharply until 2009, recovered for a few years and has been declining again since 2012. It is also notable that a similar trend can be seen in the highest bracket for many other high earning states. These are important brackets because they pay almost all of the income tax. The unscientific expectation of this analyst was the top group in Connecticut might have lost more ground to other states given the heavy reliance on financial services income, but this was not the case.</p>
+
+<p>Another interesting thing in these charts is the surge in income seen in the middle income brackets of several states during and immediately after the financial crisis which wasn&rsquo;t evident at all in Connecticut. Connecticut&rsquo;s middle income earners have been above average most of the time, but might have lost a bit of ground on average for not participating in this post crisis middle income surge. As discussed previously in <a href="https://redwallanalytics.com/2019/01/09/analysis-of-connecticut-tax-load-by-income-bracket/">Analysis of Connecticut Tax Load by Income Bracket and Type</a>, Connecticut&rsquo;s middle income groups pay very high effective tax rates when all taxes are considered.</p>
+
+<p>It is surprising that the mean income of lowest &lt;$25k bracket is consistently the lowest nationally. Remember that this is Adjusted Gross Income so not allowing for greater income support from transfer payments, so AGI may not fully reflect the amount sustaining those families annually.</p>
+
+<h2 id="connecticut-has-lowest-percentage-of-filers-in-bottom-brackets-and-highest-in-top-brackets">Connecticut Has Lowest Percentage of Filers in Bottom Brackets and Highest in Top Brackets</h2>
+
+<p>Now moving onto the percentage of taxpayers in each bracket in Figure \@ref(fig:percentage-by=bracket)). Connecticut has the consistently had the smallest number of people in the bottom two brackets in the country, although still more than half of taxpayers. As seen in most states, Connecticut middle income brackets showed a decline in percentage of taxpayers during 2009, while the lowest bracket briefly increased. Aside from that one year, t is also notable that the number of earners in the two lowest brackets has been in pretty steady decline nationally over the period.</p>
+
+<div class="figure">
+<img src="/post/2019-01-28-irs-income-tax-data-show-growth-in-high-earners-but-rich-not-richer_files/figure-html/percentage-by=bracket-1.png" alt="Percentage of Taxpayers in Bracket by State - Connecticut in Red" width="100%" />
+<p class="caption">(\#fig:percentage-by=bracket)Percentage of Taxpayers in Bracket by State - Connecticut in Red</p>
+</div>
+
+<p>On the ranks of the lowest brackets seem to have decreased and the highest brackets have increased, while the middle income groups have remained the same in percentage terms. This study is measuring a $100k+ cutoff, which is not that high income in parts of Connecticut. As previously discussed, IRS statistics have shown that the average income of leavers has been much higher the last few years than previously. This has probably been skewed by a few very large taxpayers leaving the state in protest of the 2013 tax hikes on high earners as well as the long term trend of retirement to warmer climates. Overall, there are signficantly more taxpayers living in the state earning &gt;$100k (although they have been earning less on average than 10 years ago).</p>
+
+    </div>
+  </article>
+
+  
+
+
+</main>
+
+      <footer class="footer">
+        <ul class="footer-links">
+          <li>
+            <a href="/index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
+          </li>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/images/hugo-logo.png" alt="Img link to Hugo website" width="22" height="22"></a>
+          </li>
+        </ul>
+      </footer>
+
+    </div>
+    
+
+    
+<script src="/js/math-code.js"></script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+
+    
+  </body>
+</html>
+

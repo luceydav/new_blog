@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Redwall Analytics Blogsite</title>
+    <link>/</link>
+    <description>Recent content on Redwall Analytics Blogsite</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 12 Oct 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Replicating Yankee Institute Risk Score Over 15 Years</title>
+      <link>/2019/10/12/replicating-yankee-institute-risk-score-over-15-years/</link>
+      <pubDate>Sat, 12 Oct 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/2019/10/12/replicating-yankee-institute-risk-score-over-15-years/</guid>
+      <description>Warning Signs - Part II As mentioned in part I of this series Connecticut City Unfunded Pension and OPEB Liabilities Over Time, we intend to look at the evolution of city financial vulnerability over time. The metric put forth in the Yankee report used a methodology developed by Marc Joffe of the Reason Foundation in two pieces.
+Mr. Joffe’s first piece Assessing Municipal Bond Default Probabilities looked in depth at the conditions which led to municipal bankruptcies during the Great Depression when they were most common, and the handful of more recent special cases.</description>
+    </item>
+    
+    <item>
+      <title>Connecticut City Unfunded Pension and OPEB Liabilities Over Time</title>
+      <link>/2019/10/11/connecticut-city-unfunded-pension-and-opeb-liabilities-over-time/</link>
+      <pubDate>Fri, 11 Oct 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/2019/10/11/connecticut-city-unfunded-pension-and-opeb-liabilities-over-time/</guid>
+      <description>Introduction - Part I Earlier this year, Reviewing Fairfield County Municipal Fiscal Indicators Since 2001 looked at data from 17 annual Connecticut Municipal Fiscal Indicators reports to better understand the current financial condition of all 169 towns. Those reports included only began including the net pension liability over the last three years and had no OPEB data. It turns out that the same disclosure by the Office of Policy Management includes separate tables for pension and other post employment benefits (OPEB).</description>
+    </item>
+    
+    <item>
+      <title>IRS Data shows Connecticut Taxpayers Also Pay Higher Federal Taxes</title>
+      <link>/2019/03/07/irs-data-shows-connecticut-taxpayers-also-pay-higher-federal-taxes/</link>
+      <pubDate>Thu, 07 Mar 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/2019/03/07/irs-data-shows-connecticut-taxpayers-also-pay-higher-federal-taxes/</guid>
+      <description>Introduction In this post, we will be using the same dataset as our earlier: IRS Data Shows Growth in Number not Income of Highest Earners since 2005. This dataset encompases 2.2 million rows of five brackets for each zip code from 2005-2016. Using actual tax data, we noted that despite the robust political dialogue, income inequality has been declining nationally and in Connecticut since 2007.</description>
+    </item>
+    
+    <item>
+      <title>A Through the Cycle Geo-Spatial Analysis of CT Town Finances</title>
+      <link>/2019/02/11/looking-at-ct-towns-through-the-cycle-with-maps/</link>
+      <pubDate>Mon, 11 Feb 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/2019/02/11/looking-at-ct-towns-through-the-cycle-with-maps/</guid>
+      <description>Introduction In an earlier post, Reviewing Fairfield County Municipal Fiscal Indicators Since 2001, we used 17 years of individual Town Comprehensive Annual Financial Reports (CAFR) aggregated in Connecticut’s Municipal Fiscal Indicator’s to compare 15 Fairfield County towns. The challenge was that the graphs became crowded even with that small number of towns. In this analysis, we will expand our look at the similar variables over all 169 Connecticut towns using Geo-spatial mapping.</description>
+    </item>
+    
+    <item>
+      <title>IRS Data Shows Growth in Number not Income of Highest Earners since 2005</title>
+      <link>/2019/01/28/irs-data-show-growth-in-number-not-income-of-highest-earners-since-2005/</link>
+      <pubDate>Mon, 28 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/2019/01/28/irs-data-show-growth-in-number-not-income-of-highest-earners-since-2005/</guid>
+      <description>Introduction In this study, Redwall Analytics looks at 12 years of adjusted gross income data from over 140 million annual tax returns across the US and compare to Connecticut returns over five income brackets. We find a few suprising trends:
+ Despite being the highest income state, mean income of Connecticut’s &amp;lt;$25k income group is at the bottom of all 50 states (though it had the smallest percentage of taxpayers in that bracket).</description>
+    </item>
+    
+    <item>
+      <title>Analysis of Connecticut Tax Load by Income Bracket</title>
+      <link>/2019/01/09/analysis-of-connecticut-tax-load-by-income-bracket/</link>
+      <pubDate>Wed, 09 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/2019/01/09/analysis-of-connecticut-tax-load-by-income-bracket/</guid>
+      <description>Introduction This brief study finds that Connecticut residents pay $62-63 billion annually in total taxes (including: Federal, State, Municipal Real Estate, Sales, FICA, Medicare) on adjusted gross income of $165-167 billion (an effective tax rate of 37-38%). Some taxes, such as FICA and Medicare, might be considered forms of savings or insurance with a future benefit, and local real estate tax funding education might offset tuition expenses (if the taxpayer’s children can high quality public schools).</description>
+    </item>
+    
+    <item>
+      <title>Reviewing Fairfield County Municipal Fiscal Indicators Since 2001</title>
+      <link>/2018/12/26/fairfield-county-town-level-spending-and-liabilities-gallop-since-2001/</link>
+      <pubDate>Wed, 26 Dec 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/12/26/fairfield-county-town-level-spending-and-liabilities-gallop-since-2001/</guid>
+      <description>Introduction In recent weeks, we have been exploring the State of Connecticut’s municipal oversight infrastructure. Every year, each of the 169 towns files an audited Comprehensive Annual Report (CAFR) and the state aggregates these into the Municipal Fiscal Indicators report Municipal Fiscal Indicators - Fiscal Years Ended 2012-2017. The report is a rich source of information for comparing municipal health.</description>
+    </item>
+    
+    <item>
+      <title>Introduction to Redwall Analytics Nutmeg Open Data Project</title>
+      <link>/2018/12/21/introduction-to-redwall-analytics-nutmeg-open-data-project/</link>
+      <pubDate>Fri, 21 Dec 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/2018/12/21/introduction-to-redwall-analytics-nutmeg-open-data-project/</guid>
+      <description>Introduction Redwall Analytics has spent the last couple of months gathering data from the State of Connecticut’s relatively new “open data initiative”. In recent months, we have made several posts on LinkedIn describing our explorations and looking at the some of the financial challenges faced by our home state: Quick Review of State of Connecticut Spending in the R Stats Language and Independent Confirmation of the Yankee Institute Study on Gold Coast Real Estate Assessments.</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>/contact/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/contact/</guid>
+      <description>Contact Details email: david.lucey@mac.com
+phone: 1-917-854-6420</description>
+    </item>
+    
+    <item>
+      <title>About</title>
+      <link>/about/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/about/</guid>
+      <description>Redwall Analytics is a collaborative firm researching global and local questions in search of independent insight. David Lucey, Founder, spent 25 years working with institutional global equity research with several top investment banking firms. He completed his Masters of Science in Business Analytics at New York University in May of 2018. In its fifth year, this is selective program was built to train senior executives to find and communicate wisdom in data.</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.52" />
+
+
+<title>Replicating Yankee Institute Risk Score Over 9 Years - Redwall Analytics Blogsite</title>
+<meta property="og:title" content="Replicating Yankee Institute Risk Score Over 9 Years - Redwall Analytics Blogsite">
+
+
+
+  
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/css/fonts.css" media="all">
+<link rel="stylesheet" href="/css/main.css" media="all">
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="/" class="nav-logo">
+    <img src="/images/"
+         width="0"
+         height="0"
+         alt="">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="/">Home</a></li>
+    
+    <li><a href="/about/">Redwall Analytics</a></li>
+    
+    <li><a href="/contact/">Contact</a></li>
+    
+    <li><a href="https://linkedin.com/in/david-lucey-cfa-cpa-mba-msba">LinkedIn</a></li>
+    
+    <li><a href="https://twitter.com/lucey_david">Twitter</a></li>
+    
+    <li><a href="https://github.com/luceydav">GitHub</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    <span class="article-duration">3 min read</span>
+    
+
+    <h1 class="article-title">Replicating Yankee Institute Risk Score Over 9 Years</h1>
+
+    
+    <span class="article-date">2019/10/12</span>
+    
+
+    <div class="article-content">
+      
+
+
+<div id="warning-signs---part-ii" class="section level1">
+<h1>Warning Signs - Part II</h1>
+<p>As mentioned in part I of this series <a href="http://127.0.0.1:4321/2019/10/11/connecticut-city-unfunded-pension-and-opeb-liabilities-over-time/">Connecticut City Unfunded Pension and OPEB Liabilities Over Time</a>, we intend to look at the evolution of city financial vulnerability over time. The metric put forth in the Yankee report used a methodology developed by Marc Joffe of the Reason Foundation in two pieces.</p>
+<p>Mr. Joffe’s first piece <a href="https://www.treasurer.ca.gov/cdiac/publications/probabilities.pdf">Assessing Municipal Bond Default Probabilities</a> looked in depth at the conditions which led to municipal bankruptcies during the Great Depression when they were most common, and the handful of more recent special cases.</p>
+<p>His second piece <a href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2858674">Costs of the Municipal Rating System</a> pointed out the large burden of the current ratings, and costly and ineffective municipal bond insurance system. In response, Joffe suggested a simple, easily calculated risk index combining three components based on municipal financial indicators and two smaller components based on macro economic factors (home prices and unemployment).</p>
+<p>The Yankee Insititute Warning Signs report probably relied on a manual work to gather data from CAFR reports and to process in Excel, but the calculations can be done quickly and on a larger scale using available digital information on the State of Connecticut’s website. There are a few key differences in our calculation:</p>
+<ol style="list-style-type: decimal">
+<li><p>Warning signs used all “Long Term Obligations”, effectively including bonds outstanding, pension and OPEB Liabilities and payables. Our calculation will include everything except for payables.</p></li>
+<li><p>The Yankee report used Total Revenues from all accounts, but our data referred only to General Fund Revenues. This will be by far the largest share for most towns, but will lead to differences in the GF Score and Total Scores.</p></li>
+<li><p>The Yankee report used Zillow indices to determine home price levels in each city, but we will use actual arm’s length sales as reported by each town’s assessor’s office.</p></li>
+<li><p>We also only used data for 115 cities through the period because many cities did not report pensions or OPEB liabilities in the MFI database.</p></li>
+<li><p>OPEB liabilities are only included as of 2009, the first year included in the data. Because we did not adjust for prior years, LTO Scores and Total Scores will be biased higher in the earlier years.</p></li>
+</ol>
+</div>
+<div id="shiny-app-of-connecticut-municipal-vulnerability-scores-from-2004-2017" class="section level1">
+<h1>Shiny App of Connecticut Municipal Vulnerability Scores from 2004-2017</h1>
+<p>The default in the app below is set for Bridgeport (shown in red) among 115 other Connecticut municipalities. Using the app pull down at the top, it is possible to change the city name to see its scores relative to the rest of the State. The table tab can be used to see the actual data for that town.</p>
+<iframe width="900" height="1200" scrolling="no" frameborder="no" src="https://luceyda.shinyapps.io/yankee_shiny/">
+</iframe>
+<p>While the aggregate scores for most towns bottomed out around 2009 with the economic cycle helped by unemployment and home prices, the more significant LTO Score continues to tail off as liabilities grow for many.</p>
+</div>
+
+    </div>
+  </article>
+
+  
+
+
+</main>
+
+      <footer class="footer">
+        <ul class="footer-links">
+          <li>
+            <a href="/index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
+          </li>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/images/hugo-logo.png" alt="Img link to Hugo website" width="22" height="22"></a>
+          </li>
+        </ul>
+      </footer>
+
+    </div>
+    
+
+    
+
+    
+  </body>
+</html>
+

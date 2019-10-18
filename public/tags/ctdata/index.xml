@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Ctdata on Redwall Analytics Blogsite</title>
+    <link>/tags/ctdata/</link>
+    <description>Recent content in Ctdata on Redwall Analytics Blogsite</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 07 Mar 2019 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/ctdata/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>IRS Data shows Connecticut Taxpayers Also Pay Higher Federal Taxes</title>
+      <link>/2019/03/07/irs-data-shows-connecticut-taxpayers-also-pay-higher-federal-taxes/</link>
+      <pubDate>Thu, 07 Mar 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/2019/03/07/irs-data-shows-connecticut-taxpayers-also-pay-higher-federal-taxes/</guid>
+      <description>Introduction In this post, we will be using the same dataset as our earlier: IRS Data Shows Growth in Number not Income of Highest Earners since 2005. This dataset encompases 2.2 million rows of five brackets for each zip code from 2005-2016. Using actual tax data, we noted that despite the robust political dialogue, income inequality has been declining nationally and in Connecticut since 2007.</description>
+    </item>
+    
+    <item>
+      <title>A Through the Cycle Geo-Spatial Analysis of CT Town Finances</title>
+      <link>/2019/02/11/looking-at-ct-towns-through-the-cycle-with-maps/</link>
+      <pubDate>Mon, 11 Feb 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/2019/02/11/looking-at-ct-towns-through-the-cycle-with-maps/</guid>
+      <description>Introduction In an earlier post, Reviewing Fairfield County Municipal Fiscal Indicators Since 2001, we used 17 years of individual Town Comprehensive Annual Financial Reports (CAFR) aggregated in Connecticut’s Municipal Fiscal Indicator’s to compare 15 Fairfield County towns. The challenge was that the graphs became crowded even with that small number of towns. In this analysis, we will expand our look at the similar variables over all 169 Connecticut towns using Geo-spatial mapping.</description>
+    </item>
+    
+  </channel>
+</rss>
