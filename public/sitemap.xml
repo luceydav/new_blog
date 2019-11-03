@@ -3,6 +3,16 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>/2019/11/02/how-does-stamford-charter-school-for-excellence-do-it/</loc>
+    <lastmod>2019-11-02T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/2019/10/25/analyzing-500-000-connecticut-real-estate-sales-over-20-years/</loc>
+    <lastmod>2019-10-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>/2019/10/12/replicating-yankee-institute-risk-score-over-15-years/</loc>
     <lastmod>2019-10-12T00:00:00+00:00</lastmod>
   </url>
@@ -56,8 +66,14 @@
   </url>
   
   <url>
+    <loc>/tags/charterschools/</loc>
+    <lastmod>2019-11-02T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>/tags/connecticut/</loc>
-    <lastmod>2019-10-12T00:00:00+00:00</lastmod>
+    <lastmod>2019-11-02T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -69,13 +85,13 @@
   
   <url>
     <loc>/tags/cteconomy/</loc>
-    <lastmod>2019-10-12T00:00:00+00:00</lastmod>
+    <lastmod>2019-10-25T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>/tags/dataviz/</loc>
-    <lastmod>2019-10-12T00:00:00+00:00</lastmod>
+    <lastmod>2019-11-02T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -93,13 +109,13 @@
   
   <url>
     <loc>/post/</loc>
-    <lastmod>2019-10-12T00:00:00+00:00</lastmod>
+    <lastmod>2019-11-02T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>/categories/r/</loc>
-    <lastmod>2019-10-12T00:00:00+00:00</lastmod>
+    <lastmod>2019-11-02T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -111,19 +127,19 @@
   
   <url>
     <loc>/</loc>
-    <lastmod>2019-10-12T00:00:00+00:00</lastmod>
+    <lastmod>2019-11-02T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>/tags/rstats/</loc>
-    <lastmod>2019-10-12T00:00:00+00:00</lastmod>
+    <lastmod>2019-11-02T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>/tags/</loc>
-    <lastmod>2019-10-12T00:00:00+00:00</lastmod>
+    <lastmod>2019-11-02T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
