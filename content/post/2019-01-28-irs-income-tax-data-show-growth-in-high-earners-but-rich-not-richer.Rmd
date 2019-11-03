@@ -1,0 +1,170 @@
+---
+title: IRS Data Shows Growth in Number not Income of Highest Earners since 2005
+author: David Lucey
+date: '2019-01-28'
+slug: irs-data-show-growth-in-number-not-income-of-highest-earners-since-2005
+categories:
+  - R
+tags:
+  - R Markdown
+  - plot
+---
+
+```{r 'setup',include=FALSE}
+knitr::opts_chunk$set(comment=NA,fig.width=12, fig.height=8, out.width = '100%')
+```
+
+
+```{r 'libraries', include=FALSE}
+library(data.table)
+library(tidyverse)
+library(stringr)
+library(rebus)
+library(zipcode)
+library(DT)
+```
+
+
+```{r include=FALSE}
+setwd("/Users/davidlucey/Desktop/David/Projects/blog/new_blog/")
+source("get_irs_tax.R")
+```
+
+
+```{r 'data-import-cleaning', include=FALSE}
+setwd("~/Desktop/David/Projects/CT_data/")
+source("my_chart_attributes.R")
+source("format_ggplotly.R")
+
+##Load data from disc as list of data.tables and name by year
+years <- c(2005:2016)
+irs <- get_irs_tax(years)
+
+```
+
+
+## Introduction
+
+In this study, Redwall Analytics looks at 12 years of adjusted gross income data from over 140 million annual tax returns across the US and compare to Connecticut returns over five income brackets. We find a few suprising trends:
+  
+  * Despite being the highest income state, mean income of Connecticut's <$25k income group is at the bottom of all 50 states (though it had the smallest percentage of taxpayers in that bracket).
+  * Many states showed a surprising, but temporary surge in middle income brackets during the Great Recession, but Connecticut's taxpayers did not enjoy this.
+  * Connecticut's highest earners maintained their lead in mean Adjusted Gross Income (AGI) despite headwinds in the contracting financial services sector, departures of key employers like GE and a relative lack of participation in the tech boom. Although earning somewhat less than before the recession, there was signficantly percentage of taxpayers in the highest >$100k bracket (in keeping with the national trend).
+
+## Methodology
+
+In almost every year since 1998 (except strangely not in 2000, 2001 and 2003), the IRS posts Statistics of Income (SOI) spreadsheet showing aggregated tax return data by zip code on its website [SOI Tax Stats - Individual Income Tax Statistics - ZIP Code Data (SOI)] (https://www.irs.gov/statistics/soi-tax-stats-individual-income-tax-statistics-zip-code-data-soi). As we discussed in the previous post, [Analysis of Connecticut Tax Load by Income Bracket and Type](https://redwallanalytics.com/2019/01/09/analysis-of-connecticut-tax-load-by-income-bracket/) (where we looked at only Connecticut), it is possible to use this same source to compile a granular picture of income and tax paid by income bracket in every zip code, town, county or state. 
+
+Though SOI disclosure is fantastic, as we are finding is often the case with public open data, it can seem like the people who post it may not understand how hard it can be to access if the goal is to look for trends and patterns across more than one year. Getting data from the website into a usable form can be a painful process. Fortunately, the National Bureau of Economic Research (NBER) did part of the work moving the SOI from unstructured spreadsheets into a cleaner csv format starting in 2005 [SOI Tax Stats - Individual Income Tax Statistics - ZIP Code Data (SOI) Data](https://www.nber.org/data/soi-tax-stats-individual-income-tax-statistics-zip-code-data-soi.html). Even with this very helpful first step, there was still a lot to be done to get a full 12-year picture: 
+
+  1. Income brackets disclosed had changed over time so had to be equalized
+  2. Fields on income levels in 2006 had been corrupted and needed to be cleaned
+  3. Factor levels had multiple abbreviations ("ny", "NY") and zips were both 4 and 5 digits
+  4. New variables had been added over time and new names were used for the same fields (such as total tax)
+  5. Some fields was rounded differently than the same fields in other years and needed to be normalized. 
+  
+If anyone is interested in accessing the R code to download and clean the full dataset, it will be posted on Github by following the link on the homepage of this blog.
+
+In order to protect individual identities, the IRS doesn't disclose zip code income levels when there are less than 10 returns in a bracket for a certain zip code. As a result, the full dataset we are using has between 27-39k zip codes out of all 42k in total. However, our aggregated data covers pretty much the full US total AGI of $10 trillion paid by 140+ million tax returns, for example in 2015, so we are pretty close to seeing the full picture here. For an independent comparisons, please see the Tax Foundations summaries in Tables 2 and 3 if interested [Summary of the Latest Federal Income Tax Data, 2017 Update]( https://taxfoundation.org/summary-federal-income-tax-data-2017/). Please see Table \@ref(fig:summary) below for a summary of the almost 2.3 million data points used in this analysis.
+
+
+```{r 'summary', echo=FALSE, fig.cap='Summary of Twelve Years of IRS SOI Zip Code Data', message=FALSE, warning=FALSE}
+
+irs[!zipcode %in% c("00000","99999"),
+        .(`Total AGI ($B)`= sum(as.numeric(a00100), na.rm = TRUE)/1000000,
+          `Total Tax ($B)`= sum(as.numeric(total_tax), na.rm = TRUE)/1000000,
+          `Total Returns (m)`=sum(as.numeric(n1), na.rm=TRUE)/1000000,
+          `Unique Zips`=length(unique(zipcode))),
+            by=.(`Year` = year)] %>% 
+  datatable(options = list(dom = 't'),
+             filter="none",
+            rownames=FALSE)%>% 
+  formatStyle(columns = c(1:5),
+              fontSize = '100%') %>%
+  formatCurrency(columns = c(2:3),
+                 mark=",",
+              digits=0)
+
+```
+
+## Connecticut Incomes Consistently Highest Average AGI for >$100k and Lowest for <$25k brackets
+
+Figure \@ref(fig:CT-AGI-versus-States-over-time) shows the aggregate level Adjusted Gross Income per capita for every US state divided into five brackets (<$25k, $25-50k, $50-75k, $75-100k and $100k+) since 2005 (with Connecticut shown in red). More recently, the IRS SOI disclosures include a >$200k bracket, and having this would have improved the analysis considerably, because $100k is not that high an income in many coastal locations. In addition, income above $200k+ would likely be more cyclical, and might have different behavior through the cycle. However, $200k+ was not available pre 2009, so we merged it into a combined >$100+ super bracket.
+
+```{r 'CT-AGI-versus-States-over-time', fig.cap='Adjusted Gross Income ($ Billions) by State & Income Group - Connecticut in Red', echo=FALSE}
+
+states <- irs[,agi_level := forcats::fct_relevel(agi_level,"<$25k", "$25-50k", "$50-75k","$75-100k","$100k+")][
+  !zipcode %in% c("00000","99999") &
+      agi_level %in% c("<$25k", "$25-50k", "$50-75k", "$75-100k","$100k+"),
+      { agi_sum = sum(a00100 ,na.rm = TRUE)
+        total = sum(n1 ,na.rm=TRUE)
+        agi_cap = agi_sum / total
+        list( `Income per Capita`=agi_cap)},
+    by=.(`Year`=year,state,agi_level)]
+
+  ggplot(states[!state %in% c("CT","WY","GA")])+
+          geom_line(aes(`Year`,`Income per Capita`,group=state))+
+  scale_color_manual(values = "red", name="")+
+          geom_line(data=states[state == "CT"],
+                    aes(`Year`,`Income per Capita`,col="red",size=1, group=state))+
+          mychartattributes +
+    scale_x_discrete(breaks=c(2005,2010,2015))+
+    facet_wrap(~agi_level,scale="free")+
+    theme(legend.position = "none")
+
+rm(states)
+```
+
+It might be surprising that mean income of Connecticut's top earners remained the highest in the country (close to $300k in most years), despite relatively slow growth generally and the contraction of the key financial services sector specifically. In parallel with national trends, mean income at the top peaked in 2007, declined sharply until 2009, recovered for a few years, and has been declining again since 2012. These are critical taxpayers because they pay the large majority of the income taxes in most states.
+
+The charts show a bump in income seen in the middle income brackets of several states during and immediately after the financial crisis (which wasn't evident at all in Connecticut). Though Connecticut's middle income earners have had higher average income than most other states, they appear to have lost some ground relative to the pack since the recession. As discussed previously in [Analysis of Connecticut Tax Load by Income Bracket and Type](https://redwallanalytics.com/2019/01/09/analysis-of-connecticut-tax-load-by-income-bracket/), Connecticut's middle income groups pay very high effective tax rates (when all taxes are considered). This may be attributed to the slow growth in income over the period, while some taxes such as real estate have marched steadily higher.
+
+It is surprising that the mean income of lowest <$25k bracket has consistently been among the lowest nationally. Though mean income for the lowest bracket recovered sharply right after the crisis, it has been flat nationally since 2010. As shown in the chart, Connecticut lowest bracket hasn't narrowed the gap with many other states. It is possible that  Adjusted Gross Income doesn't include transfers (like housing support or food assistance), and hence, may not fully reflect sources of income for those families. In a future study, we will explore this uninituitive finding further to see if it can be better explained.
+
+## Connecticut Has Lowest Percentage of Filers in Bottom and Highest in Top Brackets
+
+Now moving onto the percentage of taxpayers in each bracket (shown in Figure \@ref(fig:percentage-by-bracket) below). As seen in most states, Connecticut middle income brackets showed a decline in percentage of taxpayers, while the lowest bracket briefly increased during the 2009 financial crisis. In addition to having the smallest percentage in the bottom two brackets (although still more than half of taxpayers), the percentage of taxpayers in these income groups has kept pace with the decline nationally. 
+
+```{r echo=FALSE, 'percentage-by-bracket', fig.cap='Percentage of Taxpayers in Bracket by State & Income Group- Connecticut in Red',}
+states_bracket <- irs[,agi_level := 
+          forcats::fct_relevel(agi_level,"<$25k", "$25-50k", "$50-75k","$75-100k","$100k+")][
+      !zipcode %in% c("00000","99999") &
+      agi_level %in% c("<$25k", "$25-50k", "$50-75k", "$75-100k","$100k+"),
+        { total_bracket = sum(n1 ,na.rm=TRUE)
+            list( total_bracket=total_bracket)},
+              by=.(year=year,state,agi_level)]
+
+states_total <-irs[
+      !zipcode %in% c("00000","99999"),
+        { total_state = sum(n1 ,na.rm=TRUE)
+            list( total_state=total_state)},
+              by=.(year=year,state)]
+
+state_percent <- states_total[states_bracket, on=c("year","state")][
+  ,`:=`(`Percent of Taxpayers in Bracket`= (total_bracket * 100) / total_state, 
+     `Year`=year)]
+
+
+ggplot(state_percent[!state %in% c("CT")])+
+                  geom_line(aes(`Year`,`Percent of Taxpayers in Bracket`,group=state))+
+                            #scale_color_manual(values = "red", name="")+
+                  geom_line(data=state_percent[state =="CT"],
+                            aes(`Year`,`Percent of Taxpayers in Bracket`,col="red",size=1,group=state))+
+                            theme(legend.title=element_blank())+
+                  mychartattributes +
+                  scale_x_discrete(breaks=c(2005,2010,2015))+
+                  facet_wrap(~agi_level,scale="free") +
+                  theme(legend.position = "none")
+
+rm(states_total,state_percent,states_bracket)
+```
+
+While mean income of lowest bracket flattened out after 2010, the percentage of taxpayers in this group has decreased by about 10% (still remaining the largest group). To hypothesize, it may be the upward movement of these lower income workers into the middle brackets over the course of the recovery, combined with the relative lack of newly generated high paying jobs in high growth areas (like software and internet) may be restraining the mean income in the middle.
+
+Although leavers over the last five years are known to be relatively high earners on average [The Out-Migration Problem](http://www.yankeeinstitute.org/connecticut-out-migration-problem/), this has probably been skewed by a few very large taxpayers leaving the state in protest of the 2013 tax hikes on high earners as well as the long term trend of retirement to warmer climates. The rising percentage of taxpayers in the highest bracket suggests that leavers are being replaced by rising income from the middle. Although signs of economic growth seem clear at the low and high ends, the appearance of flat income and unchanged percentage of taxpayers may mask that there are a lot of different people in this group than ten years ago.
+
+## Conclusion
+
+As speculated in the prior section, a missing piece from bracket-based income and tax analysis such as this, can be the income lifecycle of a worker. Income tends to peak for high earners in their 40's and 50's, as organizations are pyramids and not everyone will become CEO. Many of those leaving the state are likely to be at or beyond their top earning years, and their future earnings in other states may not match what they earned before migrating. In the case of Connecticut, a generation of very high earning financial sector workers may have moved on since 2005. This can be seen in the the mean income of top earnings which has declined steadily since the 2007. The biggest challenge for Connecticut may not be the workers it has been losing, but the new workers and employers it may be failing to attract.
+
+

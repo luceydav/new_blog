@@ -1,0 +1,511 @@
+---
+title: IRS Data shows Connecticut Taxpayers Also Pay Higher Federal Taxes
+author: David Lucey
+date: '2019-03-07'
+slug: irs-data-shows-connecticut-taxpayers-also-pay-higher-federal-taxes
+categories:
+  - R
+tags:
+  - ctdata
+  - dataviz
+  - rstats
+---
+
+```{r 'libraries', include=FALSE}
+library(data.table)
+library(tidyverse)
+library(plotly)
+library(rebus)
+library(zipcode)
+
+```
+
+
+```{r, include=FALSE}
+setwd("/Users/davidlucey/Desktop/David/Projects/blog/new_blog/")
+source("get_irs_tax.R")
+source("my_chart_attributes.R")
+```
+
+
+```{r 'data', warning=FALSE, include=FALSE}
+setwd("/Users/davidlucey/Desktop/David/Projects/CT_data")
+
+years <- c(2005:2016)
+
+
+ct_zips <- fread("ct_zips.csv")[,`:=`(zipcode=zip,TOWN=municipality)]
+ct_zips$zipcode <- clean.zipcodes(ct_zips$zipcode)
+
+irs <- get_irs_tax(years)
+
+ct_irs <- ct_zips[irs[state=="CT"],on="zipcode"]
+
+ct_irs[,`:=`(a00100=sum(as.numeric(a00100),na.rm=TRUE),
+           n1=sum(as.numeric(n1),na.rm=TRUE),
+           total_tax=sum(total_tax,na.rm=TRUE))
+          ,by=.(TOWN,agi_level,year)]
+
+```
+
+## Introduction
+
+In this post, we will be using the same dataset as our earlier: [IRS Data Shows Growth in Number not Income of Highest Earners since 2005](https://redwallanalytics.com/2019/01/28/irs-data-show-growth-in-number-not-income-of-highest-earners-since-2005/). This dataset encompases 2.2 million rows of five brackets for each zip code from 2005-2016. Using actual tax data, we noted that despite the robust political dialogue, income inequality has been declining nationally and in Connecticut since 2007. Again, we also found a few new insights in this latest analysis:  
+
+  * Connecticut taxpayers in all brackets pay higher effective federal tax rates, which is suprising given the unlimited SALT deductions available until recently.
+  * Though still highest nationally, Connecticut's highest earners lost ground relative to the averages over the studied period, while its lowest earners gained ground, but remained close to the lowest.
+
+## Aggregate AGI Rises of Highest Earnings Group Soars Above Pre-Recession Levels
+
+Figure \@ref(fig:agi) below shows AGI for the other 49 states (left) and for Connecticut alone (right). Note that the scale of the y-axes are not the same, but in both cases, the top bracket has made substantial gains in aggregate income relative to the other groups. However, the top group has 42% more taxpayers nationally and 22% in CT in 2016, so the increase has been driven by more taxpayers with more income and not more income per taxpayer. In addition, there are 23% fewer members of the lowest brackets both nationally and in Connecticut. Connecticut has clearly underperformed the national trends, but with the boom in global markets and the financial services industry, the late 2000's was not a normal starting point. In the normal course of events, wage gains and inflation would be expected to push taxpayers into higher brackets, but those have been notably slow over the measured period. Although wage gains must be partly responsible for the "bracket creep", such a significant number of taxpayers moving into the highest brackets and out of the lowest seems inconsistent with the current narrative of ever-rising inequality.
+
+```{r 'agi', echo=FALSE, warning=FALSE, fig.cap='Adjusted Gross Income ($ Billions) for USA and Connecticut 2005-2016'}
+a <- list(
+  text = "Other 49 States",
+  xref = "paper",
+  yref = "paper",
+  yanchor = "top",
+  xanchor = "center",
+  align = "center",
+  x = 0.5,
+  y = 1,
+  showarrow = FALSE
+)
+
+b <- list(
+  text ="Connecticut",
+  xref = "paper",
+  yref = "paper",
+  yanchor = "top",
+  xanchor = "center",
+  align = "center",
+  x = 0.5,
+  y = 1,
+  showarrow = FALSE
+)
+
+
+p1 <- irs[!zipcode %in% c("00000","99999") &
+      state!="CT" &
+      agi_level %in% c("<$25k", "$25-50k", "$50-75k", "$75-100k", "$100k+"),
+      { agi_sum = sum(a00100 ,na.rm = TRUE) /1000000
+        total = sum(n1 ,na.rm=TRUE)
+        list( `Returns` = total, 
+              `Total Amount` = agi_sum)},
+    by=.(year, `Income Group` = agi_level)][
+        ,plot_ly(.SD, 
+                 x= ~year, 
+                 y= ~`Total Amount`,
+                 group_by=~`Income Group`,
+                 color=~`Income Group`,
+                 type="scatter", 
+                 mode="lines",
+                 showlegend = T,
+                 hoverinfo = 'text',
+                 text = ~paste(
+                      '</br> Year: ', year,
+                      '</br> AGI: ', paste0("$",format(`Total Amount`,
+                                                        digits=0),"B"),
+                      '</br> Income Group: ', `Income Group`,
+                      '</br> # of Returns: ', format(`Returns`,
+                                                     big.mark=",",
+                                                     digits=0,
+                                              scientific=FALSE))) %>% 
+          add_markers(size = ~`Returns`,
+                    mode="markers") %>%
+  layout(annotations = a)]
+
+
+p2 <- irs[!zipcode %in% c("00000","99999") &
+      state=="CT" &
+      agi_level %in% c("<$25k", "$25-50k", "$50-75k", "$75-100k", "$100k+"),
+      { agi_sum = sum(a00100 ,na.rm = TRUE) /1000000
+        total = sum(n1 ,na.rm=TRUE)
+        list( `Returns` = total, 
+              `Total Amount` = agi_sum)},
+    by=.(year, `Income Group` = agi_level)][
+        ,plot_ly(.SD, 
+                 x= ~year, 
+                 y= ~`Total Amount`,
+                 group_by=~`Income Group`,
+                 color=~`Income Group`,
+                 type="scatter", 
+                 mode="lines",
+                 showlegend = F,
+                 hoverinfo = 'text',
+                 text = ~paste(
+                      '</br> Year: ', year,
+                      '</br> AGI: ', paste0("$",format(`Total Amount`,
+                                                        digits=0),"B"),
+                      '</br> Income Group: ', `Income Group`,
+                      '</br> # of Returns: ', format(`Returns`,
+                                                     big.mark=",",
+                                                     digits=0,
+                                                     scientific=FALSE))) %>% 
+          add_markers(size = ~`Returns`,
+                    mode="markers") %>%
+  layout(annotations = b)]
+
+subplot(p1,p2,shareX=TRUE) %>% 
+  layout(
+    xaxis = list(
+      title="Tax Year",
+      domain = c(0, 0.5)
+    ),
+    xaxis2 = list(
+      annotations=list(text = "Connecticut"),
+      title="Tax Year",
+      domain = c(0.50, 1),
+      anchor = ""
+    ),
+    yaxis = list(
+      domain = c(0,1),
+      nticks = 6,
+      range = c(0,6000),
+      title = 'Adj. Gross Income (AGI) by Group ($ billions)'
+    ),
+    yaxis2 = list(
+      nticks = 6,
+      domain = c(0,1),
+      range = c(0,125),
+      title = ""
+    ),
+    showlegend= TRUE
+)
+```
+
+## AGI Per Taxpayer Declining for the Highest while Increasing for Lowest Group Since 2007 
+
+Figure \@ref(fig:agi-cap) shows aggregate AGI divided by the number of taxpayers in each bracket. It can be seen that nationally (left) and in Connecticut, that the average income per taxpayer in the top bracket has declined steadily since 2007. In addition, the lowest brackets are still earning very small amounts, but 25-30% more than before the crisis. It is the middle income brackets which are earning exactly the same over the period, hence steadily losing to inflation both nationally and in Connecticut. Our previous analysis of the full tax load [Analysis of Connecticut Tax Load by Income Bracket](https://redwallanalytics.com/2019/01/09/analysis-of-connecticut-tax-load-by-income-bracket/)suggested that the two middle brackets paid the highest percentage tax loads (counting federal and state income, real estate, sales, social security and medicare taxes). It is also notable that the top group in Connecticut has earned more than the national average for that bracket, average income levels in all other groups are exactly in sync.
+
+```{r 'agi-cap', echo=FALSE, warning=FALSE, fig.cap='AGI per Taxpayer for USA and Connecticut from 2005-2016'}
+p1 <- irs[!zipcode %in% c("00000","99999") & 
+            state != "CT" &
+      agi_level %in% c("<$25k", "$25-50k", "$50-75k", "$75-100k", "$100k+"),
+      { agi_sum = sum(a00100, na.rm = TRUE)
+        total = sum(n1, na.rm=TRUE)
+        agi_return = agi_sum / total;
+          list(`Income Amount` = agi_return , 
+                `Returns` = total)},
+            by= .(year, `Income Group` = agi_level)][
+        ,plot_ly(.SD, 
+                 x= ~year, 
+                 y= ~`Income Amount`,
+                 group_by=~`Income Group`,
+                 color=~`Income Group`,
+                 type="scatter", 
+                 mode="lines",
+                 showlegend = T,
+                 hoverinfo = 'text',
+                 text = ~paste(
+                      '</br> Year: ', year,
+                      '</br> AGI per Taxpayer: ', paste0("$",format(`Income Amount`,
+                                                        digits=2),"k"),
+                      '</br> Income Group: ', `Income Group`,
+                      '</br> # of Returns: ', format(`Returns`,
+                                                     big.mark=",",
+                                                     digits=2,
+                                                     scientific=FALSE))) %>% 
+          add_markers(size = ~`Returns`,
+                    mode="markers") %>%
+  layout(annotations = a)]
+
+p2 <- irs[!zipcode %in% c("00000","99999") & 
+            state == "CT" &
+      agi_level %in% c("<$25k", "$25-50k", "$50-75k", "$75-100k", "$100k+"),
+      { agi_sum = sum(a00100, na.rm = TRUE)
+        total = sum(n1, na.rm=TRUE)
+        agi_return = agi_sum / total;
+          list(`Income Amount` = agi_return , 
+                `Returns` = total)},
+            by= .(year, `Income Group` = agi_level)][
+        ,plot_ly(.SD, 
+                 x= ~year, 
+                 y= ~`Income Amount`,
+                 group_by=~`Income Group`,
+                 color=~`Income Group`,
+                 type="scatter", 
+                 mode="lines",
+                 showlegend = F,
+                 hoverinfo = 'text',
+                 text = ~paste(
+                      '</br> Year: ', year,
+                      '</br> AGI per Taxpayer: ', paste0("$",format(`Income Amount`,
+                                                        digits=2),"k"),
+                      '</br> Income Group: ', `Income Group`,
+                      '</br> # of Returns: ', format(`Returns`,
+                                                     big.mark=",",
+                                                     digits=0,
+                                                     scientific=FALSE))) %>% 
+          add_markers(size = ~`Returns`,
+                    mode="markers") %>%
+  layout(annotations = b)]
+
+
+subplot(p1,p2,shareX=TRUE) %>% 
+  layout(
+    title = "",
+    xaxis = list(
+      title="Tax Year",
+      domain = c(0, 0.5)
+    ),
+    xaxis2 = list(
+      title="Tax Year",
+      domain = c(0.50, 1),
+      anchor = ""
+    ),
+    yaxis = list(
+      scaleanchor = "y2",
+      anchor = "x1",
+      domain = c(0,1),
+      range = c(0,325),
+      title = 'AGI per Taxpayer by Group ($ thousands)'
+    ),
+    yaxis2 = list(
+      nticks = 12,
+      domain = c(0,1),
+      anchor = "x1",
+      range = c(0,325),
+      title = ""
+    ),
+    showlegend= TRUE
+)
+```
+
+## Connecticut Taxpayers Have Higher Effective Federal Tax Rates Despite SALT Deductions
+
+Figure \@ref(fig:tax-rates) shows that the federal tax rates for the top groups declined from 2006 through 2009 nationally, and through 2012 in Connecticut before rising again. Over the measured period, effective federal income tax rates in all brackets have been higher in Connecticut than nationally. Connecticut effective tax rates for the top bracket jumps by 2% in 2012 (unrelated to the separate 2011 state tax increases on higher incomes). In fact, the higher state income tax might have been expected to decrease the federal rate because of higher SALT deductions, but it did not.
+
+While it is not surprising for the highest Connecticut bracket to pay ~2% higher effective rates (because the average AGI has been approximately 20% higher than the national average in that group), it is unexpected for the lower brackets where income is on par with national levels. The period measured ends in 2016 (before recent changes in the tax code), so many taxpayers should have higher deductions for Connecticut's well known nation-leading state and local taxes (SALT) burden. However, SALT deductions would be expected to yield lower effective federal tax rates which is a surprise. in light of the new tax code, this unfortunate trend seems likely to worsen in the coming years.
+
+```{r 'tax-rates', echo=FALSE, warning=FALSE, fig.cap='Effective Federal Tax Rates for USA and Connecticut from 2005-2016'}
+
+p1 <- irs[!zipcode %in% c("00000","99999") &
+      #zipcode %in% zipcode::clean.zipcodes(Greenwich) & 
+      state!="CT" &
+      agi_level %in% c("<$25k", "$25-50k", "$50-75k", "$75-100k", "$100k+"),
+      { agi_sum = sum(a00100 ,na.rm = TRUE) 
+        tot_tax = sum(total_tax, na.rm = TRUE) 
+        tax_rate = tot_tax / agi_sum
+        total = sum(n1 ,na.rm=TRUE)
+        list( `Returns` = total, 
+              `Tax Rate` = tax_rate)},
+    by=.(year, `Income Group` = agi_level)][
+        ,plot_ly(.SD, 
+                 x= ~year, 
+                 y= ~`Tax Rate`,
+                 group_by=~`Income Group`,
+                 color=~`Income Group`,
+                 type="scatter", 
+                 mode="lines",
+                 showlegend = T,
+                 hoverinfo = 'text',
+                 text = ~paste(
+                      '</br> Year: ', year,
+                      '</br> Tax Rate: ', paste0(format(`Tax Rate`*100,
+                                                        digits=2),"%"),
+                      '</br> Income Group: ', `Income Group`,
+                      '</br> # of Returns: ', format(`Returns`,
+                                                     big.mark=",",
+                                                     digits=0,
+                                                     scientific=FALSE))) %>% 
+          add_markers(size = ~`Returns`,
+                    mode="markers") %>%
+  layout(annotations = a)]
+
+
+p2 <- irs[!zipcode %in% c("00000","99999") &
+      state=="CT" &
+      agi_level %in% c("<$25k", "$25-50k", "$50-75k", "$75-100k", "$100k+"),
+      { agi_sum = sum(a00100 ,na.rm = TRUE) 
+        tot_tax = sum(total_tax, na.rm = TRUE) 
+        tax_rate = tot_tax / agi_sum
+        total = sum(n1 ,na.rm=TRUE)
+        list( `Returns` = total, 
+              `Tax Rate` = tax_rate)},
+    by=.(year, `Income Group` = agi_level)][
+        ,plot_ly(.SD, 
+                 x= ~year, 
+                 y= ~`Tax Rate`,
+                 color=~`Income Group`, 
+                 group_by=~`Income Group`,
+                 type="scatter", 
+                 mode="lines",
+                 showlegend = F,
+                 hoverinfo = 'text',
+                 text = ~paste(
+                      '</br> Year: ', year,
+                      '</br> Tax Rate: ', paste0(format(`Tax Rate`*100,
+                                                        digits=2),"%"),
+                      '</br> Income Group: ', `Income Group`,
+                      '</br> # of Returns: ', format(`Returns`,
+                                                     big.mark=",",
+                                                     digits=0,
+                                                     scientific=FALSE))) %>% 
+          add_markers(size = ~`Returns`,
+                    mode="markers") %>%
+  layout(annotations = b)]
+
+
+subplot(p1,p2,shareX = TRUE,shareY = TRUE) %>% 
+  layout(
+    title = "",
+   xaxis = list(
+     title="Tax Year",
+      domain = c(0, 0.48)
+    ),
+    xaxis2 = list(
+      title="Tax Year",
+      domain = c(0.52, 1),
+      anchor = ""
+    ),
+    yaxis = list(
+      scaleanchor = "y2",
+      anchor = "x1",
+      domain = c(0,1),
+      range = c(0,.25),
+      title = 'Effective Federal Tax Rate by Group (%)'
+    ),
+    yaxis2 = list(
+      nticks = 5,
+      domain = c(0,1),
+      anchor = "x1",
+      range = c(0,.25),
+      title = ""
+    )
+)
+```
+
+## Connecticut's Highest Earners Income Trails the National Average since 2007
+
+The left chart in Figure \@ref(fig:ct-groups-relative) below shows the decline and recovery of AGI by CT residents compared to all other states for our five income groups. The three of the middle three brackets in CT have exactly tracked the rest of the country. The AGI of the top bracket rose to a 30% premium in the financial boom, and has subsequently fallen back to 20% above the national average. We are constrained by the available data, but it is problematic to use >$100k+ as a single bracket because it is likely dominated by a handful of extremely high earners, who "skew" the group mean above the median. Taxpayers who earn closer to $100k look very similar to the other middle income brackets (ie: flat over the period), so it is likely the contributions of the highest earners has declined more sharply than the group mean shown in the chart. There are a lot more taxpayers in this group, but some very high income taxpayers have probably changed their residencies. In [IRS Data Shows Growth in Number not Income of Highest Earners since 2005](https://redwallanalytics.com/2019/01/28/irs-data-show-growth-in-number-not-income-of-highest-earners-since-2005/), we noted that the bottom earners surprisingly were also the lowest in the country which is again shown here, although narrowing in 2007. This is a subject we plan to explore further in the future.
+
+```{r 'ct-groups-relative', echo=FALSE, warning=FALSE, fig.cap='Connecticut Incomes Relative to USA by Bracket from 2005-2016'}
+
+##Calculate relative recovery by bracket for CT
+ct <- irs[!zipcode %in% c("00000","99999") & 
+      state=="CT" &
+      agi_level %in% c("<$25k", "$25-50k", "$50-75k", "$75-100k", "$100k+"),
+     {agi_sum=sum(a00100,na.rm = TRUE)
+      total=sum(n1,na.rm=TRUE)
+      tot_tax = sum(total_tax, na.rm = TRUE) 
+      agi_return=agi_sum/total
+      tax_return=tot_tax/total;
+      list(agi_return=agi_return,tax_return=tax_return)},
+    by=.(year,agi_level)]
+
+#Calculate relative recovery by bracket for US
+us_ex_ct <- irs[!zipcode %in% c("00000","99999") & 
+      state!="CT" &
+      agi_level %in% c("<$25k", "$25-50k", "$50-75k", "$75-100k", "$100k+"),
+     {agi_sum=sum(a00100,na.rm = TRUE)
+      total=sum(n1,na.rm=TRUE)
+      tot_tax = sum(total_tax, na.rm = TRUE)
+      agi_return=agi_sum/total
+      tax_return=tot_tax/total;
+      list(agi_return=agi_return,tax_return=tax_return)},
+    by=.(year,agi_level)]
+
+
+a <- list(
+  text = "AGI - CT vs USA",
+  xref = "paper",
+  yref = "paper",
+  yanchor = "top",
+  xanchor = "center",
+  align = "center",
+  x = 0.5,
+  y = 1,
+  showarrow = FALSE
+)
+
+b <- list(
+  text ="Tax Paid - CT vs USA",
+  xref = "paper",
+  yref = "paper",
+  yanchor = "top",
+  xanchor = "center",
+  align = "center",
+  x = 0.5,
+  y = 1,
+  showarrow = FALSE
+)
+
+
+p1 <- ct[us_ex_ct, on=.(year,agi_level)][,
+  .(`Relative Recovery` = agi_return/i.agi_return),
+  by=.(year,`Income Group`= agi_level)][
+          ,plot_ly(.SD, 
+                 x= ~year, 
+                 y= ~`Relative Recovery`,
+                 color=~`Income Group`, 
+                 group_by=~`Income Group`,
+                 type="scatter", 
+                 mode="lines-markers",
+                 showlegend = F,
+                 hoverinfo = 'text',
+                 text = ~paste(
+                      '</br> Year: ', year,
+                      '</br> Year: ', round(`Relative Recovery`,2),
+                      '</br> Income Group: ', `Income Group`)) %>%
+                  layout(annotations = a)]
+
+
+p2 <- ct[us_ex_ct, on=.(year,agi_level)][,
+  .(`Relative Recovery` = tax_return/i.tax_return),
+  by=.(year,`Income Group`= agi_level)][
+          ,plot_ly(.SD, 
+                 x= ~year, 
+                 y= ~`Relative Recovery`,
+                 color=~`Income Group`, 
+                 group_by=~`Income Group`,
+                 type="scatter", 
+                 mode="lines-markers",
+                 showlegend = T,
+                 hoverinfo = 'text',
+                 text = ~paste(
+                      '</br> Year: ', year,
+                      '</br> Year: ', round(`Relative Recovery`,2),
+                      '</br> Income Group: ', `Income Group`)) %>%
+                layout(annotations = b)]
+
+subplot(p1,p2,shareX = TRUE,shareY = TRUE) %>% 
+  layout(
+    title = "",
+   xaxis = list(
+     title="Tax Year",
+      domain = c(0, 0.48)
+    ),
+    xaxis2 = list(
+      title="Tax Year",
+      domain = c(0.52, 1),
+      anchor = ""
+    ),
+    yaxis = list(
+      scaleanchor = "y2",
+      anchor = "x1",
+      domain = c(0,1),
+      range = c(0.9,1.5),
+      title = 'Relative Recovery by Group (%)'
+    ),
+    yaxis2 = list(
+      nticks = 5,
+      domain = c(0,1),
+      anchor = "x1",
+      range = c(0.9,1.5),
+      title = ""
+    )
+)
+
+
+```
+
+The right chart of Figure \@ref(fig:ct-groups-relative) above shows the relative tax paid by our income groups over time. Consistent our study of effective tax rates in Figure \@ref(fig:tax-rates), we found that all Connecticut groups have paid higher taxes than the national average (above 1). Showing significant progressivity in federal taxes, the highest bracket (which earned between 20-30% of the national average), paid almost 50% more than the national average in 2007, but has steadily fallen back to less than it has been during the measurement period near 30%.
+
+
+
+
+
+
+
+

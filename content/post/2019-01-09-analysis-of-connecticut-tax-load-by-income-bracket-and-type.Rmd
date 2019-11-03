@@ -1,0 +1,353 @@
+---
+title: Analysis of Connecticut Tax Load by Income Bracket
+author: David Lucey
+date: '2019-01-09'
+slug: analysis-of-connecticut-tax-load-by-income-bracket
+categories:
+  - R
+tags:
+  - plot
+  - R Markdown
+---
+
+```{r 'setup',include=FALSE}
+knitr::opts_chunk$set()
+```
+
+
+```{r 'libraries', include=FALSE}
+library(stringr)
+library(tidyverse)
+library(data.table)
+library(rebus)
+library(readxl)
+library(zipcode)
+library(plotly)
+
+```
+
+
+```{r 'load-functions', message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE}
+setwd("~/Desktop/David/Projects/CT_data/")
+source("my_chart_attributes.R")
+source("format_ggplotly.R")
+source("load_ct_muni.R")
+source("extract_tax.R")
+source("load_ct_cafr.R")
+```
+
+
+
+```{r 'functions', include=FALSE}
+##Functions to be used to impute sales and fica taxes paid
+
+#function to est fica by income
+fica <- function(x){
+ rate <- case_when(x < 128400 ~ 0.062 * 2 * x,
+                   x > 128400 ~ 128400 * 0.062 * 2)
+ return(rate)
+}
+
+#Function to est sales tax paid by income
+sales_tax <- function(x,y) {
+  tax <- case_when(y == "$1 under $25,000" ~ x * 0.0625,
+                   y == "$25,000 under $50,000" ~ x * 0.0525,
+                   y == "$50,000 under $75,000" ~ x * 0.0425,
+                   y == "$75,000 under $100,000" ~ x * 0.0325,
+                   y == "$100,000 under $200,000" ~ x * 0.0225,
+                   y == "$200,000 or more" ~ x * 0.0125)
+  return(tax)
+}
+
+#Calculate real estate tax not deducted and allocate to towns and income bracket.
+impute_tax <- function(size_agi, city_var, year_var) {
+
+##calc real estate paid by town by year not deducted
+
+## diff is the difference between municipal tax revenues from CAFR and real estate tax deduction on the SOI
+diff <- irs_re[muni_re, on = c("city", "year")][
+          city== city_var & year==year_var
+            ,{sum_muni = sum(as.numeric(muni), na.rm=TRUE);
+              sum_irs = sum(irs,na.rm=TRUE);
+              diff = ifelse(sum_muni-sum_irs > 0, sum_muni-sum_irs, 0);
+                list(sum_muni = sum_muni, sum_irs = sum_irs, diff = diff)},
+                  by = .(city, year)][
+                    , diff / 1000]
+
+## Tax is the allocation of the diff to income groups
+tax <- case_when(size_agi == "$1 under $25,000" ~ diff * 0.05,
+                   size_agi == "$25,000 under $50,000" ~ diff * 0.10,
+                   size_agi == "$50,000 under $75,000" ~ diff  *0.25,
+                   size_agi == "$75,000 under $100,000" ~ diff * 0.25,
+                   size_agi == "$100,000 under $200,000" ~ diff * 0.30,
+                   size_agi == "$200,000 or more" ~ diff * 0.05)
+  
+return(tax)
+}
+
+
+```
+
+
+```{r 'irs-data', include=FALSE}
+#Load IRS SOI tax by zip data using extract_tax function
+
+#Year's to load
+years <- c("2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016")
+year <- str_c("~/Desktop/David/Projects/CT_data/ct_irs_", years, ".xls")
+
+#Load spreadsheets, run extract_tax function defined above and convert to data.table
+ct_tax <- lapply(year, function(x) {
+                   out <- list(read_xls(x, col_types = "text"))
+                   names(out) <- str_extract(x, "\\d+")
+                  return(out)
+                   }) %>%
+  map2_dfr(years, extract_tax) %>%
+  mutate(zip = clean.zipcodes(zip_code)) %>%
+  mutate(size_of_adjusted_gross_income = 
+           factor(size_of_adjusted_gross_income, 
+                  levels=c("$1 under $25,000",
+                           "$25,000 under $50,000",
+                           "$50,000 under $75,000",
+                           "$75,000 under $100,000",
+                           "$100,000 under $200,000",
+                           "$200,000 or more"))) %>%
+  as.data.table()
+
+##Select columns available in all years in ct_tax data
+index <- psych::describe(ct_tax) %>% 
+  select(n) %>% 
+  mutate(names = rownames(psych::describe(ct_tax))) %>% 
+  filter(n == 12624) %>% 
+  select(names) %>% 
+  mutate(names=str_remove(names, char_class("*") %R% END))
+index <- as.vector(index$names)
+
+```
+
+
+
+```{r 'muni-data', include=FALSE}
+##Municipal fiscal indicators 2007-2016 loaded and rbind together
+
+years <- c("2007", "2013", "2014", "2015", "2016")
+ct_towns <- load_ct_cafr(years)
+
+```
+
+
+```{r 'zipcode-data', include=FALSE}
+setwd("~/Desktop/David/Projects/CT_data/")
+#Import manual zip by town data and convert to data.table
+data("zipcode")
+ct_zips <- read.csv("ct_zips.csv", stringsAsFactors = FALSE)
+ct_zips$zip <- zipcode::clean.zipcodes(ct_zips$zip)
+ct_zips$city <- str_to_title(ct_zips$municipality)
+ct_zips <- setDT(ct_zips[, c("zip", "city")])
+```
+
+## Introduction
+
+This brief study finds that Connecticut residents pay $62-63 billion annually in total taxes (including: Federal, State, Municipal Real Estate, Sales, FICA, Medicare) on adjusted gross income of $165-167 billion (an effective tax rate of 37-38%). Some taxes, such as FICA and Medicare, might be considered forms of savings or insurance with a future benefit, and local real estate tax funding education might offset tuition expenses (if the taxpayer's children can high quality public schools). Nevertheless, this is the total amount taken from residents to fund their government.
+
+In the study, we will attempt to allocate all taxes paid among the six income groups and 169 towns between 2008-2016. While estimates and assumptions have used to make allocations for some taxes (described below), it appears that middle income brackets (ie: between $50-100k) have the highest effective tax rates (>40%). In addition, 7.5% of taxpayers with the highest incomes (>$200k) also have effective rates >40% and pay almost half of all taxes. Although the lowest brackets don't pay much in Federal or State income tax, the estimated tax burdens for these groups are still over 30%. 
+
+It is important to note that all data comes from the period before the recent tax change. Out of $27 billion in Federal income tax paid, Connecticut residents deducted approximately $10 billion of mortgage interest and state and local taxes, so the effect of the cap will be significant relative to rate reductions. This may be looked at in a future post, but it may be hard to get an estimate using this data.
+
+## Methodology
+
+The IRS publishes annual (SOI) tax return data by zip code grouped by income size each year [SOI Tax Stats - Individual Income Tax Statistics - ZIP Code Data (SOI)](https://www.irs.gov/statistics/soi-tax-stats-individual-income-tax-statistics-zip-code-data-soi). We have loaded all SOI data for Connecticut residents since 2001. It is important to emphasize that it is not possible to see individual tax returns, only collectively by zip code divided into six income levels. Once loaded and cleaned, were able to add up all of the zip codes in each of Connecticut's 169 towns to see most taxes paid in each town. 
+
+Every line item of the 1040 tax return is reflected as a variable in the dataset, including adjusted gross income, state and local income tax paid and mortgage interest deducted by zip and income bracket. It is also possible to see how many returns filed by town, income level and the range of deductions taken by income group. Please see Figure \@ref(fig:itemized) below showing that almost 100% of returns above $200k itemized, but less than 10% of returns below $25k. A lower percentage of middle income returns have been itemizing over time.
+
+```{r 'itemized', fig.align = 'center', fig.cap='Percentage of Income Bracket Itemizing Deductions', echo=FALSE}
+as.data.table(zipcode)[ct_tax[,..index],on="zip"][
+  zip != "0"
+      ,{tot_deds=sum(
+               as.numeric(total_itemized_deductions));
+       tot_agi=sum(as.numeric(adjusted_gross_income_agi));
+       tot_returns=sum(as.numeric(number_of_returns),na.rm=TRUE);
+       list(rate=tot_deds/tot_returns,`Number of Returns`=tot_returns)},
+      by=.(`Income Bracket` = size_of_adjusted_gross_income,year)][
+                ,ggplot(.SD,aes(year,rate,color=`Income Bracket`))+
+                    geom_line(aes(color=`Income Bracket`))+
+              scale_y_continuous(labels = scales::percent)+
+                ylab("Percentage Itemizing")+
+                xlab("Year")+
+                mychartattributes]
+```
+
+## Estimate of Sales Tax, Medicare and FICA and Partial Allocation of Local Real Estate Tax to Income Groups
+
+Several taxes are only partially or not present at all on IRS returns, but can be estimated with reasonable confidence. For example, only a few percent of returns deduct sales tax, but this was estimated based on 6.25% of AGI for the lowest bracket down to 1.25% for the highest. The basis for this estimate came from the Institute for Taxation and Economic Policy in their paper [Who Pays?](https://itep.org/whopays/).
+
+In addition, FICA can be estimated based on 6.2% of the employee AGI, and an additional 6.2% by the employer (up to $128k). Some might leave the employer contribution out because it is not directly paid by the employee, but we included it because it is a tied of the employee's labor. Medicare is imputed at 2.9% of AGI without limit.
+
+The allocation of real estate tax paid is more complicated because only about half of the annual $10 billion paid is deducted on IRS tax returns (mostly by higher income taxpayers who itemize). From the work we did last week in [Reviewing Fairfield County Municipal Fiscal Indicators Since 2007](https://redwallanalytics.com/2018/12/26/fairfield-county-town-level-spending-and-liabilities-gallop-since-2008/), we know real estate tax for each town. Using this, it was possible to impute the actual amount paid, but not deducted for taxes by town. We then allocated this to the income groups based on where it was estimated to be paid but not deducted.
+  
+```{r 'imputed-re-tax', include=FALSE}
+#calc real estate tax not deducted
+muni_re <- ct_towns[,
+            .(muni=sum(tarev,na.rm=TRUE)),
+               by=.(municipality,fisc_year_end)][
+                 fisc_year_end>2008,
+                   .(city=str_to_title(municipality),
+                       year=fisc_year_end,muni)]
+
+irs_re <- ct_zips[ct_tax,on="zip"][
+            zip!="0",
+            .(irs=sum(as.numeric(real_estate_taxes_amt)*1000,na.rm=TRUE)),
+                 by=.(year,city)]
+
+##real estate tax rate by agi
+imputed_re_tax <- as.data.table(zipcode)[ct_tax[,..index],on="zip"][
+  zip != "0",
+      {irs_re_tax=sum(as.numeric(real_estate_taxes_amt));
+       imputed_re_tax=impute_tax(size_of_adjusted_gross_income,city,year);
+       tot_agi=sum(as.numeric(adjusted_gross_income_agi));
+       rate=(irs_re_tax+imputed_re_tax)/tot_agi;
+       tot_returns=sum(as.numeric(state_and_local_income_taxes),na.rm=TRUE);
+       list(rate=rate,
+            irs_re_tax=irs_re_tax,
+            imputed_re_tax=imputed_re_tax,
+            tot_returns=tot_returns)},
+                    by=.(city,year,size_of_adjusted_gross_income)][,
+                      .(city,year,size_of_adjusted_gross_income,imputed_re_tax)]
+
+```
+
+For example, relatively few taxpayers with income below $25k are likely to own significant amounts of real estate, and if so, the values should be relatively low (implying low real estate taxes). In addition, the highest brackets are most likely to itemize, hence reflecting the tax on their returns. However, these taxpayers are likely to be much higher valued homes, so only a small number not itemized could add up to meaningful dollar amounts. We used the following ratios to allocate to income groups: <$25k (5% allocated), $25-50k (10%), $50-75k (25%), $75-100k (25%), "$100-200k (30%) and $200k+ (5%). There is no science behind these allocations other than common sense, so the levels among groups might be slightly off, but the absolute amount allocated should be correct.
+
+Finally, only $8.5 billion out of $10 billion of total state income tax paid annually was deducted, and hence allocated to the income groups in our numbers. This probably means that middle income effective tax rates are if anything understated by our study. Other taxes left out of the analysis are estate taxes of $170 million, real estate conveyance of $27 million and gas taxes. Corporate income taxes of $800 million annually are also out of scope.
+
+## Effective Tax Rates of Middle Income Groups Highest and Growing Steadily
+
+Effective tax rates and number of taxpayers by income bracket can be seen by hovering in over the line in Figure \@ref(fig:effective-tax-rates). As mentioned earlier, tax burden on the two lowest and largest brackets are meaningful (above 30%), but mostly composed of social security and sales tax (as we will see further down). These brackets don't pay meaningful income or real estate taxes. It can be seen by hovering over the graph that these two groups make up almost half of all filers.
+
+Figure \@ref(fig:effective-tax-rates) also shows the highest and steadily growing effective tax rates on the $50-75k and $75-100k brackets. This may be partly attributed to falling deductions as the percentage who itemize have been falling (shown in \@ref(fig:itemized)).  While these groups still pay relatively little income tax, real estate taxes have moved up meaningfully in most towns. These groups have also shown little or no income growth over the whole period studied, so tax increases more directly affect effective rates than the higher income groups where earnings recovered during the period.
+
+The >$200k bracket is a much broader range of incomes from the 1% to the 0.1%. With the high cost of living in Fairfield County, it is possible to reach this threshold without the same standard of living as it might bring elsewhere in the country. It also includes taxpayers who are able to structure to a degree where they will live and how much tax they will pay. Overall, the effective rate for this bracket jumped 3-5% when taxes were raised in 2012 (in attempt to close the budget deficit). 
+
+Although several ultra high income taxpayers vocally changed their residences and/or relocated their businesses, recent IRS numbers showed that other higher income taxpayers left more quietly [The Out-Migration Problem](http://www.yankeeinstitute.org/connecticut-out-migration-problem/). Despite this, the chart below shows that by 2016, the number of filers in the highest bracket actually grew by 20% in 2014-2016 above the levels before the hike. Some recovery in the number of taxpayers in this group should have been expected as it also likely suffered the biggest reduction during the recession due to heavier reliance on financial services activities and capital gains, a future study will attempt to find pre-crisis data for comparison to better understand the long term trend. 
+
+```{r 'effective-tax-rates', fig.align = 'center', fig.cap='Estimated Total Taxes Paid By Type (All Towns)', echo=FALSE}
+##Join zipcode data to create city variable from zipcodes, and look at total tax rate across income aggregated across full CT
+ct_zips[ct_tax[zip!="0",..index],on="zip"][
+      ,{sl=sum(as.numeric(state_and_local_income_taxes_amt));
+        re=sum(as.numeric(real_estate_taxes_amt));
+        fedl=sum(as.numeric(income_tax_amt));
+        fica=sum(fica(as.numeric(adjusted_gross_income_agi)));
+        mc=sum(0.029*as.numeric(adjusted_gross_income_agi));
+        credit=sum(-as.numeric(total_tax_credits_amt));
+        sales=sum(sales_tax(as.numeric(adjusted_gross_income_agi),size_of_adjusted_gross_income));
+       tot_agi=sum(as.numeric(adjusted_gross_income_agi));
+       tot_returns=sum(as.numeric(number_of_returns));
+       list(sl=sl,re=re,fedl=fedl,fica=fica,mc=mc,sales=sales,credit=credit,tot_agi=tot_agi,tot_returns=tot_returns)},
+      by=.(city,year,size_of_adjusted_gross_income)][
+        imputed_re_tax, on=c("city","year","size_of_adjusted_gross_income")][,
+           {sl=sum(sl,na.rm=TRUE);
+           re=sum(re,na.rm=TRUE);
+           imp_re=sum(imputed_re_tax,na.rm=TRUE);
+           fedl=sum(fedl,na.rm = TRUE);
+           fica=sum(fica,na.rm=TRUE);
+           mc=sum(mc,na.rm=TRUE);
+           credit=sum(credit,na.rm=TRUE);
+           sales=sum(sales,na.rm=TRUE);
+           tot_agi=sum(tot_agi,na.rm=TRUE);
+           rate=sum(sl,re,imp_re,fedl,fica,mc,credit,sales)/tot_agi;
+           tot_returns=sum(tot_returns,na.rm = TRUE);
+           list(`Effective Rate`=rate,`Number of Returns`=tot_returns)},
+           by=.(Year=year,`Income Bracket`=size_of_adjusted_gross_income)][
+,ggplot(.SD,aes(Year,`Effective Rate`,color=`Income Bracket`))+
+        geom_point(aes(size=`Number of Returns`))+
+        geom_line(aes(color=`Income Bracket`))+
+        scale_y_continuous(label = scales::percent)+
+        xlab("Tax Year") +
+        ylab("Percentage of Taxes Paid By Type")+
+        mychartattributes] %>%
+  ggplotly()
+```
+
+## The Highest Income Groups Pay a Majority of Tax
+
+In Figure \@ref(fig:total-tax-load-by-type)), Federal income tax (shown in red) makes almost half of the tax paid by Connecticut residents at approximately $27 billion, (though $8 billion reportedly comes back to the state in the form of federal grants). While Federal and State income taxes are almost entirely paid by the top quarter of tax payers, many other state and local taxes are carried more broadly. As we showed in Figure \@ref(fig:effective-tax-rates), those top two groups contained 259k and 122k filers out of the total of 1.72 million,respectively. Even with the more regressive nature of some local taxes such as real estate [Analysis Comparing Connecticut Real Estate Assessments over Three Revaluation Cycles](https://luceyda.shinyapps.io/ct_real_assess/), the overall structure is progressive with 7.5% and 22% of returns funding 49% and 71% of taxes.
+
+```{r 'total-tax-load-by-type', fig.align = 'center', fig.cap ='Estimated Total Taxes Paid By Type (All Towns)', echo=FALSE}
+
+ylab <- c(0, 10, 20, 30, 40)
+ct_zips[ct_tax[zip!="0",..index],on="zip"][
+      ,{sl=sum(as.numeric(state_and_local_income_taxes_amt));
+        re=sum(as.numeric(real_estate_taxes_amt));
+        fedl=sum(as.numeric(income_tax_amt));
+        fica=sum(fica(as.numeric(adjusted_gross_income_agi)));
+        mc=sum(0.029*as.numeric(adjusted_gross_income_agi));
+        credit=sum(-as.numeric(total_tax_credits_amt));
+        sales=sum(sales_tax(as.numeric(adjusted_gross_income_agi),
+                            size_of_adjusted_gross_income));
+          list(sl=sl,re=re,fedl=fedl,fica=fica,mc=mc,sales=sales,credit=credit)},
+            by=.(city,year,size_of_adjusted_gross_income)][
+              imputed_re_tax, 
+              on=c("city","year","size_of_adjusted_gross_income")][,
+                .(`Federal`=sum(fedl,na.rm = TRUE),
+                  `State`=sum(sl,na.rm=TRUE),
+                  `Real Estate`=sum(re,na.rm=TRUE),
+                  `Imputed Real Est`=sum(imputed_re_tax,na.rm = TRUE),
+                  `Social Security`=sum(fica,na.rm=TRUE),
+                  `Medicare`=sum(mc,na.rm=TRUE),
+                  `Tax Credit`=sum(credit,na.rm=TRUE),
+                  `Sales Tax`=sum(sales,na.rm=TRUE)),
+                    by=.(year,size_of_adjusted_gross_income)][
+                      ,melt(.SD,id.vars=c(1:2),
+                            measure.vars=c(3:10),
+                            value.name="Amount",
+                            variable.name="Tax Type")][
+    ,ggplot(.SD,aes(year,Amount,fill=`Tax Type`,color=`Tax Type`))+
+            geom_area(position='stack')+
+            scale_y_continuous(labels = paste0(ylab, "B"),
+                     breaks = 10^6 * ylab)+
+            mychartattributes+
+            xlab("Tax Year") +
+            ylab("Taxes Paid by Type ($ Billions)")+
+            facet_wrap(~size_of_adjusted_gross_income)] %>%
+  ggplotly()
+
+
+```
+
+## Conclusions
+
+Based on this analysis, there is amunition for both political perspectives (the ultimate objective of this blog). Middle income filers appear to now have a higher tax burden than the two upper groups as a percentage of total income, and all groups are paying a meaningful amount of tax (in contrast to the fears of some conservative commentators). However, the two upper groups bear the predominant share of the tax load in contrast to the progressive call to pay a "fair share". It will be interesting to see the data in 2018 when the cap on state and local tax deductions enters the dicussion. Despite the state's many urgent needs to fund its pensions, invest in transportation infrastructure and improve educational outcomes in key cities to be able compete for new enterprise as legacy industries diminish, it doesn't appear that there is a lot of room to further increase taxes on any group. It is hard to imagine a business which would expect to pass on higher costs to its customers in this manner without taking real structural measures to become more efficient. Now that the data is loaded and cleaned, future posts will look at tax burden by town and county and will look at tax burden on seniors (those reporting social security benefits) to see which new insights might be revealed. It appears that there is a lot of runway for further analysis.
+
+
+```{r eval=FALSE, include=FALSE}
+ct_zips[ct_tax[zip!="0",..index],on="zip"][
+      ,{sl=sum(as.numeric(state_and_local_income_taxes_amt),na.rm=TRUE);
+        re=sum(as.numeric(real_estate_taxes_amt));
+        fedl=sum(as.numeric(income_tax_amt));
+        fica=sum(fica(as.numeric(adjusted_gross_income_agi)));
+        mc=sum(0.029*as.numeric(adjusted_gross_income_agi));
+        credit=sum(-as.numeric(total_tax_credits_amt));
+        sales=sum(sales_tax(as.numeric(adjusted_gross_income_agi),size_of_adjusted_gross_income));
+       tot_agi=sum(as.numeric(adjusted_gross_income_agi));
+       tot_returns=sum(as.numeric(number_of_returns),na.rm=TRUE);
+       list(sl=sl,re=re,fedl=fedl,fica=fica,mc=mc,sales=sales,credit=credit,tot_agi=tot_agi,tot_returns=tot_returns)},
+      by=.(city,year,size_of_adjusted_gross_income)][
+        imputed_re_tax, on=c("city","year","size_of_adjusted_gross_income")][,
+           {sl=sum(sl,na.rm=TRUE);
+           re=sum(re,na.rm=TRUE);
+           imp_re=sum(imputed_re_tax,na.rm=TRUE);
+           fedl=sum(fedl,na.rm = TRUE);
+           fica=sum(fica,na.rm=TRUE);
+           mc=sum(mc,na.rm=TRUE);
+           credit=sum(credit,na.rm=TRUE);
+           sales=sum(sales,na.rm=TRUE);
+           tot_agi=sum(tot_agi,na.rm=TRUE);
+           tot_tax=sum(sl,re,imp_re,fedl,fica,mc,credit,sales);
+           tot_returns=sum(tot_returns,na.rm = TRUE);
+           list(tot_tax,tot_returns=tot_returns)},
+           by=.(year,size_of_adjusted_gross_income)]
+```
+
+
+
+

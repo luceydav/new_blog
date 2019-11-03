@@ -1,0 +1,295 @@
+---
+title: Introduction to Redwall Analytics Nutmeg Open Data Project
+author: David Lucey
+date: '2018-12-21'
+slug: introduction-to-redwall-analytics-nutmeg-open-data-project
+categories:
+  - R
+tags: -plot
+      -R Markdown
+---
+
+
+```{r 'setup',include=FALSE}
+knitr::opts_chunk$set(comment=NA, fig.width=12, fig.height=8, out.width = '100%')
+```
+
+
+```{r include=FALSE}
+##Libraries
+library(data.table)
+library(tidyverse)
+library(stringr)
+library(rebus)
+library(DT)
+```
+
+
+```{r include=FALSE}
+##Functions used to load and merge data from data.ct.gov and Transparency CT websites
+
+#Chart formating
+source("/Users/davidlucey/Desktop/David/Projects/CT_data/my_chart_attributes.R")
+
+#Functions to load and clean up data from Transparency CT
+##http://transparency.ct.gov/html/downloads.asp
+source("/Users/davidlucey/Desktop/David/Projects/blog/new_blog/load_ct_payroll.R")
+source("/Users/davidlucey/Desktop/David/Projects/CT_data/load_ct_pensions.R")
+source("/Users/davidlucey/Desktop/David/Projects/blog/new_blog/load_ct_spending.R")
+source("/Users/davidlucey/Desktop/David/Projects/blog/new_blog/load_ct_payments.R")
+source("/Users/davidlucey/Desktop/David/Projects/blog/new_blog/load_ct_grants.R")
+
+```
+
+
+```{r include=FALSE}
+setwd("~/Desktop/David/Projects/CT_data/")
+
+##Run functions to load, merge and clean data from data.ct.gov and Transparency CT
+##Sourced from data.ct.gov
+ct_payroll_2 <- fread("ct_payroll_full_2015-18.csv") %>%
+  janitor::clean_names() #only covers 2015-2018, but has more columns than similar ct_payroll below
+ct_federal <- fread("~/Desktop/David/Projects/CT_data/Federal_Revenue.csv") %>%
+  janitor::clean_names() %>%
+  select(-c(fund_descr,ledger_type)) %>%
+  as.data.table
+
+##Years available
+years <- c("2010","2011","2012","2013","2014","2015","2016","2017","2018")
+
+##Data from Transparency CT. Data is poorly formatted and needs heavy processing by manual functions,
+ct_payroll <- load_ct_payroll(years) #covers 2010-2017, but not as many variables as ct_payroll_2 above
+#Has been removed from transparency.ct so can't be run without csv
+ct_spending <- load_ct_spending(years)
+ct_pays <- load_ct_payments(years)
+ct_grants <- load_ct_grants(years)
+
+years <- c("2010","2011","2012","2013","2014","2015","2016","2017")
+ct_pension <- load_ct_pensions(years) 
+
+```
+
+## Introduction
+
+Redwall Analytics has spent the last couple of months gathering data from the State of Connecticut's relatively new "open data initiative". In recent months, we have made several posts on LinkedIn describing our explorations and looking at the some of the financial challenges faced by our home state:  [Quick Review of State of Connecticut Spending in the R Stats Language](https://www.linkedin.com/pulse/quick-review-state-connecticut-spending-r-stats-lucey-cfa-cpa-mba/) and [Independent Confirmation of the Yankee Institute Study on Gold Coast Real Estate Assessments](https://www.linkedin.com/pulse/independent-confirmation-yankee-institute-study-gold-david/). The latter post led to the creation of this Shiny App for anyone who would like to look at patterns of real estate assessment ratios in their own towns [Analysis Comparing Connecticut Real Estate Assessments over Three Revaluation Cycles](https://luceyda.shinyapps.io/ct_real_assess/). In general, the pattern of under-assessing higher relative to lower valued homes is evident across Connecticut and in Fairfield County, though less so than in other towns. 
+
+This will be the first in a series of posts further exploring Connecticut's finances from the federal, state and municipal levels, and the effect on real estate. The cause of our State's recent travails are complex, and have been built up over decades under both parties. With the shrinking of the financial sector, the recovery in the largest cities at the expense of the suburbs and the rise of the digital economy benefitting other places more, it all come to a head after the Great Recession. The ultimate objective will be create a platform we will call the "Nutmeg Project" for accessing and linking to other sources of data, such as real estate prices, in order to look for patterns which may not have been considered previously. The code to access this data using the R Statistical Programming Language can be found at the Github link on our home page. Any contributions of ideas or skills for making the platform more accessible are welcome. 
+
+Below is a quick introduction to the data available at data.ct.gov and Transparency CT. Although the State is to be commended for its effort to make public data available since 2014, the current disclosures are still not that well organized or annotated. This project intended to try to find and help reduce the friction in accessing the data, and to look for insights which might otherwise be outside of the paths of most busy people. As with all research by Redwall Analytics, the orientation will be non-partisan and open-minded with respect to any insights which may be found. 
+
+## State Employee Compensation Expense for Fiscal 2010-2018 from Transparency CT
+
+Compensation data from Transparency CT began to include fringe benefits in 2017 as shown in Figure \@ref(fig:payroll). This data came from a download a few months ago, but it appears that data about fringe benefits has subsequently been removed without explanation. It is unfortunate given that these items represents 1/3 of employee compensation and are at the root of the State's current challenges. It is also not clear why separate disclosures from data.ct.gov (just below) seem show differing amounts of employees and compensation.
+
+```{r 'payroll', fig.cap='Selected Salary & Benefits Items from Transparency CT', echo=FALSE}
+
+##Summary by year all agencies
+ct_payroll[
+  ,.(tot_salary=sum(earnings),
+    tot_fringe=sum(fringe_amt,na.rm = TRUE),
+    tot_all=sum(total_amt,na.rm=TRUE),
+    tot_emps=length(unique(name))),
+          by=c("fiscal_year")][,
+            .(fiscal_year,
+              tot_salary,
+              tot_emps,
+              tot_fringe,
+              tot_all)][
+              order(fiscal_year)
+                  ,.(`Fiscal Year` = fiscal_year,
+                     `Salary ($M)`=format(tot_salary/1000000,big.mark=",",digits=2),
+                     `Fringe ($M)`=format(tot_fringe/1000000,big.mark=",",digits=2),
+                     `Total ($M)`=format(tot_all/1000000,big.mark = ",",digits=2),
+                     `Totl. Empls.`=format(tot_emps,big.mark=","),
+                     `Avg Salary ($)`=format(tot_salary/tot_emps,big.mark=",",digits=0,scientific = FALSE),
+                     `Avg Fringe ($)`=format(tot_fringe/tot_emps,big.mark=",",digits=0),
+                     `Avg Total ($)`=format(tot_all/tot_emps,big.mark=",",digits=0)
+                     )] %>% 
+  datatable(extensions = c('FixedColumns'),
+            options = list(dom = 't',
+                           scrollX=TRUE,
+                           fixedColumns = list(leftColumns = 1)),
+             filter="none",
+            rownames=FALSE)%>% 
+  formatStyle(columns = c(1:7),
+              fontSize = '75%')
+```
+
+## State Employee Compensation Expense for Fiscal 2015-2019 Conflicts with CTdata
+
+Figure \@ref(fig:payroll-2) shows a shorter period and has richer variables including the employees' age, job description, ethnicity, sex, full/part time, hire date, location, union and agency. It also discloses more categories of compensation. The full dataset includes over 102k employees during the full year of 2017 at a slightly lower total compensation of $75k (thought greater than the average amount disclosed by Transparency CT). If it is filtered for only full time employees as shown below, the number of unique employees falls to 60k, but the average total compensation rises close to $120k. As a general rule, the data is often loaded onto the websites without dictionaries or detailed explanation of context so can be challenging to understand.
+
+```{r 'payroll-2', fig.cap='Selected Salary & Benefits Items from CTdata', echo=FALSE}
+ct_payroll_2 <- ct_payroll_2 %>% janitor::clean_names()
+##Summary by year all agencies
+ct_payroll_2[full_part=="F",
+             .(tot_salary=sum(salaries_wages),
+               tot_fringe=sum(fringe,na.rm = TRUE),
+                tot_emps=length(unique(empl_id_empl_rcd))),
+                        by=calendar_year][,
+                           .(calendar_year,
+                             tot_salary,
+                             tot_fringe,
+                             tot_emps,
+                             tot_earnings=tot_salary + tot_fringe)][
+                                  order(calendar_year)
+                                    ,.(`Fiscal Year`=calendar_year,
+                                      `Salary ($M)`=format(tot_salary/1000000,big.mark=",",digits=2),
+                                      `Fringe ($M)`=format(tot_fringe/1000000,big.mark=",",digits=2),
+                                      `Total ($M)`=format(tot_earnings/1000000,big.mark=",",digits=2),
+                                      `Totl. Empls.`=format(tot_emps,big.mark=","),
+                                      `Avg Salary ($)`=format(tot_earnings/tot_emps,big.mark=",",scientific=FALSE,digits=0),
+                                      `Avg Fringe ($)`=format(tot_fringe/tot_emps,big.mark=",",scientific=FALSE,digits=0),
+                                      `Avg Total ($)`=format(tot_earnings/tot_emps,big.mark=",",scientific=FALSE,digits=0))] %>% 
+  datatable(extensions = c('FixedColumns'),options = list(dom = 't',
+                           scrollX=TRUE,
+                           fixedColumns = list(leftColumns = 1)),
+             filter="none",
+            rownames=FALSE)%>% 
+  formatStyle(columns = c(1:9),
+              fontSize = '75%')
+
+```
+
+## Pensions for State  Retirees since 2010 from Transparency CT
+
+Figure \@ref(fig:pension) with all pension data since 2010. The pension disclosures included employee name, year and total amount is believed to include only State retirees (SERS) and not Municipal Teacher's as a general rule, our opinion is that the employee name doesn't need to be disclosed, but the grade, years of service, job function and other employee attributes such as sex, age and ethnicity should be disclosed in any of the compensation and pension payments disclosures.
+
+```{r 'pension', fig.align='left', fig.cap='Pensions for Retirees Other than Municipal Teachers from Transparency CT', echo=FALSE}
+##State annual pension summary
+ct_pension[,.(tot_pension=sum(total_amt),
+              tot_emps=length(!duplicated(tolower(name)))),
+                  by=c("calendar_year")][
+                    ,.(`Calendar Year`=calendar_year,
+                       `Total Pensions ($M)`=format(tot_pension/1000000,big.mark=",",digits=0,scientific=FALSE),
+                       `Total Retirees`=format(tot_emps,big.mark=","),
+                       `Average Pension ($)`=format(tot_pension/tot_emps,big.mark=",",digits=0,scientific=FALSE))] %>% 
+  datatable(options = list(dom = 't',
+                           scrollX=TRUE),
+             filter="none",
+            rownames=FALSE)%>% 
+  formatStyle(columns = c(1:4),
+              fontSize = '75%')
+```
+
+## State Spending Database Since 2010
+
+The spending database of almost 1 million rows has every payment made by category since 2010. The largest categories are human resources, finance, transportation, and operations. Figure \@ref(fig:spending) shows the data filtered by the largest category human resources which had increased to $13.8 billion from just under $10 billion in 2010. Salaries & wages had barely budged, but 75% of the increase was attributed to pension items (SERS & Pension Payments to Retirees) which togther reached almost half of all human resource relaated expenses.
+
+```{r 'spending', fig.cap='Connecticut Expense Items Pertaining to Employees (Amounts in $ Millions)', echo=FALSE}
+
+hr <- c("Drugs & Pharmaceuticals","Fica","Medical Insurance","Medical Program Support Servs","Salaries & Wages-Full Time","Salaries & Wages-Part Time","Sers","Pension Payments to Retirees")
+  
+finance <- c("Debt Sevice Paid","Interest Expense","Interest on Late Payments","Loans")
+
+trans <- c("Unemployment Compensation","Unempl Compensat Claims (OSC)","Pass thru Grant Non-State","MEDICARE PART B & D REIMB","State Aid Grants","Trnsfr Grant Expend-St Agency")
+  
+ops <- c("Client Services-General","Engineer/Architect Services","Government Buildings","Highways","Judges & Comp Commissioners","Management Consultant Services","Other Structures","Public Transportation","Roadways Services-Contractual")
+
+#Print report output using kable and kable extra
+options(knitr.table.format = "html") 
+
+ct_spending[account %in% hr,
+            .(year,account = trimws(tm::removePunctuation(tolower(account))),total)][
+              ,.(Total = sum(total/1000000)),
+                  by=c("year","account"),][,
+                      dcast(.SD,str_to_title(account) ~ year,value.var="Total",fill=0)] %>%
+  janitor::adorn_totals() %>% 
+  datatable(extensions = c('FixedColumns'),
+            options = list(dom = 't',
+                           scrollX=TRUE,
+                           fixedColumns = list(leftColumns = 1)),
+             filter="none",
+            rownames=FALSE)%>% 
+  formatStyle(columns = c(1:10),
+              fontSize = '75%') %>%
+  formatCurrency(columns=c(2:10),
+                 currency = "", 
+                 interval = 3, 
+                 mark = ",",
+                 digits = 0)
+
+```
+
+## State Payments Data Show the Nuts and Bolts of Government Operations
+
+Figure \@ref(fig:payments) is a summary of over 3 million payments filtered for items over $100 million. Payments to the Department of Social Services has always been the largest item, and it has grown at a rapid rate (although this appears to have been reclassified from the grants database (below) so the growth here may be overstated). Transportation and Finance have also been large and gained in signficance. The consolidation of the state universities into the Board of Regents in 2015 is evident. Grants to the University of Connecticut have more than doubled.
+
+```{r 'payments', fig.cap='Selected State of Connecticut Total Payments > $100M (Amounts in $ Millions)', echo=FALSE}
+
+##Summary of annual items > $100,000,000 formatted with knitr and kableExtra
+ct_pays[,.(fiscal_year,
+           agency = trimws(tm::removePunctuation(tolower(agency_description))),
+           tot_monetary_amt)][
+             ,.(Total = sum(tot_monetary_amt/1000000)),
+                  by=c("fiscal_year","agency")][Total>100][,
+                      dcast(.SD,str_to_title(agency) ~ fiscal_year,value.var="Total",fill=0)] %>%
+  janitor::adorn_totals()  %>% 
+  datatable(extensions = c('FixedColumns'),
+            options = list(dom = 't',
+                           scrollX=TRUE,
+                           fixedColumns = list(leftColumns = 1)),
+             filter="none",
+            rownames=FALSE)%>% 
+  formatStyle(columns = c(1:10),
+              fontSize = '75%') %>%
+  formatCurrency(columns=c(2:10),
+                 currency = "", 
+                 interval = 3, 
+                 mark = ",",
+                 digits = 0)
+```
+
+## State Grant Show the Rise in Aid to Troubled Cities
+
+State Grants shown in Table \@ref(fig:state-grants) are tax dollars transferred back to municipalities from Hartford. Grants rose rapidly until 2012, and fell back sharply subsequently. Fiscal troubles have led to grants growing rapidly in Hartford and the Capital Region Education Council, New Haven and Bridgeport while declining in most other places. In an upcoming post, this blog will look at the Municipal Fiscal Indicators and some of the challenges will become clear in Hartford and New Haven, where half the Grand Lists are exempt from taxation. The wealthier towns of Fairfield County used to receive considerable Inter-Governmental transfers, but now receive small direct transfers although the state does pick up the full tab for teacher pensions in proportion to salaries.
+
+```{r 'state-grants', fig.cap='Selected Connecticut Total Grant Items >$100M (Amounts in $ Millions)', echo=FALSE}
+##Summary of annual items > $10,000,000 formatted with knitr and kableExtra
+ct_grants[,.(year,vendor = trimws(tm::removePunctuation(tolower(vendor))),amount)][
+  ,.(Total = sum(amount/1000000)),by=c("year","vendor")][Total>100][
+    ,dcast(.SD,str_to_title(vendor) ~ year,value.var="Total",fill=0)] %>%
+  janitor::adorn_totals()  %>% 
+  datatable(extensions = c('FixedColumns'),
+            options = list(dom = 't',
+                           scrollX=TRUE,
+                           fixedColumns = list(leftColumns = 1)),
+             filter="none",
+            rownames=FALSE)%>% 
+  formatStyle(columns = c(1:10),
+              fontSize = '75%') %>%
+  formatCurrency(columns=c(2:10),
+                 currency = "", 
+                 interval = 3, 
+                 mark = ",",
+                 digits = 0)
+```
+
+## Federal Grants Have Grown Considerably Primarily Driven By Medicaid
+
+If the growth in the Medicaid Federal Share which commenced with Affordable Health were removed, Federal Grants would have been flat as shown in Table \@ref(fig:federal-grants). Most other items have remained relatively stable.
+
+```{r 'federal-grants', fig.cap='Selected Federal Total Grant Items to Connecticut > $100M (Amounts in $ Millions)', echo=FALSE}
+##Federal grants >$100m
+ct_federal[,.(fiscal_year,program_descr = trimws(tm::removePunctuation(tolower(program_descr))),actual_amount)][
+  ,.(Total = sum(actual_amount/1000000)),by=c("fiscal_year","program_descr")][Total>100][
+    ,dcast(.SD,str_to_title(program_descr) ~ fiscal_year,value.var="Total",fill=0)] %>%
+  janitor::adorn_totals() %>% 
+  datatable(extensions = c('FixedColumns'),
+            options = list(dom = 't',
+                           scrollX=TRUE,
+                           fixedColumns = list(leftColumns = 1)),
+             filter="none",
+            rownames=FALSE)%>% 
+  formatStyle(columns = c(1:10),
+              fontSize = '75%') %>%
+  formatCurrency(columns=c(2:10),
+                 currency = "", 
+                 interval = 3, 
+                 mark = ",",
+                 digits = 0)
+```
+
+## Conclusion
+
+This has been a less exciting introduction of the project and some of the data which will be used. In the next post, we will look at the Municipal Financial Indicators which is a statewide compilation of each town's Comprehensive Annual Financial Report (CAFR), and specifically compare the towns of Fairfield County since 2001. Using this data, it is theoretically possible to compare all 169 towns across 58 variables with a few lines of code, and to look for patterns suggesting success or challenge. After that, we will look at the IRS Statistics of Income (SOI) data which compiles every line item of tax returns filed by zip code for Connecticut specifically and compared to every other state. Using this data, it is possible to calculate the full tax rate and total tax borne by six income segments. It is also possible to compare the evolution of income in Connecticut to other states.

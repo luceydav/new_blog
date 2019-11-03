@@ -1,0 +1,272 @@
+---
+title: Reviewing Fairfield County Municipal Fiscal Indicators Since 2001
+author: David Lucey
+date: '2018-12-26'
+categories:
+  - R
+tags:
+  - plot
+  - R Markdown
+runtime: shiny
+slug: fairfield-county-town-level-spending-and-liabilities-gallop-since-2001
+---
+
+```{r 'setup',include=FALSE}
+knitr::opts_chunk$set(comment=NA, fig.width=12, fig.height=8, out.width = '100%')
+```
+
+
+```{r 'libraries', include=FALSE}
+library(data.table)
+library(tidyverse)
+library(DT)
+library(plotly)
+```
+
+
+```{r 'functions', message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE}
+setwd("~/Desktop/David/Projects/CT_data/")
+source("my_chart_attributes.R")
+source("format_ggplotly.R")
+source("extract_mfi.R")
+```
+
+
+```{r 'towns', include=FALSE}
+##Towns in FF county
+towns <- c("Greenwich",
+           "Stamford",
+           "New Canaan",
+           "Darien",
+           "Westport",
+           "Norwalk",
+           "Fairfield",
+           "Wilton",
+           "Weston",
+           "Ridgefield",
+           "Redding",
+           "Easton",
+           "Newtown",
+           "Bethel",
+           "Stratford")
+```
+
+
+```{r 'data', include=FALSE}
+##Load CT MFI reports since 2001
+files <- list("ct_mfi_2003-07.mdb","ct_mfi_2008-12.mdb","ct_mfi_2013-17.mdb")
+ct_towns <- as.data.table(extract_mfi(files))
+
+```
+
+## Introduction
+
+In recent weeks, we have been exploring the State of Connecticut's municipal oversight infrastructure. Every year, each of the 169 towns files an audited Comprehensive Annual Report (CAFR) and the state aggregates these into the Municipal Fiscal Indicators report [Municipal Fiscal Indicators - Fiscal Years Ended 2012-2017](https://portal.ct.gov/-/media/OPM/MuniFiscIndicators/FI-2013-17-Edition-As-of-1-31-19.pdf?la=en). The report is a rich source of information for comparing municipal health. The State appears to be thinking along the same lines having recently built a benchmarking tool [Municipal Benchmarking Tool](https://ucoa.ct.gov/benchmarking/#).  
+
+Redwall Analytics has taken it one step further by aggregating the available Municipal Financial Indicators all the way back to 2001 which gives a picture before, during and after the Great Recession over 58 common fields. Please see the curated list of 17 variables from all Connecticut Towns in Table \@ref(fig:datatable). This table can be filtered by town and sorted by data for anyone who wishes to explore their own town's financials. It is also possible to scroll right to see more variables not immediately visible in the table.
+ 
+```{r 'datatable', echo=FALSE, fig.cap='Fifteen Years of Key Connecticut Municipal Fiscal Indicators', paged.print=TRUE}
+my_vars <- c('year',
+             'municipality',
+             'county_identifier',
+             'inter_gov_rev',
+             'total_taxes_collected',
+             'total_revenue',
+             'net_investment_in_capital_assets',
+             'invested_in_capital_assets_net_of_related_debt',
+             'education',
+             'debt_service',
+             'total_expenditures',
+             'total_bonded_long_term_debt_rsd_town',
+             'total_net_pension_liability',
+             'population',
+             'area_lmt',
+             'empl',
+             'acmr',
+             'enrollmt',
+             'acglfy',
+             'egl')
+
+ct_towns[, ..my_vars][
+  ,`:=`(empl=round(empl*100,0),
+        municipality=str_to_title(municipality),
+        net_investment_in_capital_assets=ifelse(is.na(net_investment_in_capital_assets),invested_in_capital_assets_net_of_related_debt,net_investment_in_capital_assets))][,
+            invested_in_capital_assets_net_of_related_debt := NULL] %>%  
+    datatable(extensions = c('FixedColumns'),
+              options=list(scrollX=TRUE,
+                           fixedColumns = list(leftColumns = 2)),
+              filter='top',
+              rownames=FALSE,
+              colnames=c('Year',
+                         'Town',
+                         'County',
+                         'Inter Govt',
+                         'Taxes',
+                         'Total Revenue',
+                         'Capital Spend',
+                         'Education',
+                         'Debt Service',
+                         'Total Spending',
+                         'Bonded Debt',
+                         'Net Pensions',
+                         'Population',
+                         'Area',
+                         'Employee per Cap',
+                         'Mill Rate',
+                         'Students',
+                         'Grand List',
+                         'Equal Grand List')) %>% 
+  formatStyle(columns = c(1:19),
+              fontSize = '75%') %>%
+  formatCurrency(columns=c(4:19),
+                 currency = "", 
+                 interval = 3, 
+                 mark = ",",
+                 digits = 0)
+  
+```
+
+Connecticut gets good marks for its open data initiatives, but merging and cleaning .csv files in order to do most analysis is still time consuming. For example, data is disclosed at unequal intervals, variable names change from year to year,and new variables are added without updating past disclosures. Interesting and overlapping datasets are also sometimes included in different locations with different fields. If there are data dictionaries, they were not easy to find, and it can be difficult to understand the context of some fields. A future post will discuss specific ways that State's data practices could be improved from the perspective of an outside user. As mentioned in the last post, our R code for accessing the data is available by following the Github link on our home page.
+
+## Analysis of Key Town Attributes in Fairfield County
+
+While Fairfield County has considerably more income than the State average, the subset of 15 towns here vary in size and income. In Figure \@ref(fig:ff-attributes), it is possible to hover over the line to see the town name and values per adult resident at different points in time since 2001. All towns showed a sharp dip in education spending per pupil during 2008, but have rebounded with the median now around $20k (the State mean and median is closer to $16k). Several smaller towns towards the Northeastern side of the County (further from NYC) are seeing declining in student age population (some starting at levels as high as 25%). Several towns in Fairfield County beginning to move above $25k (though some towns elsewhere in the State are above $30k).
+
+Although population has been declining since 2013, Connecticut had about 2% more people in 2017 than 2007. In contrast, density in Fairfield County towns has been increasing much more rapidly as people have seemed inclined to leave bigger, more isolated plots further from town centers. Our hometown of Stamford in particular has been booming with apartment construction and population growth in recent years, but Norwalk has also shown growth. Most of the smaller towns have had stable density, but further Northeast, school age population has been declining rapidly from very high levels in the past. Unemployment rose sharply in most towns, but hadn't fully recovered to the lows before the previous two recessions as of 2017. Stratford seems to have structurally higher employment than the other towns.
+
+```{r 'ff-attributes', echo=FALSE, fig.align = 'center', fig.cap='Key Attributes of Fairfield County Towns', paged.print=FALSE}
+ct_towns[
+  ,area_lmt:=ifelse(is.na(area_lmt),area_lmt[year==2011],area_lmt),by=municipality][
+    str_to_title(municipality) %in% towns,
+                .(`Spending per Pupil ($)`=education/enrollmt,
+                  `Students per Population (%)`=enrollmt*100/population,
+                  `Unemployment Rate (%)`=empl*100,
+                  `Population Density (per Sq Mi)` =population/area_lmt),
+                      by=.(Year=year, Municipality=str_to_title(municipality))][,
+                          melt(.SD,id.vars=c("Year","Municipality"),
+                                    measure.vars=c(3:6))][,
+                          ggplot(.SD,aes(Year,value,color=Municipality)) +
+                            geom_line() +
+                            mychartattributes+
+                            theme(
+                              axis.title.x=element_blank(),
+                              axis.title.y=element_blank()) +
+                            facet_wrap(.~variable,
+                                        scales = "free")] %>%
+                            ggplotly()
+```
+
+## Tax Revenues Per Adult Resident Have Climbed Steadily, but Other Revenues Mostly Still Lagging
+
+After a small dip in 2008 and slowdown in rate of growth, tax revenues per adult resident have continued to rise even as Grand Lists declined. Grand lists have never completely recovered in most towns althought have come close to previous peaks in Greenwich, New Canaan, Darien and Westport (as shown in Figure \@ref(fig:revenue)). Smaller, less dense towns to the Northeast generally have higher tax levels than those further Southwest (closer to NYC). It is notable that Non Tax Revenue in most towns has declined sharply since 2008 (though Westport is doing something right in this respect). Recent budget cuts and the need to support the City of Hartford and Bridgeport Schools have meant that fewer income tax dollars sent to Hartford are making it back to most towns in the County. Stamford, Norwalk and Stratford have shown a small amount of growth in Inter-Governmental transfers. It should be noted that there is a significant implicit transfer to every town not reflected in these numbers, due the State assuming full responsibility for Teacher pensions without charges.
+
+```{r 'revenue', fig.align = 'center', fig.cap='Fairfield County Revenues Over Time per Adult Resident',echo=FALSE}
+
+convert_pop <- function(x,population,enrollmt) {
+ result <-  sum(as.numeric(x),na.rm=TRUE)/(population-enrollmt)
+ return(result)
+}
+
+  ##ggplotly for FF county by town 
+  ct_towns[str_to_title(municipality) %in% towns,
+            {.(`Equalized Grand List`=convert_pop(egl,population,enrollmt),
+               `Tax Revenue`=convert_pop(tax_rev,population,enrollmt),
+              `Non Tax Revenue`=convert_pop(total_revenue-tax_rev,population,enrollmt),
+               `Inter Govt Revenue`=convert_pop(inter_gov_rev,population,enrollmt)
+               )},
+                    by=.(Year=year,Municipality=str_to_title(municipality))][
+                         ,melt(.SD,id.vars=c("Year","Municipality"),
+                                   measure.vars=c(3:6))][,
+       {ggplot(.SD,aes(Year,value, color=Municipality)) + 
+            geom_line() +
+            ggtitle("") +
+            scale_y_continuous(labels = scales::dollar)+
+            mychartattributes +
+           theme(axis.title.x=element_blank(),
+                axis.title.y=element_blank()) +
+            facet_wrap(~variable,scale="free",ncol=2)}] %>%
+        ggplotly()
+```
+
+## Capital Spending per Adult Resident Never Slowed During the GFC, and Education Spending Recovered Quickly
+
+Categories of spending per adult resident can be seen in Figure \@ref(fig:spending). There has been capital spending boom with statewide annual spending rising to $15 billion from $6 billion before the Great Recession. This can be seen clearly in almost every Fairfield County towns except for Stratford. Some towns have controlled education spending much more effectively than others, especially in the smaller less dense towns to the Northeast. 
+
+While Greenwich has controlled Educational Spending well, Capital and Non Educational spending have risen substantially. It is notable that debt service in New Canaan has increased substantially to the highest levels among the towns while decreasing in most other towns. There has been debate in Stamford about tax levels as the town has invested in infrastructure to fund rapid population growth, but it appears to shown relatively good discipline across spending categories. As we will see later, the debt levels in Fairfield County are higher than most parts of the state, but Moody's ratings are still relatively solid likely because of the high income in the County.
+
+```{r 'spending', fig.align = 'center', fig.cap='Fairfield County Spending Over Time per Adult Resident',echo=FALSE}
+  ct_towns[str_to_title(municipality) %in% towns,
+            {.(`Capital Spending`=
+                 convert_pop(ifelse(is.na(net_investment_in_capital_assets),invested_in_capital_assets_net_of_related_debt,net_investment_in_capital_assets),population,enrollmt),
+               `Non Educational Spending`=
+                 convert_pop(total_expenditures-education,population,enrollmt),
+               `Education Spending`=
+                 convert_pop(education,population,enrollmt),
+               `Debt Service`=
+                 convert_pop(debt_service,population,enrollmt))},
+                    by=.(Year=year,
+                         Municipality=str_to_title(municipality))][
+                         ,melt(.SD,id.vars=c("Year","Municipality"),
+                                   measure.vars=c(3:6))][,
+       {ggplot(.SD,aes(Year,value, color=Municipality)) + 
+            geom_line() +
+            ggtitle("") +
+            scale_y_continuous(labels = scales::dollar)+
+            mychartattributes +
+            facet_wrap(~variable,scale="free",ncol=2)+
+           theme(axis.title.x=element_blank(),
+                 axis.title.y=element_blank(),
+                 )}] %>%
+        ggplotly()
+
+```
+
+
+## Addition of Net Unfunded Pension Liabilities to Fairfield County Towns in 2015 Gave Sudden Spike to Recorded Liabilities
+
+Much has been written about $35 billion unfunded pension and $21b of retiree healthcare (OPEB) liabilities at the State level as legislators failed to require large enough employee contributions or to set aside sufficient reserves to cover promises. As mentioned earlier, the responsibility for teacher pensions resides with the State, but towns are still responsible for all other municipal employee pensions and OPEB (Health) benefits. 
+
+Towns started recording pension liabilities on the CAFR in 2015 with signficant effect (as shown in the bottom left chart in Figure \@ref(fig:liabilities)). Excellent research was done by the Yankee Institute along with the Reason Foundation taking pension liabilities into account in this report [Warning Signs: Assessing Municipal Fiscal Health](http://www.yankeeinstitute.org/policy-papers/warning-signs/). In aggregate, towns in Fairfield County alone suddenly recognized new liabilities of $750 million on top of bonded debt of $1.75 billion. 
+
+Fortunately, bonded debt has been steadily falling in most towns for the last ten years, and all towns have made progress on unfunded pensions as in 2017. From an accounting perspective, most towns operate close to breakeven on an operating level and seem to have stable net positions with the exception of Stratford which has had notable struggles with pension obligations for some time.
+
+```{r 'liabilities', echo=FALSE, fig.align='center', fig.cap='Fairfield County Debt and Unfunded Liabilities Rising Sharply'}
+##Line chart of pension liabilities by town
+ct_towns[str_to_title(municipality) %in% towns,
+            .(`Total Net Position`=
+                convert_pop(sum(ifelse(is.na(total_net_position),as.numeric(total_net_assets),as.numeric(total_net_position)),na.rm=TRUE),
+                            population,
+                            enrollmt),
+               `Bonded Debt Outstanding`=
+                convert_pop(sum(as.numeric(total_bonded_long_term_debt_rsd_town),na.rm=TRUE),
+                            population,
+                            enrollmt),
+              `Unfunded Pension Liability`=
+                convert_pop(sum(as.numeric(total_net_pension_liability),na.rm=TRUE),
+                            population,
+                            enrollmt),
+                `Operating Surplus`=
+                convert_pop(sum(as.numeric(operating_surplus_deficit_including_sources_and_uses),na.rm=TRUE),
+                            population,
+                            enrollmt)),
+         by=.(Municipality=str_to_title(municipality),Year=year)][,
+                                  melt(.SD, id.vars=c("Year","Municipality"),
+                                            measure.vars=c(3:6))][,
+      {ggplot(.SD,aes(Year,value,color=Municipality)) + 
+         geom_line() +
+         scale_y_continuous(labels = scales::dollar) +
+         ylab("Annual Amount") +
+         xlab("Year") +
+         mychartattributes+
+         facet_wrap(~variable,scales="free")+
+         theme(axis.title.x=element_blank(),
+         axis.title.y=element_blank(),
+                 )}] %>%
+                    ggplotly()
+
+```
+
+
+## Conclusion
+
+It is important to note that these liabilities didn't just appear in 2015 and are not attributed to that year alone. In our earlier [Quick Review of State of Connecticut Spending in the R Stats Language](https://www.linkedin.com/pulse/quick-review-state-connecticut-spending-r-stats-lucey-cfa-cpa-mba/) on LinkedIn, we noted that 75% of state employee pensions are below $15k, and excluding teachers, only about 48,000 retirees are currently receiving benefits, so we are still trying to better understand how the accounting for this works. Our assumption is that an additional 50,000 teachers with higher pensions are not shown with the State's disclosure. The sharp drop in interest rates over the last decade is likely to have a big impact increasing the present value of those obligations, especially since the legacy pay-as-you-go system meant that little was invested heading into the great bull market. If any readers can improve our understanding the numbers, it would be welcome input.

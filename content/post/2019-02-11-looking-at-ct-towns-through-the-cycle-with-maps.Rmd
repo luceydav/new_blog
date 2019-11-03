@@ -1,0 +1,271 @@
+---
+title: A Through the Cycle Geo-Spatial Analysis of CT Town Finances
+author: David Lucey
+date: '2019-02-11'
+slug: looking-at-ct-towns-through-the-cycle-with-maps
+categories:
+  - R
+tags:
+  - ctdata
+  - rstats
+  - dataviz
+output:
+  html_document:
+    code_folding: true
+---
+
+```{r 'setup',include=FALSE}
+knitr::opts_chunk$set(comment=NA, out.width='750px', dpi=200,fig.align = "center")
+```
+
+
+
+```{r 'libraries', include=FALSE}
+library(data.table)
+library(tidyverse)
+library(plotly)
+library(sf)
+library(tmap)
+```
+
+
+
+```{r 'data', include=FALSE}
+setwd("~/Desktop/David/Projects/CT_data/")
+source("extract_mfi.R")
+files <- c("ct_mfi_2003-07.mdb",
+              "ct_mfi_2008-12.mdb",
+              "ct_mfi_2013-17.mdb")
+
+ct_mfi <- as.data.table(extract_mfi(files))
+
+```
+
+
+
+```{r 'map', include=FALSE}
+setwd("~/Desktop/David/Projects/CT_data/Connecticut_Town_shp/")
+
+ct_map <- st_read("CONNECTICUT_TOWN_POLY.shp")
+ct_map_simple <- st_simplify(ct_map, dTolerance = 1000)
+
+ct_map_merged <- merge(ct_map_simple, 
+                      ct_mfi[,.(year,
+                                population,
+                                tax_pop=total_taxes_collected/(population-enrollmt),
+                                spend_pop=total_expenditures/(population-enrollmt),
+                                ed_student=education/enrollmt,
+                                student_cap=enrollmt/population,
+                                gl_pop=egl/(population-enrollmt),
+                                debt_pop=total_bonded_long_term_debt_rsd_town/(population-enrollmt),
+                                acmr,
+                                tanf_pop=tanf_recipients/(population-enrollmt),
+                                empl,
+                                moodys_ratings,
+                                transfers_pop=inter_gov_rev/(population-enrollmt),
+                                pop_density=population/area_lmt,
+                            cap_inv_cap=ifelse(is.na(net_investment_in_capital_assets),invested_in_capital_assets_net_of_related_debt,net_investment_in_capital_assets)/(population-enrollmt),
+                                TOWN=str_to_title(municipality))], by = "TOWN")
+
+```
+
+
+# Introduction
+
+In an earlier post, [Reviewing Fairfield County Municipal Fiscal Indicators Since 2001](https://redwallanalytics.com/2018/12/26/fairfield-county-town-level-spending-and-liabilities-gallop-since-2001/), we used 17 years of individual Town Comprehensive Annual Financial Reports (CAFR) aggregated in Connecticut's Municipal Fiscal Indicator's to compare 15 Fairfield County towns. The challenge was that the graphs became crowded even with that small number of towns. In this analysis, we will expand our look at the similar variables over all 169 Connecticut towns using Geo-spatial mapping.
+
+We find a few surprising trends:
+
+  * Education expenses have risen rapidly and broadly, but declining school age populations may be pushing towards unsutainable levels in some towns
+  * Three of Connecticut's four largest cities (other than Stamford) show ongoing struggles with employment, mill rates, debt levels and credit ratings in contrast to the national trend for cities to generate employment and thrive
+  * There has been a broad based capital spending boom, but some towns stand out above all others for spending
+
+The map in Figure \@ref(fig:population-map) is a snapshot of 2017 financial data for each town in CT with color scaled by population. The map shows the largest town populations along Metronorth and the I-95 Corridor through New Haven, and then North to Hartford along I-91 in the central part of the state. It is possible click to see the town names along with per cap data on taxes, spending, state transfers, equalized grand lists, mill rates, debt and capital investment. School spending makes up about 60% of town spending on average (although ranging widely between 40-80%). Spending per student and students per population are shown. Unemployment, population density and Moody's ratings are also shown. The point in time in Figure \@ref(fig:population-map) is well into the recovery, but below we will "animate" by year to give a feel for changes through the cycle. 
+
+```{r 'population-map', echo=FALSE, fig.cap='Connecticut Towns Names and Attributes by Population in 2016', message=FALSE, warning=FALSE, echo=FALSE}
+
+l <- tm_shape(ct_map_merged[ct_map_merged$year==2017,], unit="mi") +
+        tm_polygons(col=c("population"), 
+              id="TOWN", title="Population",
+              breaks=c(0,2500,5000,10000,25000,50000,75000,100000,125000,150000,200000),
+              popup.vars=c("All Tax per Adult Resident" = "tax_pop",
+                           "Spend per Adult Resident"="spend_pop",
+                           "State Transfers per Adult Resident"="transfers_pop",
+                           "Grand List per Cap"="gl_pop",
+                           "Mill Rate" = "acmr",
+                           "Debt per Adult Resident" = "debt_pop",
+                           "Spending per Student" = "ed_student",
+                           "Students per Adult Resident"="student_cap",
+                           "Cap Inv per Adult Resident" = "cap_inv_cap",
+                           "Unemployment"= "empl",
+                           "Moody's Rating" = "moodys_ratings",
+                           "Popu. Density (per sqm)"="pop_density"),
+              popup.format=list(student_cap=list(digits=2),
+                                empl=list(digits=2),
+                                acmr=list(digits=2),
+                                tax_pop=list(digits=0),
+                                spend_pop=list(digits=0),
+                                ed_student=list(digits=0),
+                                debt_pop=list(digits=0),
+                                pop_density=list(digits=0),
+                                cap_inv_cap=list(digits=0),
+                                transfers_pop=list(digits=0)))+
+  tm_basemap("OpenStreetMap",alpha=0.5)
+
+library(leaflet)
+tmap_leaflet(l, mode = "view") #+
+  #tm_fill("Pop_2001", fill.title = "Population, 2001", scale = 0.8, alpha = 0.5) +
+  #setView(lng=-8.2237333, lat=43.4822354, zoom = 16)
+
+rm(l)
+```
+
+
+# The Western and Southern Parts of State Led Local Real Estate Tax Increases
+
+In a later post, we will do a similar analysis based on income and income taxes for the towns, but higher local taxes (mostly real estate) as shown in Figure \@ref(fig:taxes) probably couldn't be sustained without higher earnings. We did note in [Analysis of Connecticut Tax Load by Income Bracket and Type](https://redwallanalytics.com/2019/01/09/analysis-of-connecticut-tax-load-by-income-bracket/) that incomes of two middle brackets have appeared to trail rising tax rates since 2009. Back in 2001, most towns collected taxes less than $2,000 annually, but by 2017, only a handful were still in that range (mostly in the Eastern part of the state). Both the growth trajectory and absolute level of taxes seems to be higher in West. As we will see below, education spending has grown rapidly in that region, and this is the likely driver of higher taxes.
+
+```{r 'taxes', echo=FALSE, fig.cap='Taxes are Higher In Western Connecticut to Pay for Higher Education Spending', message=FALSE, warning=FALSE,fig.show='animate', ffmpeg.format='gif', dev='jpeg'}
+
+tm_shape(ct_map_merged, unit="mi") +
+  tm_polygons(col="tax_pop", id="TOWN", title="Tax per Adult Resident",
+              breaks=c(0,1000,2000,3000,4000,5000,6000,7000,8000,9000)) + 
+  tm_facets(along="year",nrow=1,ncol=1) +
+  tm_scale_bar(breaks = c(0, 25, 50), size = 1)+
+  tm_layout(legend.title.size = 2,
+          legend.text.size = 1.5)
+
+```
+
+# Education Costs Mostly Rising in Tandem with Some Towns Now Above $30,000 Per Student
+
+Figure \@ref(fig:education) shows the rapid growth in spending per student across the state. While the Northwest started and remained highest (followed by the Southwest), the overall picture is of a rapid and fairly equal rise in spending across the state. The rise in the North West is likely the result of declining student age population. Given the much higher living costs in Fairfield County, it is somewhat surprising that many towns have costs within the range of others with much less expensive real estate to the North and East. As noted in [Reviewing Fairfield County Municipal Fiscal Indicators Since 2001](https://redwallanalytics.com/2018/12/26/fairfield-county-town-level-spending-and-liabilities-gallop-since-2001/), some towns in Northeastern Fairfield County are also seeing declining student age population pressuring costs.
+
+```{r 'education', echo=FALSE, fig.cap='Education Cost Per Student Have Grown Rapidly in Western Connecticut', fig.show='animate', message=FALSE, warning=FALSE, dev='jpeg', ffmpeg.format='gif'}
+
+tm_shape(ct_map_merged, unit="mi") +
+  tm_polygons(col="ed_student", id="TOWN", title="Cost per Student",
+              breaks=c(5000,10000,15000,20000,25000,30000,35000)) + 
+  tm_facets(along="year",nrow=1,ncol=1) +
+  tm_scale_bar(breaks = c(0, 25, 50), size = 1)+
+  tm_layout(legend.title.size = 2,
+          legend.text.size = 1.5)
+
+
+```
+
+# School Age Population in Rapid Decline Since 2010
+
+We can see in Figure \@ref(fig:students) a high and rising percentage of population enrolled in school up until 2009, followed by rapid reduction since the recovery began. To see such a significant change in demographics in only five years is surprising when only 1/12th of students leave school each year, and most are replaced at the start of the year. On the other hand, towns with very high school age populations (above 20% pre-recession were common and possibly unsustainable). Nevertheless, the affect of the decline in school age populations in some Northwestern and Northern Fairfield County towns may have begun to push per pupil costs to unsustainable levels.
+
+```{r 'students', echo=FALSE, fig.cap='Student Populations have Fallen Back Across the State Post 2009', fig.show='animate', message=FALSE, warning=FALSE, dev='jpeg', ffmpeg.format='gif'}
+
+tm_shape(ct_map_merged, unit="mi") +
+  tm_polygons(col="student_cap", id="TOWN", title="Students per Cap",
+              breaks=c(0,0.05,0.10,0.15,0.20,0.25,0.30)) + 
+  tm_facets(along="year",nrow=1,ncol=1) +
+  tm_scale_bar(breaks = c(0, 25, 50), size = 1)+
+  tm_layout(legend.title.size = 2,
+          legend.text.size = 1.5)
+
+```
+
+# Capital Investment Spending Boom Spread Widely Across The State
+
+Less widely discussed than some other issues, the sum of capital investment in Connecticut towns has risen from $6-7 billion in the mid 2000's to a much higher run rate of $14-15 billion recently. In Figure \@ref(fig:capital-investment), capital investment appears to have grown relatively evenly across the state, with a few towns like Waterbury and Waterford standing out for their sustained high capital spending per capita. Capital projects funded by the state seem to be the major cause of the state's rising debt [Lamont wants to slam brakes on state borrowing](https://ctmirror.org/2019/02/12/lamont-slams-brakes-on-state-borrowing/). It will be interesting to watch.
+
+```{r 'capital-investment', echo=FALSE, fig.cap='Capital Investment Has Boomed but Spread Evenly Across Regions', message=FALSE, warning=FALSE, fig.show='animate', ffmpeg.format='gif', dev='jpeg'}
+
+ct_map_merged %>% 
+  filter(cap_inv_cap>0) %>%
+  tm_shape(unit="mi") +
+  tm_polygons(col="cap_inv_cap", id="TOWN", title="Capital Inv per Adult Resident",
+              breaks=c(0,2500,5000,7500,10000,12500,15000,17500,20000)) + 
+  tm_facets(along="year",nrow=1,ncol=1) +
+  tm_scale_bar(breaks = c(0, 25, 50), size = 1)+
+  tm_layout(legend.title.size = 2,
+          legend.text.size = 1.5)
+
+```
+
+# Equalized Grand Lists Rise in the Boom Led by South and West
+
+Figure \@ref(fig:grand-list) below shows the striking difference in real estate costs in with the averages to in the South and West in many towns multiples higher than to the North, Central and East. While there are small populations in Northwestern Connecticut, the high and resilient grand lists there are impressive given the long distances to employment hubs like NYC, lack of transit options and distance from the Coast.
+
+```{r 'grand-list', echo=FALSE, fig.cap='Eastern Connecticut Has Largest Grand Lists', message=FALSE, warning=FALSE, fig.show='animate', ffmpeg.format='gif', dev='jpeg'}
+
+tm_shape(ct_map_merged, unit="mi") +
+  tm_polygons(col="gl_pop", id="TOWN", title="Grand List per Adult Resident",
+              breaks=c(0,100000,125000,150000,200000,300000,400000,750000,1000000)) + 
+  tm_facets(along="year",nrow=1,ncol=1) +
+  tm_scale_bar(breaks = c(0, 25, 50), size = 1)+
+  tm_layout(legend.title.size =2,
+          legend.text.size = 1.5)
+
+```
+
+# Mill Rates are Higher and Have Risen More in the Middle of the State
+
+The flip side of movements in grand lists has to be either reductions in services or increases in mill rates (as shown in Figure \@ref(fig:mill-rate) below). While home prices are lower in the middle and east of the state, higher mill rates have been needed to make up for (and possibly cause) some of this difference. As a hypothesis, real estate prices seem to be a function of the quality of local schools, access to employment and property tax rates. With the exception of maybe Stamford, Connecticut's cities stand out among others in their failure to benefit from urban renewal seen in many large cities around the country in the past two decades. In our earlier study, [Analysis Comparing Connecticut Real Estate Assessments over Three Revaluation Cycles](https://luceyda.shinyapps.io/ct_real_assess/), we also noted a widespread tendency of Connecticut towns to over-assess lesser valued properties to the benefit of higher valued homes. Real estate assessments are maintained on a town-by-town basis, so this persistent pattern is difficult to explain.
+
+```{r 'mill-rate', echo=FALSE, fig.cap='Mill Rates are Consistently Higher in the Middle of Connecticut', message=FALSE, warning=FALSE, fig.show='animate', ffmpeg.format='gif', dev='jpeg'}
+
+tm_shape(ct_map_merged, unit="mi") +
+  tm_polygons(col="acmr", id="TOWN", title="Mill Rate",
+              breaks=c(0,20,40,60,80,100,120,140,160)) + 
+  tm_facets(along="year",nrow=1,ncol=1) +
+  tm_scale_bar(breaks = c(0, 25, 50), size = 1)+
+  tm_layout(legend.title.size =2,
+          legend.text.size = 1.5)
+
+```
+
+# Employment Never Really Recovered 2001 Levels Although Getting Close in 2017
+
+In the late 1990s, Connecticut had some of the lowest unemployment rates nationally with most towns below 3% as shown in Figure \@ref(fig:unemployment). The rise in unemployment generally appears earlier in the Central and Eastern parts of the state. With the exception of Eastern Connecticut, which showed the biggest rises and highest sustained unemployment, the recession seems to have hit most towns in tandem and relatively evenly. A small number of towns in the middle of the state appear to have persistently higher unemployment with Hartford being one of those, possibly as state government retrenched. Though the recession ended in mid-2009, unemployment doesn't start subsiding until 2012.
+
+```{r 'unemployment', echo=FALSE, fig.cap='Unemployment Rose and Fell, but has Been More Stubborn in Some Towns', message=FALSE, warning=FALSE, fig.show='animate', ffmpeg.format='gif', dev='jpeg'}
+
+tm_shape(ct_map_merged, unit="mi") +
+  tm_polygons(col="empl", id="TOWN", title="Unemployment",
+              breaks=c(0,0.03,0.06,0.09,0.12,0.15,0.18)) + 
+  tm_facets(along="year",nrow=1,ncol=1) +
+  tm_scale_bar(breaks = c(0, 25, 50), size = 1)+
+  tm_layout(legend.title.size = 2,
+          legend.text.size = 1.5)
+
+```
+
+# Credit Ratings of Most Towns Overall Appears Higher than Pre-Crisis Although Total Debt Has Risen Significantly
+
+Figure \@ref(fig:moodys) shows that municipal credit ratings also never recovered coming out of the 2001 recession, and stayed middling through the 2008 recession. Despite absolute debt levels and debt service statewide being 75% higher since the early 2000s, Moody's ratings broadly appear to have improved in the last couple of years. Although more towns currently have lower debt levels per capita than the earlier period, ongoing challenges specifically in the larger cities may explain this. As shown in Figure \@ref(fig:debt) below, high debt levels per capita can be seen along the I-91 corridor, particularly Hartford and New Haven, debt and to a lesser extent, Bridgeport/Stratford. Although some towns in the West have comparable debt levels, these towns likely don't have income to support that level of borrowings.
+
+```{r 'moodys', fig.cap='Moodys Ratings are Higher In Fairfield County despite Higher Debt & Spending', echo=FALSE,message=FALSE, warning=FALSE,warning=FALSE, fig.show='animate', ffmpeg.format='gif', dev='jpeg'}
+
+tm_shape(ct_map_merged, unit="mi") +
+  tm_polygons(col="moodys_ratings", id="TOWN", title="Moody's Rating",palette="seq") + 
+  tm_facets(along="year",nrow=1,ncol=1) +
+  tm_scale_bar(breaks = c(0, 25, 50), size = 1)+
+  tm_layout(legend.title.size =2,
+          legend.text.size = 1.5)
+
+```
+
+
+```{r 'debt', echo=FALSE, fig.cap='The Highest Debt per Capita Levels are in Fairfield County', message=FALSE, warning=FALSE, fig.show='animate', ffmpeg.format='gif', dev='jpeg'}
+
+tm_shape(ct_map_merged, unit="mi") +
+  tm_polygons(col="debt_pop", id="TOWN", title="Debt per Adult Resident",
+              breaks=c(0,1000,2000,3000,4000,5000,6000,7000,8000)) + 
+  tm_facets(along="year",nrow=1,ncol=1) +
+  tm_scale_bar(breaks = c(0, 25, 50), size = 1)+
+  tm_layout(legend.title.size =2,
+          legend.text.size = 1.5)
+
+```
+
+# Conclusion
+
+It is an opportune time to be studying Connecticut's finances with so much change coming. Governor Lamont came in with ambitious promises to improve transportation with his 30-30-30 rail plan and commission to sell Connecticut's positive attributes as a place to invest. The reality has quickly set in that past debt financed spending and pension liabilities, which have driven fixed costs up to 30% of budgetary spending currently (from 10% in the 1990's), doesn't leave him with much room to operate.
+
+A structural increase in shared services across overlapping governments seems to be a logical part of the solution, but will be very complicated. For example, New Haven Senator Looney has proposed legislation to force school districts in towns with less than 40,000 inhabitants to merge. [Looney’s real plan is to merge failing urban school districts with successful surburban schools](https://www.theday.com/columnists/20190210/looneys-real-plan-is-to-merge-failing-urban-school-districts-with-successful-surburban-schools). Connecticut's own laws reportedly have made some other school district cooperations unsuccessful in reducing costs [OP-ED | What Prevents Towns From Regionalizing Schools? Mountains of Red Tape](https://www.ctnewsjunkie.com/archives/story/20190207_op-ed_what_prevents_towns_from_regionalizing_schools_is_red_tape/). From a distance, merging a troubled large urban Bridgeport with a smaller suburban school district like Trumbull seems to carry a risk of doing more harm than good. It is going to be quite a year.

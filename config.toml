@@ -1,0 +1,58 @@
+baseurl = "https://luceydav.netifly.com/"
+languageCode = "en-us"
+title = "Redwall Analytics Blogsite"
+theme = "hugo-lithium"
+googleAnalytics = ""
+disqusShortname = ""
+ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
+
+[permalinks]
+    post = "/:year/:month/:day/:slug/"
+
+[menu]
+    [[menu.main]]
+        name = "Home"
+        pre = "<i class='fa fa-home fa-fw'></i>"
+        weight = 1
+        identifier = "home"
+        url = "/"
+    [[menu.main]]
+        name = "Redwall Analytics"
+        url = "/about/"
+        weight = 2
+    [[menu.main]]
+        name = "Contact"
+        pre = "<i class='fa fa-phone fa-fw'></i>"
+        weight = 3
+        url = "/contact/"
+    [[menu.main]]
+        name = "LinkedIn"
+        url = "https://linkedin.com/in/david-lucey-cfa-cpa-mba-msba"
+        weight = 4
+    [[menu.main]]
+        name = "Twitter"
+        url = "https://twitter.com/lucey_david"
+        weight = 5 
+    [[menu.main]]
+        name = "GitHub"
+        url = "https://github.com/luceydav"
+        weight = 6
+   
+
+[params]
+    description = "A Website for Sharing Research Explorations in R"
+
+    # options for highlight.js (version, additional languages, and theme)
+    highlightjsVersion = "9.12.0"
+    highlightjsCDN = "//cdnjs.cloudflare.com/ajax/libs"
+    highlightjsLang = ["r", "yaml"]
+    highlightjsTheme = "github"
+
+    MathJaxCDN = "//cdnjs.cloudflare.com/ajax/libs"
+    MathJaxVersion = "2.7.5"
+
+[params.logo]
+    url = ""
+    width = 0
+    height = 0
+    alt = ""
