@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Tags on Redwall Analytics Blogsite</title>
@@ -12,7 +12,7 @@
     
     
     <item>
-      <title>Charterschools</title>
+      <title>charterschools</title>
       <link>/tags/charterschools/</link>
       <pubDate>Sat, 02 Nov 2019 00:00:00 +0000</pubDate>
       
@@ -21,7 +21,7 @@
     </item>
     
     <item>
-      <title>Connecticut</title>
+      <title>connecticut</title>
       <link>/tags/connecticut/</link>
       <pubDate>Sat, 02 Nov 2019 00:00:00 +0000</pubDate>
       
@@ -30,25 +30,7 @@
     </item>
     
     <item>
-      <title>Ctdata</title>
-      <link>/tags/ctdata/</link>
-      <pubDate>Thu, 07 Mar 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/ctdata/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Cteconomy</title>
-      <link>/tags/cteconomy/</link>
-      <pubDate>Fri, 25 Oct 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/cteconomy/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Dataviz</title>
+      <title>dataviz</title>
       <link>/tags/dataviz/</link>
       <pubDate>Sat, 02 Nov 2019 00:00:00 +0000</pubDate>
       
@@ -57,20 +39,38 @@
     </item>
     
     <item>
-      <title>Plot</title>
-      <link>/tags/plot/</link>
-      <pubDate>Mon, 28 Jan 2019 00:00:00 +0000</pubDate>
+      <title>rstats</title>
+      <link>/tags/rstats/</link>
+      <pubDate>Sat, 02 Nov 2019 00:00:00 +0000</pubDate>
       
-      <guid>/tags/plot/</guid>
+      <guid>/tags/rstats/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>Plot R Markdown</title>
-      <link>/tags/plot-r-markdown/</link>
-      <pubDate>Fri, 21 Dec 2018 00:00:00 +0000</pubDate>
+      <title>cteconomy</title>
+      <link>/tags/cteconomy/</link>
+      <pubDate>Fri, 25 Oct 2019 00:00:00 +0000</pubDate>
       
-      <guid>/tags/plot-r-markdown/</guid>
+      <guid>/tags/cteconomy/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>ctdata</title>
+      <link>/tags/ctdata/</link>
+      <pubDate>Thu, 07 Mar 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/ctdata/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>plot</title>
+      <link>/tags/plot/</link>
+      <pubDate>Mon, 28 Jan 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/plot/</guid>
       <description></description>
     </item>
     
@@ -84,11 +84,11 @@
     </item>
     
     <item>
-      <title>Rstats</title>
-      <link>/tags/rstats/</link>
-      <pubDate>Sat, 02 Nov 2019 00:00:00 +0000</pubDate>
+      <title>-plot -R Markdown</title>
+      <link>/tags/plot-r-markdown/</link>
+      <pubDate>Fri, 21 Dec 2018 00:00:00 +0000</pubDate>
       
-      <guid>/tags/rstats/</guid>
+      <guid>/tags/plot-r-markdown/</guid>
       <description></description>
     </item>
     
