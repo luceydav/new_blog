@@ -1,4 +1,4 @@
-baseURL = "https://optimistic-poincare-c56b3a.netifly.com/"
+baseurl = "https://optimistic-poincare-c56b3a.netifly.com/"
 languageCode = "en-us"
 title = "Redwall Analytics Blogsite"
 theme = "hugo-lithium"
