@@ -1,0 +1,55 @@
+---
+title: Tracking R&D spending by 700 Listed US Pharma Companies - Part 2
+author: David Lucey
+date: '2020-02-18'
+slug: tracking-r-d-spending-by-700-listed-us-pharma-companies
+draft: true
+categories:
+  - R
+  - XBRL
+tags:
+  - rstats
+  - XBRL
+---
+
+
+
+<pre class="r"><code>pharma &lt;- 
+  fread(&quot;~/Desktop/David/Projects/xbrl_investment/data/pharma_inc.csv&quot;)</code></pre>
+<p>However, we found <a href="https://github.com/antoinevulcain/Financial-Modeling-Prep-API">Financial Modeling prep</a> which maintains a free API which offers updated and standardized financial statements for US companies among other data. We also found that <a href="https://topforeignstocks.com">Top Foreign Stocks</a> maintains lists of most stock groups so we downloaded their list of Major Pharma and Biotech Companies which gave us over 700 companies with 20 shown here.</p>
+<p>We built two helper functions to download the data, then to convert to data.tables and clean up names and variable types.</p>
+<pre class="r"><code># Build URL to call financialmodelingprep API for the income statement of each ticker
+# Add 5-10 second delay so as to be respectful guests
+get_sector &lt;- function(ticker){
+  
+  # Build url for that ticker
+  url &lt;- &quot;https://financialmodelingprep.com/api/v3/financials/income-statement/&quot;
+  company &lt;- paste0(url,ticker)
+  
+  # Try in case there is an issue with the data for a particular company
+  income_list &lt;- try(fromJSON(company))
+  
+  # Stagger requests
+  delay &lt;- 5:10
+  wait &lt;- sample(delay, replace = TRUE)
+  Sys.sleep(wait)
+  
+  # Return income_list
+  income_list
+}</code></pre>
+<pre class="r"><code># 
+convert_dt &lt;- function(list) {
+  # Take list$financials into income_df
+  income_df &lt;- list$financials
+  income_dt &lt;- setDT(income_df)
+  num &lt;- 2:ncol(income_dt)
+  income_dt[,(num):=lapply(.SD, as.numeric),.SDcols=num]
+  income_dt &lt;- janitor::clean_names(income_dt)
+  income_dt
+}</code></pre>
+<p>We then used our get_sector to pull the data from financialmodelingprep.com. This took about an hour and 20 of the companies failed to download. A</p>
+<pre class="r"><code>pharma_sector &lt;- lapply(tickers,get_sector)
+names(pharma_sector) &lt;- tickers
+pharma_sector &lt;- pharma_sector[lengths(pharma_sector)==2]
+pharma_dt &lt;- lapply(pharma_sector,convert_dt)
+pharma &lt;- rbindlist(pharma_dt,use.names=TRUE,idcol=&quot;ticker&quot;)</code></pre>

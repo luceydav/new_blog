@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>XBRL on Redwall Analytics Blogsite</title>
+    <link>/categories/xbrl/</link>
+    <description>Recent content in XBRL on Redwall Analytics Blogsite</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 18 Feb 2020 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/categories/xbrl/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>A Walk Though of Accessing Financial Statements with XBRL in R - Part 1</title>
+      <link>/2020/02/18/a-walk-though-of-accessing-financial-statements-with-xbrl-in-r-part-1/</link>
+      <pubDate>Tue, 18 Feb 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/2020/02/18/a-walk-though-of-accessing-financial-statements-with-xbrl-in-r-part-1/</guid>
+      <description>Introduction As financial professionals and analytic software lovers, the ability to efficiently load a large number of financial statements, and conduct an analysis has always been a key objective. In previous posts, Redwall Analytics worked with a 15-year time series of municipal Comprehensive Annual Financial Reports (CAFR) for 15 Fairfield County, CT towns Fairfield County Town Level Spending and Liabilities Gallop Since 2001. We also studied the worrisome long-term, time series of unfunded liabilities for all 169 Connecticut municipalities Connecticut City Unfunded Pension And OPEB Liabilities.</description>
+    </item>
+    
+    <item>
+      <title>Tracking R&amp;D spending by 700 Listed US Pharma Companies - Part 2</title>
+      <link>/2020/02/18/tracking-r-d-spending-by-700-listed-us-pharma-companies/</link>
+      <pubDate>Tue, 18 Feb 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/2020/02/18/tracking-r-d-spending-by-700-listed-us-pharma-companies/</guid>
+      <description>pharma &amp;lt;- fread(&amp;quot;~/Desktop/David/Projects/xbrl_investment/data/pharma_inc.csv&amp;quot;) However, we found Financial Modeling prep which maintains a free API which offers updated and standardized financial statements for US companies among other data. We also found that Top Foreign Stocks maintains lists of most stock groups so we downloaded their list of Major Pharma and Biotech Companies which gave us over 700 companies with 20 shown here.
+We built two helper functions to download the data, then to convert to data.</description>
+    </item>
+    
+  </channel>
+</rss>

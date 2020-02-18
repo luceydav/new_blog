@@ -1,0 +1,112 @@
+---
+title: Tracking R&D spending by 700 Listed US Pharma Companies - Part 2
+author: David Lucey
+date: '2020-02-18'
+slug: tracking-r-d-spending-by-700-listed-us-pharma-companies
+draft: true
+categories:
+  - R
+  - XBRL
+tags:
+  - rstats
+  - XBRL
+---
+
+```{r 'set-up', include=FALSE}
+
+packages <- 
+  c("jsonlite",
+    "ggplot2",
+    "readxl",
+    "data.table",
+    "stringr")
+
+if (length(setdiff(packages,rownames(installed.packages()))) > 0) {
+  install.packages(setdiff(packages, rownames(installed.packages())))  
+}
+
+invisible(lapply(packages, library, character.only = TRUE))
+
+knitr::opts_chunk$set(comment=NA, fig.width=12, fig.height=8, out.width = '100%')
+
+```
+
+
+```{r 'load-data', echo=TRUE, message=FALSE, warning=FALSE}
+
+pharma <- 
+  fread("~/Desktop/David/Projects/xbrl_investment/data/pharma_inc.csv")
+
+```
+
+
+However, we found [Financial Modeling prep](https://github.com/antoinevulcain/Financial-Modeling-Prep-API) which maintains a free API which offers updated and standardized financial statements for US companies among other data. We also found that [Top Foreign Stocks](https://topforeignstocks.com) maintains lists of most stock groups so we downloaded their list of Major Pharma and Biotech Companies which gave us over 700 companies with 20 shown here.
+
+
+```{r message=FALSE, eval=FALSE, warning=FALSE, include=FALSE}
+
+major <-
+  read_excel(
+    "~/Desktop/David/Projects/xbrl_investment/data/major-pharma-NYSE-Jan-2020.xlsx"
+  )
+biotech <-
+  read_excel(
+    "~/Desktop/David/Projects/xbrl_investment/data/biotech-NASDAQ-Feb-11-2020.xlsx"
+  )
+tickers <-
+  c(major$Ticker, biotech$Ticker)
+
+tickers[1:10]
+```
+
+We built two helper functions to download the data, then to convert to data.tables and clean up names and variable types.
+
+```{r eval=FALSE, include=TRUE}
+
+# Build URL to call financialmodelingprep API for the income statement of each ticker
+# Add 5-10 second delay so as to be respectful guests
+get_sector <- function(ticker){
+  
+  # Build url for that ticker
+  url <- "https://financialmodelingprep.com/api/v3/financials/income-statement/"
+  company <- paste0(url,ticker)
+  
+  # Try in case there is an issue with the data for a particular company
+  income_list <- try(fromJSON(company))
+  
+  # Stagger requests
+  delay <- 5:10
+  wait <- sample(delay, replace = TRUE)
+  Sys.sleep(wait)
+  
+  # Return income_list
+  income_list
+}
+
+```
+
+
+```{r eval=FALSE, include=TRUE}
+# 
+convert_dt <- function(list) {
+  # Take list$financials into income_df
+  income_df <- list$financials
+  income_dt <- setDT(income_df)
+  num <- 2:ncol(income_dt)
+  income_dt[,(num):=lapply(.SD, as.numeric),.SDcols=num]
+  income_dt <- janitor::clean_names(income_dt)
+  income_dt
+}
+```
+
+We then used our get_sector to pull the data from financialmodelingprep.com. This took about an hour and 20 of the companies failed to download. A
+
+```{r eval=FALSE, include=TRUE}
+
+pharma_sector <- lapply(tickers,get_sector)
+names(pharma_sector) <- tickers
+pharma_sector <- pharma_sector[lengths(pharma_sector)==2]
+pharma_dt <- lapply(pharma_sector,convert_dt)
+pharma <- rbindlist(pharma_dt,use.names=TRUE,idcol="ticker")
+```
+
