@@ -1,5 +1,5 @@
 ---
-title: Parsing of Mass Municipal PDF CAFR's with the Center for Municipal Finance - Part 1
+title: Parsing of Mass Municipal PDF CAFR's with Tabulizer, pdftools and AWS Textract - Part 1
 author: David Lucey
 date: '2020-03-31'
 slug: parsing-of-mass-municipal-pdf-cafr-s-with-the-center-for-municipal-finance
@@ -27,7 +27,7 @@ library(DT)
 
 # Introduction
 
-Redwall Analytics had the pleasure of collaborating with Marc Joffe, of Reason Foundation, in its post [Replicating Yankee Institute Risk Score Over 15 Years](https://redwallanalytics.com/2019/10/12/replicating-yankee-institute-risk-score-over-15-years/) for 150 Connecticut towns in October 2018. This involved taking a well organized public dataset from the State's website, and analyzing it in R. When Marc called to ask if we could report on our blog site about similar analysis for 150 Massachusetts towns, as in Connecticut's [Warning Signs](https://yankeeinstitute.org/wp-content/uploads/2018/08/Warning-Signs-min-1.pdf), we jumped at the idea. Naturally, Redwall wanted to replicate the analysis over a longer time period, but this turned out to be more challenging in Massachusetts. 
+Redwall Analytics had the pleasure of collaborating with Marc Joffe, of Reason Foundation, in its October 2018 post [Replicating Yankee Institute Risk Score Over 15 Years](https://redwallanalytics.com/2019/10/12/replicating-yankee-institute-risk-score-over-15-years/) for 150 Connecticut towns. This involved taking a well organized public dataset from the State's website, and analyzing it in R. When Marc called to ask if we could report on our blog site about similar analysis for 150 Massachusetts towns, as in Connecticut's [Warning Signs](https://yankeeinstitute.org/wp-content/uploads/2018/08/Warning-Signs-min-1.pdf), we jumped at the idea. Naturally, Redwall wanted to replicate the analysis over a longer time period, but this turned out to be more challenging in Massachusetts. 
 
 As Redwall discussed in [A Walk Though of Accessing Financial Statements with XBRL in R - Part 1](https://redwallanalytics.com/2020/02/18/a-walk-though-of-accessing-financial-statements-with-xbrl-in-r-part-1/), the SEC has required registered companies to report in XBRL since 2008. Unfortunately, this is not the case so for the tens of thousands of municipal borrowers around the US. Connecticut is one of approximately 20 states with municipal monitoring, so it systematically gathers key financial statement data each year in open public databases. Unfortunately, Massachusetts does not have formal municipal monitoring and does not make similar databases available. 
 
