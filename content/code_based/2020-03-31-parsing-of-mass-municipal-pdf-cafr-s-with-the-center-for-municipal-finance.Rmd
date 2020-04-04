@@ -80,7 +80,7 @@ DT::datatable(
               colnames = colnames,
   caption = htmltools::tags$caption(
     style = 'caption-side: bottom; text-align: right;',
-    'Table 1: ', htmltools::em('Source: Marc Joffe (Reason Foundation)'))
+    '', htmltools::em('Source: Marc Joffe (Reason Foundation)'))
   ) %>%
   formatStyle(columns = c(1:72),
               fontSize = '100%') %>%
@@ -121,7 +121,7 @@ datatable(reason[keeps], extensions = c('FixedColumns'),
                          'Employ.'),
   caption = htmltools::tags$caption(
     style = 'caption-side: bottom; text-align: right;',
-    'Table 2: ', htmltools::em('Source: Marc Joffe (Reason Foundation)'))
+    '', htmltools::em('Source: Marc Joffe (Reason Foundation)'))
           ) %>% 
   formatStyle(columns = c(1:7),
               fontSize = '100%') %>%
