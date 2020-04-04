@@ -87,9 +87,12 @@ filing_list <-
                         count = 40, 
                         page = 1),
         TRUE)
+```
+
+```{r echo=TRUE, message=FALSE, warning=FALSE}
 
 # Show full list
-filing_list
+filing_list[1:5]
 
 ```
 
@@ -102,7 +105,8 @@ filing_list
 ticker <- 'AAPL'
 type <- '10-K'
 
-#parse this listing to find only 10-K filings...e.g. not 10-K/A and 10-K405
+# Parse this listing to find only 10-K filings 
+# (ie: not 10-K/A and 10-K405)
 href_list <- filing_list[filing_list$type==type,]$href
 
 # Show the first five index links
