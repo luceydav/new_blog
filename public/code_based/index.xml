@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Code_baseds on Redwall Analytics Blogsite</title>
+    <link>/code_based/</link>
+    <description>Recent content in Code_baseds on Redwall Analytics Blogsite</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 31 Mar 2020 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/code_based/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Parsing of Mass Municipal PDF CAFR&#39;s with the Center for Municipal Finance - Part 1</title>
+      <link>/code_based/parsing-of-mass-municipal-pdf-cafr-s-with-the-center-for-municipal-finance/</link>
+      <pubDate>Tue, 31 Mar 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/code_based/parsing-of-mass-municipal-pdf-cafr-s-with-the-center-for-municipal-finance/</guid>
+      <description># Libraries library(data.table) library(stringr) library(rlist) library(DT) #library(janitor) #library(xlsx) #library(readxl) Introduction Redwall Analytics had the pleasure of collaborating with Marc Joffe, Reason Foundation, in its post Replicating Yankee Institute Risk Score Over 15 Years for 150 Connecticut towns in October last year. Mr. Joffe, who also runs the Center for Municipal Finance, has led a push for open and transparent government financial statement data by municipal governments.</description>
+    </item>
+    
+  </channel>
+</rss>
