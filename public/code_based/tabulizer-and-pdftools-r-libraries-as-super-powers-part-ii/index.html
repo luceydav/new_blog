@@ -72,6 +72,17 @@
 
     <div class="article-content">
       
+<script src="/rmarkdown-libs/htmlwidgets/htmlwidgets.js"></script>
+<script src="/rmarkdown-libs/jquery/jquery.min.js"></script>
+<link href="/rmarkdown-libs/datatables-css/datatables-crosstalk.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/datatables-binding/datatables.js"></script>
+<link href="/rmarkdown-libs/dt-core/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="/rmarkdown-libs/dt-core/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/dt-core/js/jquery.dataTables.min.js"></script>
+<link href="/rmarkdown-libs/dt-ext-fixedcolumns/css/fixedColumns.dataTables.min.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/dt-ext-fixedcolumns/js/dataTables.fixedColumns.min.js"></script>
+<link href="/rmarkdown-libs/crosstalk/css/crosstalk.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/crosstalk/js/crosstalk.min.js"></script>
 
 
 <div id="introduction" class="section level1">
@@ -82,7 +93,7 @@
 </div>
 <div id="walk-through-plan" class="section level1">
 <h1>Walk Through Plan</h1>
-<p>To begin with, we had to download the pdfs from the Center for Municipal Finance. We won’t show the code to do this and all of this project here, but it can be found at <a href="https://github.com/luceydav/pdf_cafr_parse/blob/master/reason_pdf_parser.R">reason_pdf_parser.R</a>. In order to do this on the scale that we did for the project, we had to build large nested lists of all 150 Massachussett’s CAFR pdfs. For now, we will just walk through a few key points on the Abington 2018 Statement of Net Position. The 2018 Abington CAFR used in this example is available for download <a href="https://www.abingtonpa.gov/departments/finance/cafr">here</a>.</p>
+<p>To begin with, we had to download the pdfs from the Center for Municipal Finance. We won’t show the code to do this and all of this project here, but it can be found at <a href="https://github.com/luceydav/pdf_cafr_parse/blob/master/reason_pdf_parser.R">reason_pdf_parser.R</a>. In order to do this on the scale that we did for the project, we had to build large nested lists of all 150 Massachussett’s CAFR pdfs. For now, we will just walk through a few key points on the Abington 2018 Statement of Net Position. The 2018 Abington CAFR used in this example is available for download <a href="https://www.abingtonma.gov/home/pages/annual-town-reports">here</a>.</p>
 <pre class="r"><code># Set up pdf and pdf_path to directory
 dir &lt;- &quot;/Users/davidlucey/Desktop/David/Projects/mass_munis/data/pdf_cafr/&quot;
 city &lt;- &quot;abington&quot;
@@ -242,9 +253,31 @@ abington_sonp &lt;- abington_sonp[[1]]</code></pre>
 <div id="clean-up" class="section level1">
 <h1>Clean up</h1>
 <p>The output is still in a raw form with colums sometimes determined by indentations and “x” values, such as the “$” signs. The numbers are in character form with commas, and need to be parsed into numeric. The biggest challenge is the column names which often include the first row of the full column name, and need to be rebuilt. This is not a small task and not what we were hoping to illustrate in this post, so we are just showing the output below. Please refer to our Github code for the a more complete explanation.</p>
-<pre class="r"><code>abington_final &lt;- clean_table(abington_sonp)
-
-abington_final</code></pre>
+<pre class="r"><code>datatable(abington_final, 
+  extensions = c(&#39;FixedColumns&#39;),
+  options = list(scrollY = TRUE,
+                 pageLength=10),
+  colnames=c(&#39;Element&#39;,
+             &#39;Governmental Activities&#39;,
+             &#39;Business-Type Activities&#39;,
+             &#39;Total&#39;),
+              rownames = FALSE,
+  caption = htmltools::tags$caption(
+    style = &#39;caption-side: bottom; text-align: right;&#39;,
+    &#39;&#39;, htmltools::em(&#39;Source: Abington Mass Town Reports&#39;)
+    )
+  ) %&gt;%
+  formatStyle(columns = c(1:4),
+              fontSize = &#39;100%&#39;) %&gt;%
+  formatCurrency(
+    columns = c(2:4),
+    currency = &quot;&quot;,
+    interval = 3,
+    mark = &quot;,&quot;,
+    digits = 0
+  )</code></pre>
+<div id="htmlwidget-1" style="width:100%;height:auto;" class="datatables html-widget"></div>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"filter":"none","extensions":["FixedColumns"],"caption":"<caption style=\"caption-side: bottom; text-align: right;\">\n  \n  <em>Source: Abington Mass Town Reports<\/em>\n<\/caption>","data":[["ASSETS","CURRENT","Cash and cash equivalents","Receivables, net of allowance for uncollectibles","Real estate and personal property taxes","Tax liens","Community preservation fund surtax","Motor vehicle and other excise taxes","User charges","Departmental and other","Intergovernmental","Community preservation state share","Special assessments","Tax foreclosures","Total current assets","NONCURRENT","Receivables, net of allowance for uncollectibles","Special assessments","Capital assets, nondepreciable","Capital assets, net of accumulated depreciation","Total noncurrent assets","TOTAL ASSETS","DEFERRED OUTFLOWS OF RESOURCES","Deferred outflows related to pensions","Deferred outflows related to other postemployment benefits","TOTAL DEFERRED OUTFLOWS OF RESOURCES","LIABILITIES","CURRENT","Warrants payable","Accrued payroll","Health claims payable","Accrued interest","Accrued liabilities","Capital lease obligations","Landfill closure","Compensated absences","Notes payable","Bonds payable","Total current liabilities","NONCURRENT","Landfill closure","Compensated absences","Net pension liability","Net other postemployment benefits liability","Bonds payable","Total noncurrent liabilities","TOTAL LIABILITIES","DEFERRED INFLOWS OF RESOURCES","Deferred inflows related to pensions","NET POSITION","Net investment in capital assets","Restricted for","Permanent funds","Expendable","Nonexpendable","Gifts and grants","Community preservation","Unrestricted","TOTAL NET POSITION"],[null,null,10392587,null,313316,882182,6245,387455,null,null,1715882,70735,null,663449,14431851,null,null,null,101526106,26998272,128524378,142956229,null,417711,1982740,2400451,null,null,660037,206897,311064,278817,50638,null,139000,346271,53168,2462040,4507932,null,4080000,881952,19188882,67618712,45761763,137531309,142039241,null,1399576,null,82168482,null,null,99189,69778,1088568,740211,82248365,1917863],[null,null,7449193,null,null,34598,null,null,1930158,149296,null,null,32137,null,9595382,null,null,10712,1614044,31944596,33569352,43164734,null,7062,19982,27044,null,null,403389,75704,null,71281,2247039,53845,null,26896,null,491136,3369290,null,null,20919,324438,681460,5764229,6791046,10160336,null,23663,null,27395220,null,null,null,null,null,null,5612559,33007779],[null,null,17841780,null,313316,916780,6245,387455,1930158,149296,1715882,70735,32137,663449,24027233,null,null,10712,103140150,58942868,162093730,186120963,null,424773,2002722,2427495,null,null,1063426,282601,311064,350098,2297677,53845,139000,373167,53168,2953176,7877222,null,4080000,902871,19513320,68300172,51525992,144322355,152199577,null,1423239,null,109563702,null,null,99189,69778,1088568,740211,76635806,34925642]],"container":"<table class=\"display\">\n  <thead>\n    <tr>\n      <th>Element<\/th>\n      <th>Governmental Activities<\/th>\n      <th>Business-Type Activities<\/th>\n      <th>Total<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>","options":{"scrollY":true,"pageLength":10,"columnDefs":[{"targets":[1,2,3],"render":"function(data, type, row, meta) { return DTWidget.formatCurrency(data, \"\", 0, 3, \",\", \".\", true); }"},{"className":"dt-right","targets":[1,2,3]}],"order":[],"autoWidth":false,"orderClasses":false,"rowCallback":"function(row, data) {\nvar value=data[0]; $(this.api().cell(row, 0).node()).css({'font-size':'100%'});\nvar value=data[1]; $(this.api().cell(row, 1).node()).css({'font-size':'100%'});\nvar value=data[2]; $(this.api().cell(row, 2).node()).css({'font-size':'100%'});\nvar value=data[3]; $(this.api().cell(row, 3).node()).css({'font-size':'100%'});\n}"}},"evals":["options.columnDefs.0.render","options.rowCallback"],"jsHooks":[]}</script>
 </div>
 <div id="final-product" class="section level1">
 <h1>Final Product</h1>
