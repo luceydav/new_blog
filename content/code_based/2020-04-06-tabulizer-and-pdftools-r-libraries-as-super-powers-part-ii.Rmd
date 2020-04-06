@@ -23,9 +23,7 @@ library(rlist)
 library(tabulizer)
 library(pdftools)
 library(parallel)
-#library(janitor)
-#library(xlsx)
-#library(readxl)
+library(DT)
 
 ```
 
@@ -41,7 +39,7 @@ Our Massachusset's municipal CAFR project provided a perfect opportunity to put 
 
 # Walk Through Plan
 
-To begin with, we had to download the pdfs from the Center for Municipal Finance. We won't show the code to do this and all of this project here, but it can be found at [reason_pdf_parser.R](https://github.com/luceydav/pdf_cafr_parse/blob/master/reason_pdf_parser.R). In order to do this on the scale that we did for the project, we had to build large nested lists of all 150 Massachussett's CAFR pdfs. For now, we will just walk through a few key points on the Abington 2018 Statement of Net Position. The 2018 Abington CAFR used in this example is available for download [here](https://www.abingtonpa.gov/departments/finance/cafr).
+To begin with, we had to download the pdfs from the Center for Municipal Finance. We won't show the code to do this and all of this project here, but it can be found at [reason_pdf_parser.R](https://github.com/luceydav/pdf_cafr_parse/blob/master/reason_pdf_parser.R). In order to do this on the scale that we did for the project, we had to build large nested lists of all 150 Massachussett's CAFR pdfs. For now, we will just walk through a few key points on the Abington 2018 Statement of Net Position. The 2018 Abington CAFR used in this example is available for download [here](https://www.abingtonma.gov/home/pages/annual-town-reports).
 
 
 ```{r 'pdf-data', echo=TRUE, message=FALSE, warning=FALSE}
@@ -278,14 +276,34 @@ clean_table <- function(page) {
   page
   
 }
+
+abington_final <- clean_table(abington_sonp)
+
+names(abington_final) <- str_remove(names(abington_final), "primary_government_")
 ```
 
 
 ```{r 'final-dt', echo=TRUE, message=FALSE, warning=FALSE}
 
-abington_final <- clean_table(abington_sonp)
-
-abington_final
+datatable(abington_final, 
+  extensions = c('FixedColumns'),
+  options = list(scrollY = TRUE,
+                 pageLength=10),
+              rownames = FALSE,
+  caption = htmltools::tags$caption(
+    style = 'caption-side: bottom; text-align: right;',
+    '', htmltools::em('Source: Abington Mass Town Reports')
+    )
+  ) %>%
+  formatStyle(columns = c(1:4),
+              fontSize = '100%') %>%
+  formatCurrency(
+    columns = c(2:4),
+    currency = "",
+    interval = 3,
+    mark = ",",
+    digits = 0
+  )
 
 ```
 
