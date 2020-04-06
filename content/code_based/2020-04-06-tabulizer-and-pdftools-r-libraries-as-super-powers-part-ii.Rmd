@@ -283,7 +283,7 @@ names(abington_final) <- str_remove(names(abington_final), "primary_government_"
 ```
 
 
-```{r 'final-dt', echo=TRUE, message=FALSE, warning=FALSE}
+```{r 'final-dt', echo=FALSE, message=FALSE, warning=FALSE}
 
 datatable(abington_final, 
   extensions = c('FixedColumns'),
