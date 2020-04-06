@@ -12,7 +12,7 @@ tags:
 ---
 
 
-```{r 'set-up'}
+```{r 'set-up', include=FALSE}
 # Libraries
 library(data.table)
 library(stringr)
