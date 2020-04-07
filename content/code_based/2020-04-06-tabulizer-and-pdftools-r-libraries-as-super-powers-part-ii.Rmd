@@ -194,6 +194,7 @@ abington_sonp <-
 # Extract single element from list
 abington_sonp <- abington_sonp[[1]]
 
+abington_sonp
 ```
 
 # Clean up
