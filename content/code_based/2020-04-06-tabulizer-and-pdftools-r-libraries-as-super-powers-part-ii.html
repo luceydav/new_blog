@@ -48,7 +48,7 @@ abington &lt;- pdftools::pdf_data(pdf_path)
 # Name each page of list for page index in pdf
 names(abington) &lt;- 1:length(abington)
 
-# Look at structure of 1st two elements of the 92-page nested list
+# Look at structure of 2n element in 92-page nested list
 str(abington[[2]])</code></pre>
 <pre><code>## Classes &#39;tbl_df&#39;, &#39;tbl&#39; and &#39;data.frame&#39;:    266 obs. of  6 variables:
 ##  $ width : int  42 19 76 124 58 20 96 19 41 73 ...
@@ -60,15 +60,16 @@ str(abington[[2]])</code></pre>
 </div>
 <div id="pdf-tools-pdf_data-functionality" class="section level1">
 <h1>PDF Tools pdf_data Functionality</h1>
-<p>The above is a list of data.frames containing metadata of the location of every word on every one of the 92 pages of the Abington 2018 CAFR. For example, the first page contains 16 and the second 266 words. But, we only need the key financial statements, so would like to drop pages which don’t have what we need. For example, we know that page 16 has the Statement of Net Position. We could search for that page using regular expressions as shown for variable “sonp” below. We search the first 5 lines of every page to look for the phrase “STATEMENT OF NET POSITION”, but there are several pages meeting this criteria such as “Proprietary Funds” Statement of Net Position on page 20 (which we don’t want). Most of these other pages can be eliminated by choosing NOT to match the word “FUNDS”, so notice that we negate our second match with “!”.</p>
+<p>The above is a list of data.frames containing metadata of the location of every word on every one of the 92 pages of the Abington 2018 CAFR. The structure of the second page is shown above. But, we only need the key financial statements, so would like to drop the majority of pages which don’t have what we need. For example, we know that page 16 has the Statement of Net Position. We could search for that page using regular expressions as shown for variable “sonp” below.</p>
+<p>See how we extract only the head unique 5 lines of each page by y, paste those lines back together, then match our regular expression on the text of those lines looking for the phrase “STATEMENT OF NET POSITION”. However, there are several pages meeting this criteria, such as “Proprietary Funds” Statement of Net Position on page 20 (which we don’t want). Most of these other pages can be eliminated by choosing NOT to match the word “FUNDS” by the same process, so notice that we negate our second match with “!”. Hence, our sonp_index comes back as 16, which can be used to filter out the remaining pages.</p>
 <pre class="r"><code># Convert elements to data.table
-abington &lt;- lapply(abington, setDT)
+abington &lt;- mclapply(abington, setDT)
 
 # Get index of Abington Statement of Net Position
 sonp_index &lt;- 
   which(
     unlist(
-      lapply(abington, function(page){
+      mclapply(abington, function(page){
         (str_detect(
           paste(
             # Reformat top 5 lines by y and look for match to &quot;STATEMENT OF NET POSITION&quot;
@@ -181,9 +182,8 @@ abington_sonp &lt;-
     guess = F,
     output = &quot;data.frame&quot;)
 
-# Extract single element from list
+# Extract and print single element from list
 abington_sonp &lt;- abington_sonp[[1]]
-
 abington_sonp</code></pre>
 <pre><code>##                                                                                          X
 ## 1                                                                                         
