@@ -6,10 +6,37 @@
     <description>Recent content in rstats on Redwall Analytics Blogsite</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 02 Nov 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 06 Apr 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/tags/rstats/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Tabulizer and pdftools R Libraries as Super-powers - Part II</title>
+      <link>/code_based/tabulizer-and-pdftools-r-libraries-as-super-powers-part-ii/</link>
+      <pubDate>Mon, 06 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/code_based/tabulizer-and-pdftools-r-libraries-as-super-powers-part-ii/</guid>
+      <description>Introduction This post will be a continuation of Parsing of Mass Municipal PDF CAFR’s with Tabulizer, pdftools and AWS Textract - Part 1 dealing with extracting data from PDFs using R. When Redwall discovered pdftools, and its pdf_data function, which maps out every word on a pdf page by x-y coordinate, we thought that was interesting, but didn’t really know how to use it.</description>
+    </item>
+    
+    <item>
+      <title>A Walk Though of Accessing Financial Statements with XBRL in R - Part 1</title>
+      <link>/2020/02/18/a-walk-though-of-accessing-financial-statements-with-xbrl-in-r-part-1/</link>
+      <pubDate>Tue, 18 Feb 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/2020/02/18/a-walk-though-of-accessing-financial-statements-with-xbrl-in-r-part-1/</guid>
+      <description>Introduction As financial professionals and analytic software lovers, the ability to efficiently load a large number of financial statements, and conduct an analysis has always been a key objective. In previous posts, Redwall Analytics worked with a 15-year time series of municipal Comprehensive Annual Financial Reports (CAFR) for 15 Fairfield County, CT towns Fairfield County Town Level Spending and Liabilities Gallop Since 2001. We also studied the worrisome long-term, time series of unfunded liabilities for all 169 Connecticut municipalities Connecticut City Unfunded Pension And OPEB Liabilities.</description>
+    </item>
+    
+    <item>
+      <title>Tracking R&amp;D spending by 700 Listed US Pharma Companies - Part 2</title>
+      <link>/2020/02/18/tracking-r-d-spending-by-700-listed-us-pharma-companies/</link>
+      <pubDate>Tue, 18 Feb 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/2020/02/18/tracking-r-d-spending-by-700-listed-us-pharma-companies/</guid>
+      <description># Re-load data previously stored for purposes of this blog post pharma &amp;lt;- fread(&amp;quot;~/Desktop/David/Projects/xbrl_investment/data/pharma_inc.csv&amp;quot;) Introduction In A Walk Though of Accessing Financial Statements with XBRL in R - Part 1, we went through the first steps of pulling XBRL data for a single company from Edgar into R. Although an improvement over manual plugging of numbers into a Excel, there is still a way to go to having clean comparable numbers, and several of challenges were discussed.</description>
+    </item>
     
     <item>
       <title>How Does Stamford Charter School for Excellence do it?</title>

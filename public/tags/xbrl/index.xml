@@ -6,10 +6,19 @@
     <description>Recent content in XBRL on Redwall Analytics Blogsite</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 18 Feb 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 31 Mar 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/tags/xbrl/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Parsing of Mass Municipal PDF CAFR&#39;s with Tabulizer, pdftools and AWS Textract - Part 1</title>
+      <link>/code_based/parsing-of-mass-municipal-pdf-cafr-s-with-the-center-for-municipal-finance/</link>
+      <pubDate>Tue, 31 Mar 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/code_based/parsing-of-mass-municipal-pdf-cafr-s-with-the-center-for-municipal-finance/</guid>
+      <description>Introduction Redwall Analytics had the pleasure of collaborating with Marc Joffe, of Reason Foundation, in its October 2018 post Replicating Yankee Institute Risk Score Over 15 Years for 150 Connecticut towns. This involved taking a well organized public dataset from the State’s website, and analyzing it in R. When Marc called to ask if we could report on our blog site about similar analysis for 150 Massachusetts towns, as in Connecticut’s Warning Signs, we jumped at the idea.</description>
+    </item>
     
     <item>
       <title>A Walk Though of Accessing Financial Statements with XBRL in R - Part 1</title>
@@ -26,8 +35,7 @@
       <pubDate>Tue, 18 Feb 2020 00:00:00 +0000</pubDate>
       
       <guid>/2020/02/18/tracking-r-d-spending-by-700-listed-us-pharma-companies/</guid>
-      <description>pharma &amp;lt;- fread(&amp;quot;~/Desktop/David/Projects/xbrl_investment/data/pharma_inc.csv&amp;quot;) However, we found Financial Modeling prep which maintains a free API which offers updated and standardized financial statements for US companies among other data. We also found that Top Foreign Stocks maintains lists of most stock groups so we downloaded their list of Major Pharma and Biotech Companies which gave us over 700 companies with 20 shown here.
-We built two helper functions to download the data, then to convert to data.</description>
+      <description># Re-load data previously stored for purposes of this blog post pharma &amp;lt;- fread(&amp;quot;~/Desktop/David/Projects/xbrl_investment/data/pharma_inc.csv&amp;quot;) Introduction In A Walk Though of Accessing Financial Statements with XBRL in R - Part 1, we went through the first steps of pulling XBRL data for a single company from Edgar into R. Although an improvement over manual plugging of numbers into a Excel, there is still a way to go to having clean comparable numbers, and several of challenges were discussed.</description>
     </item>
     
   </channel>
