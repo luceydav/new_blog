@@ -3,47 +3,7 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>/categories/</loc>
-    <lastmod>2020-04-06T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/code_based/</loc>
-    <lastmod>2020-04-06T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/ctdata/</loc>
-    <lastmod>2020-04-06T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/pdf/</loc>
-    <lastmod>2020-04-06T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/categories/pdftools/</loc>
-    <lastmod>2020-04-06T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/categories/r/</loc>
-    <lastmod>2020-04-06T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
     <loc>/</loc>
-    <lastmod>2020-04-06T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/rstats/</loc>
-    <lastmod>2020-04-06T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/categories/tabula/</loc>
     <lastmod>2020-04-06T00:00:00+00:00</lastmod>
   </url>
   
@@ -53,22 +13,7 @@
   </url>
   
   <url>
-    <loc>/tags/</loc>
-    <lastmod>2020-04-06T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/categories/xbrl/</loc>
-    <lastmod>2020-04-06T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
     <loc>/code_based/parsing-of-mass-municipal-pdf-cafr-s-with-the-center-for-municipal-finance/</loc>
-    <lastmod>2020-03-31T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/xbrl/</loc>
     <lastmod>2020-03-31T00:00:00+00:00</lastmod>
   </url>
   
@@ -78,28 +23,8 @@
   </url>
   
   <url>
-    <loc>/post/</loc>
+    <loc>/2020/02/18/tracking-rd-spending-by-700-listed-us-pharma-companies-part-2/</loc>
     <lastmod>2020-02-18T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/2020/02/18/tracking-r-d-spending-by-700-listed-us-pharma-companies/</loc>
-    <lastmod>2020-02-18T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/charterschools/</loc>
-    <lastmod>2019-11-02T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/connecticut/</loc>
-    <lastmod>2019-11-02T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/dataviz/</loc>
-    <lastmod>2019-11-02T00:00:00+00:00</lastmod>
   </url>
   
   <url>
@@ -108,12 +33,7 @@
   </url>
   
   <url>
-    <loc>/2019/10/25/analyzing-500-000-connecticut-real-estate-sales-over-20-years/</loc>
-    <lastmod>2019-10-25T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/cteconomy/</loc>
+    <loc>/2019/10/25/analyzing-500000-connecticut-real-estate-sales-over-20-years/</loc>
     <lastmod>2019-10-25T00:00:00+00:00</lastmod>
   </url>
   
@@ -133,22 +53,12 @@
   </url>
   
   <url>
-    <loc>/2019/02/11/looking-at-ct-towns-through-the-cycle-with-maps/</loc>
+    <loc>/2019/02/11/a-through-the-cycle-geo-spatial-analysis-of-ct-town-finances/</loc>
     <lastmod>2019-02-11T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/2019/01/28/irs-data-show-growth-in-number-not-income-of-highest-earners-since-2005/</loc>
-    <lastmod>2019-01-28T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/plot/</loc>
-    <lastmod>2019-01-28T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/r-markdown/</loc>
+    <loc>/2019/01/28/irs-data-shows-growth-in-number-not-income-of-highest-earners-since-2005/</loc>
     <lastmod>2019-01-28T00:00:00+00:00</lastmod>
   </url>
   
@@ -158,13 +68,8 @@
   </url>
   
   <url>
-    <loc>/2018/12/26/fairfield-county-town-level-spending-and-liabilities-gallop-since-2001/</loc>
+    <loc>/2018/12/26/reviewing-fairfield-county-municipal-fiscal-indicators-since-2001/</loc>
     <lastmod>2018-12-26T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/plot-r-markdown/</loc>
-    <lastmod>2018-12-21T00:00:00+00:00</lastmod>
   </url>
   
   <url>

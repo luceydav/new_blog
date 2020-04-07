@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Redwall Analytics Blogsite</title>
+    <title>Lithium Theme</title>
     <link>/</link>
-    <description>Recent content on Redwall Analytics Blogsite</description>
+    <description>Recent content on Lithium Theme</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Mon, 06 Apr 2020 00:00:00 +0000</lastBuildDate>
@@ -40,10 +40,10 @@
     
     <item>
       <title>Tracking R&amp;D spending by 700 Listed US Pharma Companies - Part 2</title>
-      <link>/2020/02/18/tracking-r-d-spending-by-700-listed-us-pharma-companies/</link>
+      <link>/2020/02/18/tracking-rd-spending-by-700-listed-us-pharma-companies-part-2/</link>
       <pubDate>Tue, 18 Feb 2020 00:00:00 +0000</pubDate>
       
-      <guid>/2020/02/18/tracking-r-d-spending-by-700-listed-us-pharma-companies/</guid>
+      <guid>/2020/02/18/tracking-rd-spending-by-700-listed-us-pharma-companies-part-2/</guid>
       <description># Re-load data previously stored for purposes of this blog post pharma &amp;lt;- fread(&amp;quot;~/Desktop/David/Projects/xbrl_investment/data/pharma_inc.csv&amp;quot;) Introduction In A Walk Though of Accessing Financial Statements with XBRL in R - Part 1, we went through the first steps of pulling XBRL data for a single company from Edgar into R. Although an improvement over manual plugging of numbers into a Excel, there is still a way to go to having clean comparable numbers, and several of challenges were discussed.</description>
     </item>
     
@@ -58,10 +58,10 @@
     
     <item>
       <title>Analyzing 500,000 Connecticut Real Estate Sales over 20 Years</title>
-      <link>/2019/10/25/analyzing-500-000-connecticut-real-estate-sales-over-20-years/</link>
+      <link>/2019/10/25/analyzing-500000-connecticut-real-estate-sales-over-20-years/</link>
       <pubDate>Fri, 25 Oct 2019 00:00:00 +0000</pubDate>
       
-      <guid>/2019/10/25/analyzing-500-000-connecticut-real-estate-sales-over-20-years/</guid>
+      <guid>/2019/10/25/analyzing-500000-connecticut-real-estate-sales-over-20-years/</guid>
       <description> Under Construction  </description>
     </item>
     
@@ -95,19 +95,19 @@ Mr. Joffe’s first piece Assessing Municipal Bond Default Probabilities looked
     
     <item>
       <title>A Through the Cycle Geo-Spatial Analysis of CT Town Finances</title>
-      <link>/2019/02/11/looking-at-ct-towns-through-the-cycle-with-maps/</link>
+      <link>/2019/02/11/a-through-the-cycle-geo-spatial-analysis-of-ct-town-finances/</link>
       <pubDate>Mon, 11 Feb 2019 00:00:00 +0000</pubDate>
       
-      <guid>/2019/02/11/looking-at-ct-towns-through-the-cycle-with-maps/</guid>
+      <guid>/2019/02/11/a-through-the-cycle-geo-spatial-analysis-of-ct-town-finances/</guid>
       <description>Introduction In an earlier post, Reviewing Fairfield County Municipal Fiscal Indicators Since 2001, we used 17 years of individual Town Comprehensive Annual Financial Reports (CAFR) aggregated in Connecticut’s Municipal Fiscal Indicator’s to compare 15 Fairfield County towns. The challenge was that the graphs became crowded even with that small number of towns. In this analysis, we will expand our look at the similar variables over all 169 Connecticut towns using Geo-spatial mapping.</description>
     </item>
     
     <item>
       <title>IRS Data Shows Growth in Number not Income of Highest Earners since 2005</title>
-      <link>/2019/01/28/irs-data-show-growth-in-number-not-income-of-highest-earners-since-2005/</link>
+      <link>/2019/01/28/irs-data-shows-growth-in-number-not-income-of-highest-earners-since-2005/</link>
       <pubDate>Mon, 28 Jan 2019 00:00:00 +0000</pubDate>
       
-      <guid>/2019/01/28/irs-data-show-growth-in-number-not-income-of-highest-earners-since-2005/</guid>
+      <guid>/2019/01/28/irs-data-shows-growth-in-number-not-income-of-highest-earners-since-2005/</guid>
       <description>Introduction In this study, Redwall Analytics looks at 12 years of adjusted gross income data from over 140 million annual tax returns across the US and compare to Connecticut returns over five income brackets. We find a few suprising trends:
  Despite being the highest income state, mean income of Connecticut’s &amp;lt;$25k income group is at the bottom of all 50 states (though it had the smallest percentage of taxpayers in that bracket).</description>
     </item>
@@ -123,10 +123,10 @@ Mr. Joffe’s first piece Assessing Municipal Bond Default Probabilities looked
     
     <item>
       <title>Reviewing Fairfield County Municipal Fiscal Indicators Since 2001</title>
-      <link>/2018/12/26/fairfield-county-town-level-spending-and-liabilities-gallop-since-2001/</link>
+      <link>/2018/12/26/reviewing-fairfield-county-municipal-fiscal-indicators-since-2001/</link>
       <pubDate>Wed, 26 Dec 2018 00:00:00 +0000</pubDate>
       
-      <guid>/2018/12/26/fairfield-county-town-level-spending-and-liabilities-gallop-since-2001/</guid>
+      <guid>/2018/12/26/reviewing-fairfield-county-municipal-fiscal-indicators-since-2001/</guid>
       <description>Introduction In recent weeks, we have been exploring the State of Connecticut’s municipal oversight infrastructure. Every year, each of the 169 towns files an audited Comprehensive Annual Report (CAFR) and the state aggregates these into the Municipal Fiscal Indicators report Municipal Fiscal Indicators - Fiscal Years Ended 2012-2017. The report is a rich source of information for comparing municipal health.</description>
     </item>
     
