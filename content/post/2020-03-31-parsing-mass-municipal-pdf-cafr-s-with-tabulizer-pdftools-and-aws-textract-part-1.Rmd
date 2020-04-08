@@ -1,14 +1,16 @@
 ---
-title: Parsing of Mass Municipal PDF CAFR's with Tabulizer, pdftools and AWS Textract - Part 1
+title: Parsing Mass Municipal PDF CAFR's with Tabulizer, pdftools and AWS Textract
+  - Part 1
 author: David Lucey
 date: '2020-03-31'
-slug: parsing-of-mass-municipal-pdf-cafr-s-with-the-center-for-municipal-finance
+slug: parsing-mass-municipal-pdf-cafr-s-with-tabulizer-pdftools-and-aws-textract-part-1
 categories:
   - R
 tags:
-  - XBRL
-  - ctdata
+  - pdftools
+  - tabulizer
   - pdf
+  - rstats
 ---
 
 
@@ -147,6 +149,4 @@ r <- readRDS("/Users/davidlucey/Desktop/David/Projects/mass_munis/mass_files.RDS
 names <- str_remove(unique(unlist(purrr::flatten(lapply(r, names)))), "users_davidlucey_desktop_david_projects_mass_munis_data_")
 names[str_detect(names, "outflows")]
 ```
-
-
 
