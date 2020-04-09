@@ -5,7 +5,7 @@ date: '2020-02-18'
 slug: a-walk-though-of-accessing-financial-statements-with-xbrl-in-r-part-1
 categories:
   - R
-  - XBRL
+  - code
 tags:
   - XBRL
   - rstats
@@ -19,11 +19,11 @@ output:
 packages <- 
   c("jsonlite",
     "ggplot2",
-    "edgarWebR",
     "XBRL",
     "finstr",
     "data.table",
-    "stringr")
+    "stringr",
+    "rvest")
 
 if (length(setdiff(packages,rownames(installed.packages()))) > 0) {
   install.packages(setdiff(packages, rownames(installed.packages())))  
@@ -36,18 +36,12 @@ knitr::opts_chunk$set(comment=NA, fig.width=12, fig.height=8, out.width = '100%'
 ```
 
 
-```{r 'xbrl-specs', include=FALSE}
 
-# XBRL package guidance
-options(stringsAsFactors = FALSE)
-
-```
-
-
-```{r 'load_data', message=FALSE, warning=FALSE, include=FALSE}
+```{r 'load_data', eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 
 # Re-load data previously stored for purposes of this blog post
-xbrl_data <- readRDS("/Users/davidlucey/Desktop/David/Projects/xbrl_investment/data/xbrl_lists.RDS")
+xbrl_data <- 
+  readRDS("/Users/davidlucey/Desktop/David/Projects/xbrl_investment/data/xbrl_lists.RDS")
 stmt_list <- xbrl_data$stmt_list
 result_list <- xbrl_data$result_list
 filing_list <- xbrl_data$filing_list
@@ -63,106 +57,144 @@ rm(xbrl_data)
 As financial professionals and analytic software lovers, the ability to efficiently load a large number of financial statements, and conduct an analysis has always been a key objective. In previous posts, Redwall Analytics worked with a 15-year time series of municipal Comprehensive Annual Financial Reports (CAFR) for 15 Fairfield County, CT towns [Fairfield County Town Level Spending and Liabilities Gallop Since 2001](https://redwallanalytics.com/2018/12/26/fairfield-county-town-level-spending-and-liabilities-gallop-since-2001/). We also studied the worrisome long-term, time series of unfunded liabilities for all 169 Connecticut municipalities [Connecticut City Unfunded Pension And OPEB Liabilities](https://redwallanalytics.com/2019/10/11/connecticut-city-unfunded-pension-and-opeb-liabilities-over-time/). We are probably most proud of our work replicating the complicated one-year (2016) spreadsheet analysis by Marc Joffe (Reason Foundation) and Mark Fitch (Yankee Institute) over the long-term [Replicating Yankee Institute Risk Score Over 15 Years](https://redwallanalytics.com/2019/10/12/replicating-yankee-institute-risk-score-over-15-years/). 
 
 However, all of these were conducted using downloaded .csv data from the State's website, not on the kind of structured XBRL data now required in real-time for public companies on the SEC's Edgar website. Despite several attempts, XBRL had remained elusive up until now, but with daily practice, tasks previously beyond reach, suddenly become achievable. 
-A good deal of credit and much of the code to extract XBRL data from Edgar comes Aaron Mumala's 2018 blog post here: [Accessing Financial Data from the SEC - Part 2](https://aaronmams.github.io/Accessing-financial-data-from-the-SEC-Part-2/). In addition, Micah Waldstein's [Parsing Functions in edgarWebR](https://micah.waldste.in/blog/blog/2017/10/parsing-functions-in-edgarwebr/), as well as his edgarWebR package were essential. Lastly, none of this would have been possible without Darko Bergant's [finstr](https://github.com/bergant/finstr) and Roberto Bertolusso's [XBRL](https://cran.r-project.org/web/packages/XBRL/XBRL.pdf) packages. To summarize the workflow to be described below, filing data is located with edgarWeb, the XBRL Instance Documents are downloaded and parsed into a list of data.frames with the XBRL package's xbrlDoAll function, and finally, statements are organized into traditional Income Statements and Balance Sheets using the finstr package. 
+
+
+# Methodology
+
+A good deal of credit and much of the code to extract XBRL data here from Edgar comes Aaron Mumala's 2018 blog post: [Accessing Financial Data from the SEC - Part 2](https://aaronmams.github.io/Accessing-financial-data-from-the-SEC-Part-2/). In addition, Micah Waldstein's [Parsing Functions in edgarWebR](https://micah.waldste.in/blog/blog/2017/10/parsing-functions-in-edgarwebr/), as well as his edgarWebR package was helpful in understanding the structure and finding documents on the Edgar website, but the package doesn't seem to be actively maintained, so we ultimately had to scrape the locations of the filings.  Lastly, none of this would have been possible without Darko Bergant's [finstr](https://github.com/bergant/finstr) and Roberto Bertolusso's [XBRL](https://cran.r-project.org/web/packages/XBRL/XBRL.pdf) packages. To summarize the workflow to be described below, filing data is extracted with web scraping, the XBRL Instance Documents are downloaded and parsed into a list of data.frames with the XBRL package xbrlDoAll function, and finally, statements are organized into traditional Income Statements and Balance Sheets using the finstr package. 
 
 This will be the first in a three-part series. First, a quick walk-through to try to fill in some gaps from Aaron Mumala's blog post and current documentation to help others up the learning curve with XBRL. Even better, we would welcome comments clarifying solutions to unresolved issues or even more efficient ways of extracting the same data than we have used. In the second part, we will use another free source of financial statement data (financialmodelingprep.com API) to pull 10-year's of income statements for ~700 publically-listed pharma companies and explore R&D spending. Lastly, we will look to mine financial statement items for warning signs using metrics from a 2003 piece in the CFA Conference Proceeding.
 
 
-# 10-K Filing List via edgarWebR
+# Scraping Apple's 10-K Filing Links from Edgar
 
 
-Below, we choose to query all past Apple 10-K filings up until last week wrapped in the try() function, so that our lapply of company_filings (from edgarWeb) won't be halted (even if a particular filing can't be successfully loaded). 28 results are available along with the web link (href) to each set of filings. Although filings prior to 2008 are available, these are in html format, and unfortunately, can't be parsed with finstr and XBRL. A later effort may be made to retrieve these by scraping and parsing the html, but this is an advanced operation. 
+We previously used edgarWebR for to find href links pertaining to filings, but because it stopped working with recent updates, so had to build the web scraper below. Below, we choose to query all past Apple XBRL 10-K filings up until last week. 20 results are available along with the web link (href) to each set of filings. Although filings prior to 2008 are available, these are in html format, and can't be parsed with finstr and XBRL. A later effort may be made to retrieve these by scraping and parsing the html, but this is an advanced operation. 
  
 
-```{r 'filings-list', echo=TRUE, eval=FALSE}
+```{r 'filing-list', echo=TRUE, message=FALSE, warning=FALSE}
 
-# This chunk was run previously and filing_list was saved for the purposes of this blog post
+# Filter Edgar company search for "10-K" starting in "1990" in this case for AAPL (CIK 0000320193)
+url <- 
+  "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0000320193&type=10-K&dateb=1990&owner=exclude&count=25"
 
-# Call company_filings from edgarWeb package
-filing_list <- 
-    try(company_filings(as.character('AAPL'),
-                        ownership = FALSE, 
-                        type = '10-K', 
-                        before = "2020207",
-                        count = 40, 
-                        page = 1),
-        TRUE)
-```
+# Scrape filing page identfier numbers
+filings <- 
+    read_html(url) %>%
+    html_nodes(xpath='//*[@id="seriesDiv"]/table') %>%
+    html_table() %>%
+  as.data.frame() %>%
+  janitor::clean_names()
 
-```{r echo=TRUE, message=FALSE, warning=FALSE}
-
-# Show full list
-filing_list[1:5]
+# Showing last 5 years
+filings[1:5, c(1,3:4)]
 
 ```
 
 
-# List of Annual Index Filing hrefs via edgarWebR
+There are generally about 15 elements in a filing package for a given year, as can be seen here for [Apple in 2019](https://www.sec.gov/Archives/edgar/data/320193/000032019319000119/0000320193-19-000119-index.htm). We only want to extract the XBRL Instance Document (XML), which is at the bottom of the table. In order to get this manually, we would have to click on the Document link. Instead, we show the steps to extract the actual links one by one using regex and again web scraping below. We also show the links for most recent five years below. Copy and pasting any of these links into the browser would show the 10-K for the relevant year.
 
 
-```{r 'href-list', echo=TRUE}
+```{r 'get-href-urls', echo=TRUE, message=FALSE, warning=FALSE}
 
-ticker <- 'AAPL'
-type <- '10-K'
+# Extract filings identifiers with regex match of digits
+pattern <- "\\d{10}\\-\\d{2}\\-\\d{6}"
+filings <- filings$description
+filings <- 
+  stringr::str_extract(filings, pattern)
 
-# Parse this listing to find only 10-K filings 
-# (ie: not 10-K/A and 10-K405)
-href_list <- filing_list[filing_list$type==type,]$href
-
-# Show the first five index links
-href_list[1:5]
-
-```
-
-
-# Individual Filing Package Components via edgarWebR
-
-Here we use edgarWeb's filing_details function to see the available 19 documents for the 2017 index filing package using the 3rd element of the href_list above (2017). The first element here is the html 10-K, and there are links to many other elements from the filing including:  html exhibits, .jpg's, the complete submission as a text file, the XBRL schema and the all important XBRL Instance Document. If we copied the html url 10-K in our browser, it would show the 10-K, however, not in the XBRL form we are looking for. 
-
-
-```{r 'filing-details', echo=TRUE}
-
-
-# 2nd Element is 2018
-filing_2018 <- 
-  filing_details(href_list[[2]])$documents
-
-# Just lines with "XBRL" and "10-K"
-filing_2018[str_detect(filing_2018$description,"XBRL|10-K"),]
-
+# Build urls for filings using filing numbers and Edgar's url structure
+urls <-
+  sapply(filings, function(filing) {
+    
+    # Rebuild URL to match Edgar format
+    url <- 
+      paste0(
+         "https://www.sec.gov/Archives/edgar/data/320193/",
+         paste0(
+           str_remove_all(filing, "-"),"/"),
+         paste0(
+           filing, "-index.htm"),
+         sep="")
+    
+    # Return Url
+    url
+   })
 
 ```
 
 
-# Extract Available XBRL Instance Documents from Edgar via edgarWebR and XBRL Package Custom Function
+```{r 'get-href-links', message=FALSE, warning=FALSE}
+  
+# Extract hrefs with links to 10-K filings
+aapl_href <-
+    sapply(urls, function(url) {
 
-In this case, we are going with only 10-K's, so we filter above again by type equal "10-K", and extract the 24 href's available. Next below, we use xbrlDoAll from the XBRL package to extract the financial statements using the links from the href_list we made above. Note that we again use try() because the function would fail on some of the documents. We are not going to run the code here on the blog, because it takes a few minutes to run for Apple. We previously saved and reloaded the object above.
+      # Pattern tomatch
+      href <- '//*[@id="formDiv"]/div/table'
+      
+      # Table of XBRL Documents
+      page <- 
+        read_html(url) %>%
+        xml_nodes('.tableFile') %>%
+        html_table()
+      
+      # Extract document 
+      page <- rbindlist(page)
+      document <- 
+        page[str_detect(page$Description, "XBRL INSTANCE DOCUMENT")]$Document
+      
+      # Take break not to overload Edgar
+      Sys.sleep(2)
+      
+      # Reconstite as href link
+      href <- 
+        paste0(str_remove(url, "\\d{18}.*$"), 
+             str_extract(url, "\\d{18}"),
+             "/",
+             document)
+      
+      # Return
+      href
+      
+    })
 
-We have not shown here, but XBRL parsing for US companies is governed by the schemas from the US GAAP reported Taxonomy, which are updated annually. These can be found here on the XBRL US website [XBRL Taxonomy](https://xbrl.us/xbrl-taxonomy/2019-us-gaap/). By downloading the relevant .xsd file, removing the .xml suffix at the end and moving it to in the "xbrl.Cache" file created when you run XBRL, these problems were resolved for XBRL Instance Documents. Redwall spent quite a bit of time figuring out that we needed currency, dei, exch, country and currency files among others. We did this manually and by trial and error, but surely there is a better way, but a more efficient solution might be found here on Stack Overflow [XBRL Package Error in File](https://stackoverflow.com/questions/52170323/xbrl-package-error-in-filefromcachefile)
+# Show first 5 hrefs
+aapl_href[1:5]
+```
 
 
-```{r 'stmt-list', echo=TRUE, eval=FALSE, message=FALSE, warning=FALSE}
 
+# Parse XBRL For all Instance Documents Using XBRL Package
+
+
+We have not shown here, but XBRL parsing for US companies is governed by the schemas from the US GAAP reported Taxonomy, which are updated annually. These can be found here on the XBRL US website [XBRL Taxonomy](https://xbrl.us/xbrl-taxonomy/2019-us-gaap/). By downloading the relevant .xsd file, removing the .xml suffix at the end and moving it to in the "xbrl.Cache" file created when you run XBRL, these problems were resolved for XBRL Instance Documents. Redwall spent quite a bit of time figuring out that we needed currency, dei, exch, country and currency files among others. We did this manually and by trial and error, but it seems likely that there is a better way. A more efficient solution might be found here on Stack Overflow [XBRL Package Error in File](https://stackoverflow.com/questions/52170323/xbrl-package-error-in-filefromcachefile).
+
+Below, we use the xbrlDoAll function from the XBRL package to extract the financial statements using the links from the aapl_href list we made above. Note that we try(), because the function would fail on some of the documents and stop at that point.
+
+
+```{r 'stmt-list', echo=TRUE, message=FALSE, warning=FALSE}
 # This chunk was run previously and stmt_list was saved for the purposes of this blog post
 
 # Need to use project where xbrl.cache is stored for this chunk
 setwd("/Users/davidlucey/Desktop/David/Projects/xbrl_investment")
 
+# Disable stringsAsFactors so XBRL parsing works
+options(stringsAsFactors = FALSE)
+
 # Run xbrlDoAll and store in stmt_list
 stmt_list <-  
   
     # apply function to each element of href_list
-    lapply(href_list, function(href) {
+    lapply(aapl_href, function(doc) {
       
-    # Get filing details for the particular annual href index
-    filing.details <- filing_details(href)$documents
-    
-    # Further get XBRL Instance Document for year href
-    doc <- filing.details[str_detect(filing.details$description,"XBRL INSTANCE DOCUMENT"),]$href
-    
     # Extract XBRL of using specified href
-    try(xbrlDoAll(doc))
+    try(XBRL::xbrlDoAll(doc))
     })
+
+# Filter elements which failed to parse
+stmt_list <- 
+  Filter(function(x) length(x) > 1, stmt_list)
 
 ```
 
@@ -170,7 +202,7 @@ stmt_list <-
 As we have set it up in the code above, we loop through all Apple's 10-K hrefs parsing with the XBRL package. This gives a list object for each annual reporting package, each in turn containing 9-10 data.frames (as shown below). Most of the data.frames relate to the taxonomy, governed by the .xsb files for that year. Starting in 2008, 10-Ks began being filed as "XBRL Instance Documents", and these work seamlessly with the workflow described above. Around 2018, 10-K's shifted to "Extended XBRL Instance Document" format, which we could not build into financial statements with finstr. 
 
 
-```{r 'show-stmt', echo=TRUE}
+```{r 'show-stmt', echo=TRUE, message=FALSE, warning=FALSE}
 
 # Show one of extracted XBRL statements
 summary(stmt_list[[3]])
@@ -185,7 +217,7 @@ Below, we show the first 50 lines of the "fact" list of the 2017 XBRL package. A
 ```{r 'xbrl-fact', echo=TRUE}
 
 # Drill down on financial statement "fact" for individual year in stmt_list
-stmt_list[[3]]$fact[1:50,c(2:4)]
+stmt_list[[3]]$fact[1:10,c(2:4)]
 
 ```
 
@@ -194,14 +226,15 @@ stmt_list[[3]]$fact[1:50,c(2:4)]
 
 Next, we run finstr's xbrl_get_statements on our stmt_list objects (ie: the XBRL Instance Documents) to convert the parsed XBRL objects into financial statements.
 
-```{r 'xbrl-get-statements', echo=TRUE, eval=FALSE, message=FALSE, warning=FALSE}
+```{r 'xbrl-get-statements', echo=TRUE, message=FALSE, warning=FALSE}
 
 # This chunk was run previously and result_list was saved for the purposes of this blog post
 
 result_list <- 
-    sapply(stmt_list, function(stmt) {
+    lapply(stmt_list, function(stmt) {
       try(xbrl_get_statements(stmt))
       })
+
 
 ```
 
@@ -216,7 +249,7 @@ As shown above, finstr's xbrl_get_statements is unsuccessful on the first item (
 There are many issues with XBRL including that companies classify items in differing ways, use different names for the same items and sometimes the there are errors in the calculation hierarchy. Classification differences will be challenging, but finstr has the check_statement function to show where there are calculation inconsistencies.
 
 
-```{r 'check-statement', echo=TRUE}
+```{r 'apply-check-statement', echo=TRUE, message=FALSE, warning=FALSE}
 
 # Run check_statement on 2nd element of result_list (2018)
 for(list in result_list[2]) {
@@ -229,9 +262,10 @@ for(list in result_list[2]) {
 Above we can see that there are six errors in the "CashAndCashEquivalentsPeriodIncreaseDecrease" element_id in the 2017 Statement of Cash Flows. We can then drill down to see what those are. In this case, it is not a mismatch between the original data and the amount calculated as a check. The check is just not there (NA). We need to do further research to fully understand this function.
 
 
-```{r}
+```{r 'check-statement', echo=TRUE, message=FALSE, warning=FALSE}
 
-check <- check_statement(result_list[[2]]$ConsolidatedStatementsOfCashFlows, element_id = "CashAndCashEquivalentsPeriodIncreaseDecrease")
+check <- 
+  check_statement(result_list[[2]]$ConsolidatedStatementsOfCashFlows, element_id = "CashAndCashEquivalentsPeriodIncreaseDecrease")
 
 # Calculated is NA
 check$calculated

@@ -4,7 +4,82 @@
   
   <url>
     <loc>/categories/</loc>
-    <lastmod>2019-11-02T00:00:00+00:00</lastmod>
+    <lastmod>2020-04-06T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/code/</loc>
+    <lastmod>2020-04-06T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/pdf/</loc>
+    <lastmod>2020-04-06T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/pdftools/</loc>
+    <lastmod>2020-04-06T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/post/</loc>
+    <lastmod>2020-04-06T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/r/</loc>
+    <lastmod>2020-04-06T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/</loc>
+    <lastmod>2020-04-06T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/tabulizer/</loc>
+    <lastmod>2020-04-06T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/2020/04/06/tabulizer-and-pdftools-togeteher-as-super-powers-part-2/</loc>
+    <lastmod>2020-04-06T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/</loc>
+    <lastmod>2020-04-06T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/xbrl/</loc>
+    <lastmod>2020-04-06T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/2020/03/31/parsing-mass-municipal-pdf-cafrs-with-tabulizer-pdftools-and-aws-textract-part-1/</loc>
+    <lastmod>2020-03-31T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/2020/02/18/a-walk-though-of-accessing-financial-statements-with-xbrl-in-r-part-1/</loc>
+    <lastmod>2020-02-18T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/rstats/</loc>
+    <lastmod>2020-02-18T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/2020/02/18/tracking-r-d-spending-by-700-listed-us-pharma-companies/</loc>
+    <lastmod>2020-02-18T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/xbrl/</loc>
+    <lastmod>2020-02-18T00:00:00+00:00</lastmod>
   </url>
   
   <url>
@@ -24,31 +99,6 @@
   
   <url>
     <loc>/2019/11/02/how-does-stamford-charter-school-for-excellence-do-it/</loc>
-    <lastmod>2019-11-02T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/post/</loc>
-    <lastmod>2019-11-02T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/categories/r/</loc>
-    <lastmod>2019-11-02T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/</loc>
-    <lastmod>2019-11-02T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/rstats/</loc>
-    <lastmod>2019-11-02T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/</loc>
     <lastmod>2019-11-02T00:00:00+00:00</lastmod>
   </url>
   

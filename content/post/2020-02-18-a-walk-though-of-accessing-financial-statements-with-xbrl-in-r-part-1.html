@@ -5,7 +5,7 @@ date: '2020-02-18'
 slug: a-walk-though-of-accessing-financial-statements-with-xbrl-in-r-part-1
 categories:
   - R
-  - XBRL
+  - code
 tags:
   - XBRL
   - rstats
@@ -19,139 +19,158 @@ output:
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
 <p>As financial professionals and analytic software lovers, the ability to efficiently load a large number of financial statements, and conduct an analysis has always been a key objective. In previous posts, Redwall Analytics worked with a 15-year time series of municipal Comprehensive Annual Financial Reports (CAFR) for 15 Fairfield County, CT towns <a href="https://redwallanalytics.com/2018/12/26/fairfield-county-town-level-spending-and-liabilities-gallop-since-2001/">Fairfield County Town Level Spending and Liabilities Gallop Since 2001</a>. We also studied the worrisome long-term, time series of unfunded liabilities for all 169 Connecticut municipalities <a href="https://redwallanalytics.com/2019/10/11/connecticut-city-unfunded-pension-and-opeb-liabilities-over-time/">Connecticut City Unfunded Pension And OPEB Liabilities</a>. We are probably most proud of our work replicating the complicated one-year (2016) spreadsheet analysis by Marc Joffe (Reason Foundation) and Mark Fitch (Yankee Institute) over the long-term <a href="https://redwallanalytics.com/2019/10/12/replicating-yankee-institute-risk-score-over-15-years/">Replicating Yankee Institute Risk Score Over 15 Years</a>.</p>
-<p>However, all of these were conducted using downloaded .csv data from the State’s website, not on the kind of structured XBRL data now required in real-time for public companies on the SEC’s Edgar website. Despite several attempts, XBRL had remained elusive up until now, but with daily practice, tasks previously beyond reach, suddenly become achievable.
-A good deal of credit and much of the code to extract XBRL data from Edgar comes Aaron Mumala’s 2018 blog post here: <a href="https://aaronmams.github.io/Accessing-financial-data-from-the-SEC-Part-2/">Accessing Financial Data from the SEC - Part 2</a>. In addition, Micah Waldstein’s <a href="https://micah.waldste.in/blog/blog/2017/10/parsing-functions-in-edgarwebr/">Parsing Functions in edgarWebR</a>, as well as his edgarWebR package were essential. Lastly, none of this would have been possible without Darko Bergant’s <a href="https://github.com/bergant/finstr">finstr</a> and Roberto Bertolusso’s <a href="https://cran.r-project.org/web/packages/XBRL/XBRL.pdf">XBRL</a> packages. To summarize the workflow to be described below, filing data is located with edgarWeb, the XBRL Instance Documents are downloaded and parsed into a list of data.frames with the XBRL package’s xbrlDoAll function, and finally, statements are organized into traditional Income Statements and Balance Sheets using the finstr package.</p>
+<p>However, all of these were conducted using downloaded .csv data from the State’s website, not on the kind of structured XBRL data now required in real-time for public companies on the SEC’s Edgar website. Despite several attempts, XBRL had remained elusive up until now, but with daily practice, tasks previously beyond reach, suddenly become achievable.</p>
+</div>
+<div id="methodology" class="section level1">
+<h1>Methodology</h1>
+<p>A good deal of credit and much of the code to extract XBRL data here from Edgar comes Aaron Mumala’s 2018 blog post: <a href="https://aaronmams.github.io/Accessing-financial-data-from-the-SEC-Part-2/">Accessing Financial Data from the SEC - Part 2</a>. In addition, Micah Waldstein’s <a href="https://micah.waldste.in/blog/blog/2017/10/parsing-functions-in-edgarwebr/">Parsing Functions in edgarWebR</a>, as well as his edgarWebR package was helpful in understanding the structure and finding documents on the Edgar website, but the package doesn’t seem to be actively maintained, so we ultimately had to scrape the locations of the filings. Lastly, none of this would have been possible without Darko Bergant’s <a href="https://github.com/bergant/finstr">finstr</a> and Roberto Bertolusso’s <a href="https://cran.r-project.org/web/packages/XBRL/XBRL.pdf">XBRL</a> packages. To summarize the workflow to be described below, filing data is extracted with web scraping, the XBRL Instance Documents are downloaded and parsed into a list of data.frames with the XBRL package xbrlDoAll function, and finally, statements are organized into traditional Income Statements and Balance Sheets using the finstr package.</p>
 <p>This will be the first in a three-part series. First, a quick walk-through to try to fill in some gaps from Aaron Mumala’s blog post and current documentation to help others up the learning curve with XBRL. Even better, we would welcome comments clarifying solutions to unresolved issues or even more efficient ways of extracting the same data than we have used. In the second part, we will use another free source of financial statement data (financialmodelingprep.com API) to pull 10-year’s of income statements for ~700 publically-listed pharma companies and explore R&amp;D spending. Lastly, we will look to mine financial statement items for warning signs using metrics from a 2003 piece in the CFA Conference Proceeding.</p>
 </div>
-<div id="k-filing-list-via-edgarwebr" class="section level1">
-<h1>10-K Filing List via edgarWebR</h1>
-<p>Below, we choose to query all past Apple 10-K filings up until last week wrapped in the try() function, so that our lapply of company_filings (from edgarWeb) won’t be halted (even if a particular filing can’t be successfully loaded). 28 results are available along with the web link (href) to each set of filings. Although filings prior to 2008 are available, these are in html format, and unfortunately, can’t be parsed with finstr and XBRL. A later effort may be made to retrieve these by scraping and parsing the html, but this is an advanced operation.</p>
-<pre class="r"><code># This chunk was run previously and filing_list was saved for the purposes of this blog post
+<div id="scraping-apples-10-k-filing-links-from-edgar" class="section level1">
+<h1>Scraping Apple’s 10-K Filing Links from Edgar</h1>
+<p>We previously used edgarWebR for to find href links pertaining to filings, but because it stopped working with recent updates, so had to build the web scraper below. Below, we choose to query all past Apple XBRL 10-K filings up until last week. 20 results are available along with the web link (href) to each set of filings. Although filings prior to 2008 are available, these are in html format, and can’t be parsed with finstr and XBRL. A later effort may be made to retrieve these by scraping and parsing the html, but this is an advanced operation.</p>
+<pre class="r"><code># Filter Edgar company search for &quot;10-K&quot; starting in &quot;1990&quot; in this case for AAPL (CIK 0000320193)
+url &lt;- 
+  &quot;https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&amp;CIK=0000320193&amp;type=10-K&amp;dateb=1990&amp;owner=exclude&amp;count=25&quot;
 
-# Call company_filings from edgarWeb package
-filing_list &lt;- 
-    try(company_filings(as.character(&#39;AAPL&#39;),
-                        ownership = FALSE, 
-                        type = &#39;10-K&#39;, 
-                        before = &quot;2020207&quot;,
-                        count = 40, 
-                        page = 1),
-        TRUE)</code></pre>
-<pre class="r"><code># Show full list
-filing_list[1:5]</code></pre>
-<pre><code>       accession_number  act file_number filing_date accepted_date
-1  0000320193-19-000119   34   001-36743  2019-10-31    2019-10-30
-2  0000320193-18-000145   34   001-36743  2018-11-05    2018-11-05
-3  0000320193-17-000070   34   001-36743  2017-11-03    2017-11-03
-4  0001628280-16-020309   34   001-36743  2016-10-26    2016-10-26
-5  0001193125-15-356351   34   001-36743  2015-10-28    2015-10-28
-6  0001193125-14-383437   34   000-10030  2014-10-27    2014-10-27
-7  0001193125-13-416534   34   000-10030  2013-10-30    2013-10-29
-8  0001193125-12-444068   34   000-10030  2012-10-31    2012-10-31
-9  0001193125-11-282113   34   000-10030  2011-10-26    2011-10-26
-10 0001193125-10-238044   34   000-10030  2010-10-27    2010-10-27
-11 0001193125-10-012091   34   000-10030  2010-01-25    2010-01-25
-12 0001193125-09-214859   34   000-10030  2009-10-27    2009-10-27
-13 0001193125-08-224958   34   000-10030  2008-11-05    2008-11-05
-14 0001047469-07-009340   34   000-10030  2007-11-15    2007-11-15
-15 0001104659-06-084288   34   000-10030  2006-12-29    2006-12-29
-16 0001104659-05-058421   34   000-10030  2005-12-01    2005-11-30
-17 0001047469-04-035975   34   000-10030  2004-12-03    2004-12-02
-18 0001047469-03-041604 &lt;NA&gt;   000-10030  2003-12-19    2003-12-19
-19 0001047469-02-007674 &lt;NA&gt;   000-10030  2002-12-19    2002-12-19
-20 0000912057-01-544436 &lt;NA&gt;   000-10030  2001-12-21    2001-12-21
-21 0000912057-00-053623 &lt;NA&gt;   000-10030  2000-12-14    2000-12-14
-22 0000912057-99-010244 &lt;NA&gt;   000-10030  1999-12-22    1999-12-22
-23 0001047469-98-044981 &lt;NA&gt;   000-10030  1998-12-23    1998-12-23
-24 0001047469-98-001822 &lt;NA&gt;   000-10030  1998-01-23    1998-01-23
-25 0001047469-97-006960 &lt;NA&gt;   000-10030  1997-12-05    1997-12-05
-26 0000320193-96-000023 &lt;NA&gt;   000-10030  1996-12-19    1996-12-19
-27 0000320193-95-000016 &lt;NA&gt;   000-10030  1995-12-19    1995-12-19
-28 0000320193-94-000016 &lt;NA&gt;   000-10030  1994-12-13    1994-12-13</code></pre>
+# Scrape filing page identfier numbers
+filings &lt;- 
+    read_html(url) %&gt;%
+    html_nodes(xpath=&#39;//*[@id=&quot;seriesDiv&quot;]/table&#39;) %&gt;%
+    html_table() %&gt;%
+  as.data.frame() %&gt;%
+  janitor::clean_names()
+
+# Showing last 5 years
+filings[1:5, c(1,3:4)]</code></pre>
+<pre><code>  filings
+1    10-K
+2    10-K
+3    10-K
+4    10-K
+5    10-K
+                                                                                               description
+1 Annual report [Section 13 and 15(d), not S-K Item 405]Acc-no: 0000320193-19-000119 (34 Act)  Size: 12 MB
+2 Annual report [Section 13 and 15(d), not S-K Item 405]Acc-no: 0000320193-18-000145 (34 Act)  Size: 12 MB
+3 Annual report [Section 13 and 15(d), not S-K Item 405]Acc-no: 0000320193-17-000070 (34 Act)  Size: 14 MB
+4 Annual report [Section 13 and 15(d), not S-K Item 405]Acc-no: 0001628280-16-020309 (34 Act)  Size: 13 MB
+5  Annual report [Section 13 and 15(d), not S-K Item 405]Acc-no: 0001193125-15-356351 (34 Act)  Size: 9 MB
+  filing_date
+1  2019-10-31
+2  2018-11-05
+3  2017-11-03
+4  2016-10-26
+5  2015-10-28</code></pre>
+<p>There are generally about 15 elements in a filing package for a given year, as can be seen here for <a href="https://www.sec.gov/Archives/edgar/data/320193/000032019319000119/0000320193-19-000119-index.htm">Apple in 2019</a>. We only want to extract the XBRL Instance Document (XML), which is at the bottom of the table. In order to get this manually, we would have to click on the Document link. Instead, we show the steps to extract the actual links one by one using regex and again web scraping below. We also show the links for most recent five years below. Copy and pasting any of these links into the browser would show the 10-K for the relevant year.</p>
+<pre class="r"><code># Extract filings identifiers with regex match of digits
+pattern &lt;- &quot;\\d{10}\\-\\d{2}\\-\\d{6}&quot;
+filings &lt;- filings$description
+filings &lt;- 
+  stringr::str_extract(filings, pattern)
+
+# Build urls for filings using filing numbers and Edgar&#39;s url structure
+urls &lt;-
+  sapply(filings, function(filing) {
+    
+    # Rebuild URL to match Edgar format
+    url &lt;- 
+      paste0(
+         &quot;https://www.sec.gov/Archives/edgar/data/320193/&quot;,
+         paste0(
+           str_remove_all(filing, &quot;-&quot;),&quot;/&quot;),
+         paste0(
+           filing, &quot;-index.htm&quot;),
+         sep=&quot;&quot;)
+    
+    # Return Url
+    url
+   })</code></pre>
+<pre class="r"><code># Extract hrefs with links to 10-K filings
+aapl_href &lt;-
+    sapply(urls, function(url) {
+
+      # Pattern tomatch
+      href &lt;- &#39;//*[@id=&quot;formDiv&quot;]/div/table&#39;
+      
+      # Table of XBRL Documents
+      page &lt;- 
+        read_html(url) %&gt;%
+        xml_nodes(&#39;.tableFile&#39;) %&gt;%
+        html_table()
+      
+      # Extract document 
+      page &lt;- rbindlist(page)
+      document &lt;- 
+        page[str_detect(page$Description, &quot;XBRL INSTANCE DOCUMENT&quot;)]$Document
+      
+      # Take break not to overload Edgar
+      Sys.sleep(2)
+      
+      # Reconstite as href link
+      href &lt;- 
+        paste0(str_remove(url, &quot;\\d{18}.*$&quot;), 
+             str_extract(url, &quot;\\d{18}&quot;),
+             &quot;/&quot;,
+             document)
+      
+      # Return
+      href
+      
+    })
+
+# Show first 5 hrefs
+aapl_href[1:5]</code></pre>
+<pre><code>                                                                        0000320193-19-000119 
+&quot;https://www.sec.gov/Archives/edgar/data/320193/000032019319000119/a10-k20199282019_htm.xml&quot; 
+                                                                        0000320193-18-000145 
+       &quot;https://www.sec.gov/Archives/edgar/data/320193/000032019318000145/aapl-20180929.xml&quot; 
+                                                                        0000320193-17-000070 
+       &quot;https://www.sec.gov/Archives/edgar/data/320193/000032019317000070/aapl-20170930.xml&quot; 
+                                                                        0001628280-16-020309 
+       &quot;https://www.sec.gov/Archives/edgar/data/320193/000162828016020309/aapl-20160924.xml&quot; 
+                                                                        0001193125-15-356351 
+       &quot;https://www.sec.gov/Archives/edgar/data/320193/000119312515356351/aapl-20150926.xml&quot; </code></pre>
 </div>
-<div id="list-of-annual-index-filing-hrefs-via-edgarwebr" class="section level1">
-<h1>List of Annual Index Filing hrefs via edgarWebR</h1>
-<pre class="r"><code>ticker &lt;- &#39;AAPL&#39;
-type &lt;- &#39;10-K&#39;
-
-# Parse this listing to find only 10-K filings 
-# (ie: not 10-K/A and 10-K405)
-href_list &lt;- filing_list[filing_list$type==type,]$href
-
-# Show the first five index links
-href_list[1:5]</code></pre>
-<pre><code>[1] &quot;https://www.sec.gov/Archives/edgar/data/320193/000032019319000119/0000320193-19-000119-index.htm&quot;
-[2] &quot;https://www.sec.gov/Archives/edgar/data/320193/000032019318000145/0000320193-18-000145-index.htm&quot;
-[3] &quot;https://www.sec.gov/Archives/edgar/data/320193/000032019317000070/0000320193-17-000070-index.htm&quot;
-[4] &quot;https://www.sec.gov/Archives/edgar/data/320193/000162828016020309/0001628280-16-020309-index.htm&quot;
-[5] &quot;https://www.sec.gov/Archives/edgar/data/320193/000119312515356351/0001193125-15-356351-index.htm&quot;</code></pre>
-</div>
-<div id="individual-filing-package-components-via-edgarwebr" class="section level1">
-<h1>Individual Filing Package Components via edgarWebR</h1>
-<p>Here we use edgarWeb’s filing_details function to see the available 19 documents for the 2017 index filing package using the 3rd element of the href_list above (2017). The first element here is the html 10-K, and there are links to many other elements from the filing including: html exhibits, .jpg’s, the complete submission as a text file, the XBRL schema and the all important XBRL Instance Document. If we copied the html url 10-K in our browser, it would show the 10-K, however, not in the XBRL form we are looking for.</p>
-<pre class="r"><code># 2nd Element is 2018
-filing_2018 &lt;- 
-  filing_details(href_list[[2]])$documents
-
-# Just lines with &quot;XBRL&quot; and &quot;10-K&quot;
-filing_2018[str_detect(filing_2018$description,&quot;XBRL|10-K&quot;),]</code></pre>
-<pre><code>   seq                                            description
-1    1                                                   10-K
-12   9                                 XBRL INSTANCE DOCUMENT
-13  10                XBRL TAXONOMY EXTENSION SCHEMA DOCUMENT
-14  11  XBRL TAXONOMY EXTENSION CALCULATION LINKBASE DOCUMENT
-15  12   XBRL TAXONOMY EXTENSION DEFINITION LINKBASE DOCUMENT
-16  13        XBRL TAXONOMY EXTENSION LABEL LINKBASE DOCUMENT
-17  14 XBRL TAXONOMY EXTENSION PRESENTATION LINKBASE DOCUMENT
-                document
-1   a10-k20189292018.htm
-12     aapl-20180929.xml
-13     aapl-20180929.xsd
-14 aapl-20180929_cal.xml
-15 aapl-20180929_def.xml
-16 aapl-20180929_lab.xml
-17 aapl-20180929_pre.xml
-                                                                                      href
-1   https://www.sec.gov/Archives/edgar/data/320193/000032019318000145/a10-k20189292018.htm
-12     https://www.sec.gov/Archives/edgar/data/320193/000032019318000145/aapl-20180929.xml
-13     https://www.sec.gov/Archives/edgar/data/320193/000032019318000145/aapl-20180929.xsd
-14 https://www.sec.gov/Archives/edgar/data/320193/000032019318000145/aapl-20180929_cal.xml
-15 https://www.sec.gov/Archives/edgar/data/320193/000032019318000145/aapl-20180929_def.xml
-16 https://www.sec.gov/Archives/edgar/data/320193/000032019318000145/aapl-20180929_lab.xml
-17 https://www.sec.gov/Archives/edgar/data/320193/000032019318000145/aapl-20180929_pre.xml
-         type    size
-1        10-K 2405889
-12 EX-101.INS 3226268
-13 EX-101.SCH   58783
-14 EX-101.CAL  119640
-15 EX-101.DEF  284952
-16 EX-101.LAB  883295
-17 EX-101.PRE  511226</code></pre>
-</div>
-<div id="extract-available-xbrl-instance-documents-from-edgar-via-edgarwebr-and-xbrl-package-custom-function" class="section level1">
-<h1>Extract Available XBRL Instance Documents from Edgar via edgarWebR and XBRL Package Custom Function</h1>
-<p>In this case, we are going with only 10-K’s, so we filter above again by type equal “10-K”, and extract the 24 href’s available. Next below, we use xbrlDoAll from the XBRL package to extract the financial statements using the links from the href_list we made above. Note that we again use try() because the function would fail on some of the documents. We are not going to run the code here on the blog, because it takes a few minutes to run for Apple. We previously saved and reloaded the object above.</p>
-<p>We have not shown here, but XBRL parsing for US companies is governed by the schemas from the US GAAP reported Taxonomy, which are updated annually. These can be found here on the XBRL US website <a href="https://xbrl.us/xbrl-taxonomy/2019-us-gaap/">XBRL Taxonomy</a>. By downloading the relevant .xsd file, removing the .xml suffix at the end and moving it to in the “xbrl.Cache” file created when you run XBRL, these problems were resolved for XBRL Instance Documents. Redwall spent quite a bit of time figuring out that we needed currency, dei, exch, country and currency files among others. We did this manually and by trial and error, but surely there is a better way, but a more efficient solution might be found here on Stack Overflow <a href="https://stackoverflow.com/questions/52170323/xbrl-package-error-in-filefromcachefile">XBRL Package Error in File</a></p>
+<div id="parse-xbrl-for-all-instance-documents-using-xbrl-package" class="section level1">
+<h1>Parse XBRL For all Instance Documents Using XBRL Package</h1>
+<p>We have not shown here, but XBRL parsing for US companies is governed by the schemas from the US GAAP reported Taxonomy, which are updated annually. These can be found here on the XBRL US website <a href="https://xbrl.us/xbrl-taxonomy/2019-us-gaap/">XBRL Taxonomy</a>. By downloading the relevant .xsd file, removing the .xml suffix at the end and moving it to in the “xbrl.Cache” file created when you run XBRL, these problems were resolved for XBRL Instance Documents. Redwall spent quite a bit of time figuring out that we needed currency, dei, exch, country and currency files among others. We did this manually and by trial and error, but it seems likely that there is a better way. A more efficient solution might be found here on Stack Overflow <a href="https://stackoverflow.com/questions/52170323/xbrl-package-error-in-filefromcachefile">XBRL Package Error in File</a>.</p>
+<p>Below, we use the xbrlDoAll function from the XBRL package to extract the financial statements using the links from the aapl_href list we made above. Note that we try(), because the function would fail on some of the documents and stop at that point.</p>
 <pre class="r"><code># This chunk was run previously and stmt_list was saved for the purposes of this blog post
 
 # Need to use project where xbrl.cache is stored for this chunk
 setwd(&quot;/Users/davidlucey/Desktop/David/Projects/xbrl_investment&quot;)
 
+# Disable stringsAsFactors so XBRL parsing works
+options(stringsAsFactors = FALSE)
+
 # Run xbrlDoAll and store in stmt_list
 stmt_list &lt;-  
   
     # apply function to each element of href_list
-    lapply(href_list, function(href) {
+    lapply(aapl_href, function(doc) {
       
-    # Get filing details for the particular annual href index
-    filing.details &lt;- filing_details(href)$documents
-    
-    # Further get XBRL Instance Document for year href
-    doc &lt;- filing.details[str_detect(filing.details$description,&quot;XBRL INSTANCE DOCUMENT&quot;),]$href
-    
     # Extract XBRL of using specified href
-    try(xbrlDoAll(doc))
+    try(XBRL::xbrlDoAll(doc))
     })</code></pre>
+<pre><code>Error in XBRL::xbrlParse(file.inst) : 
+  Opening and ending tag mismatch: script line 98 and head [76]
+Error in XBRL::xbrlParse(file.inst) : 
+  Opening and ending tag mismatch: script line 98 and head [76]
+Error in XBRL::xbrlParse(file.inst) : 
+  Opening and ending tag mismatch: script line 98 and head [76]
+Error in XBRL::xbrlParse(file.inst) : 
+  Opening and ending tag mismatch: script line 98 and head [76]
+Error in XBRL::xbrlParse(file.inst) : 
+  Opening and ending tag mismatch: script line 98 and head [76]
+Error in XBRL::xbrlParse(file.inst) : 
+  Opening and ending tag mismatch: script line 98 and head [76]
+Error in XBRL::xbrlParse(file.inst) : 
+  Opening and ending tag mismatch: script line 98 and head [76]
+Error in XBRL::xbrlParse(file.inst) : 
+  Opening and ending tag mismatch: script line 98 and head [76]</code></pre>
+<pre class="r"><code># Filter elements which failed to parse
+stmt_list &lt;- 
+  Filter(function(x) length(x) &gt; 1, stmt_list)</code></pre>
 <p>As we have set it up in the code above, we loop through all Apple’s 10-K hrefs parsing with the XBRL package. This gives a list object for each annual reporting package, each in turn containing 9-10 data.frames (as shown below). Most of the data.frames relate to the taxonomy, governed by the .xsb files for that year. Starting in 2008, 10-Ks began being filed as “XBRL Instance Documents”, and these work seamlessly with the workflow described above. Around 2018, 10-K’s shifted to “Extended XBRL Instance Document” format, which we could not build into financial statements with finstr.</p>
 <pre class="r"><code># Show one of extracted XBRL statements
 summary(stmt_list[[3]])</code></pre>
@@ -168,109 +187,29 @@ presentation 11     data.frame list</code></pre>
 <p>In the future, we would like to better understand the XBRL data structure, but again, it wasn’t easy to find much simple documentation on the subject. This post from Darko Bergant gives an excellent diagram of the structural hierarchy of the XBRL object <a href="https://github.com/bergant/XBRLFiles">Exploring XBRL files with R</a>. He goes on in the same post: <em>All values are kept in the fact table (in the fact field, precisely). The element table defines what are these values (the XBRL concepts, e.g. “assets”, “liabilities”, “net income” etc.). The context table defines the periods and other dimensions for which the values are reported</em>.</p>
 <p>Below, we show the first 50 lines of the “fact” list of the 2017 XBRL package. As noted above, data here is nested in levels, with the top level being the Balance Sheet, Income Statement, etc (again see <a href="https://github.com/bergant/XBRLFiles">Exploring XBRL files with R</a>). It is possible to drill down to lower level items. Mr. Bergant also explains here how to for example extract a lower level item such as warranty information which wouldn’t be broken out at the top level <a href="https://github.com/bergant/finstr/issues/4">How to get all the elements contained in the original XBRL?</a>.</p>
 <pre class="r"><code># Drill down on financial statement &quot;fact&quot; for individual year in stmt_list
-stmt_list[[3]]$fact[1:50,c(2:4)]</code></pre>
-<pre><code>                                                                                                                                                              contextId
-1                                                                                                                                                           FD2015Q4YTD
-2                                                                   FD2015Q4YTD_us-gaap_StatementEquityComponentsAxis_us-gaap_AccumulatedOtherComprehensiveIncomeMember
-3                                                           FD2015Q4YTD_us-gaap_StatementEquityComponentsAxis_us-gaap_CommonStockIncludingAdditionalPaidInCapitalMember
-4                                                                                      FD2015Q4YTD_us-gaap_StatementEquityComponentsAxis_us-gaap_RetainedEarningsMember
-5                                                                                                                                                           FD2016Q4YTD
-6                                                                   FD2016Q4YTD_us-gaap_StatementEquityComponentsAxis_us-gaap_AccumulatedOtherComprehensiveIncomeMember
-7                                                           FD2016Q4YTD_us-gaap_StatementEquityComponentsAxis_us-gaap_CommonStockIncludingAdditionalPaidInCapitalMember
-8                                                                                      FD2016Q4YTD_us-gaap_StatementEquityComponentsAxis_us-gaap_RetainedEarningsMember
-9                                                                                                                                                           FD2017Q4YTD
-10                                                                  FD2017Q4YTD_us-gaap_StatementEquityComponentsAxis_us-gaap_AccumulatedOtherComprehensiveIncomeMember
-11                                                          FD2017Q4YTD_us-gaap_StatementEquityComponentsAxis_us-gaap_CommonStockIncludingAdditionalPaidInCapitalMember
-12                                                                                     FD2017Q4YTD_us-gaap_StatementEquityComponentsAxis_us-gaap_RetainedEarningsMember
-13                                                                                                                                                             FI2017Q4
-14                                                                                                                                                             FI2016Q4
-15                                                                                                                                                             FI2017Q4
-16                                                                                           FI2016Q4_us-gaap_BalanceSheetLocationAxis_us-gaap_AccruedLiabilitiesMember
-17                                                                                           FI2017Q4_us-gaap_BalanceSheetLocationAxis_us-gaap_AccruedLiabilitiesMember
-18 FD2017Q4YTD_us-gaap_DebtInstrumentAxis_aapl_FourthQuarter2017CanadianDollarDenominatedDebtIssuanceMember_us-gaap_LongtermDebtTypeAxis_aapl_FixedRate2.513NotesMember
-19                          FD2017Q4YTD_us-gaap_DebtInstrumentAxis_aapl_FourthQuarter2017DebtIssuanceMember_us-gaap_LongtermDebtTypeAxis_aapl_FixedRate1.500NotesMember
-20                          FD2017Q4YTD_us-gaap_DebtInstrumentAxis_aapl_FourthQuarter2017DebtIssuanceMember_us-gaap_LongtermDebtTypeAxis_aapl_FixedRate2.100NotesMember
-21                          FD2017Q4YTD_us-gaap_DebtInstrumentAxis_aapl_FourthQuarter2017DebtIssuanceMember_us-gaap_LongtermDebtTypeAxis_aapl_FixedRate2.900NotesMember
-22                          FD2017Q4YTD_us-gaap_DebtInstrumentAxis_aapl_FourthQuarter2017DebtIssuanceMember_us-gaap_LongtermDebtTypeAxis_aapl_FixedRate3.750NotesMember
-23              FD2017Q4YTD_us-gaap_DebtInstrumentAxis_aapl_SecondQuarter2017DebtIssuanceof1.0BillionMember_us-gaap_LongtermDebtTypeAxis_aapl_FixedRate4.300NotesMember
-24             FD2017Q4YTD_us-gaap_DebtInstrumentAxis_aapl_SecondQuarter2017DebtIssuanceof10.0BillionMember_us-gaap_LongtermDebtTypeAxis_aapl_FixedRate1.550NotesMember
-25             FD2017Q4YTD_us-gaap_DebtInstrumentAxis_aapl_SecondQuarter2017DebtIssuanceof10.0BillionMember_us-gaap_LongtermDebtTypeAxis_aapl_FixedRate1.900NotesMember
-26             FD2017Q4YTD_us-gaap_DebtInstrumentAxis_aapl_SecondQuarter2017DebtIssuanceof10.0BillionMember_us-gaap_LongtermDebtTypeAxis_aapl_FixedRate2.500NotesMember
-27             FD2017Q4YTD_us-gaap_DebtInstrumentAxis_aapl_SecondQuarter2017DebtIssuanceof10.0BillionMember_us-gaap_LongtermDebtTypeAxis_aapl_FixedRate3.000NotesMember
-28             FD2017Q4YTD_us-gaap_DebtInstrumentAxis_aapl_SecondQuarter2017DebtIssuanceof10.0BillionMember_us-gaap_LongtermDebtTypeAxis_aapl_FixedRate3.350NotesMember
-29             FD2017Q4YTD_us-gaap_DebtInstrumentAxis_aapl_SecondQuarter2017DebtIssuanceof10.0BillionMember_us-gaap_LongtermDebtTypeAxis_aapl_FixedRate4.250NotesMember
-30        FD2017Q4YTD_us-gaap_DebtInstrumentAxis_aapl_SecondQuarter2017DebtIssuanceof10.0BillionMember_us-gaap_LongtermDebtTypeAxis_aapl_FloatingRateNotesDue2019Member
-31        FD2017Q4YTD_us-gaap_DebtInstrumentAxis_aapl_SecondQuarter2017DebtIssuanceof10.0BillionMember_us-gaap_LongtermDebtTypeAxis_aapl_FloatingRateNotesDue2020Member
-32        FD2017Q4YTD_us-gaap_DebtInstrumentAxis_aapl_SecondQuarter2017DebtIssuanceof10.0BillionMember_us-gaap_LongtermDebtTypeAxis_aapl_FloatingRateNotesDue2022Member
-33               FD2017Q4YTD_us-gaap_DebtInstrumentAxis_aapl_ThirdQuarter2017DebtIssuanceof1.0BillionMember_us-gaap_LongtermDebtTypeAxis_aapl_FixedRate3.000NotesMember
-34               FD2017Q4YTD_us-gaap_DebtInstrumentAxis_aapl_ThirdQuarter2017DebtIssuanceof7.0BillionMember_us-gaap_LongtermDebtTypeAxis_aapl_FixedRate1.800NotesMember
-35               FD2017Q4YTD_us-gaap_DebtInstrumentAxis_aapl_ThirdQuarter2017DebtIssuanceof7.0BillionMember_us-gaap_LongtermDebtTypeAxis_aapl_FixedRate2.300NotesMember
-36               FD2017Q4YTD_us-gaap_DebtInstrumentAxis_aapl_ThirdQuarter2017DebtIssuanceof7.0BillionMember_us-gaap_LongtermDebtTypeAxis_aapl_FixedRate2.850NotesMember
-37               FD2017Q4YTD_us-gaap_DebtInstrumentAxis_aapl_ThirdQuarter2017DebtIssuanceof7.0BillionMember_us-gaap_LongtermDebtTypeAxis_aapl_FixedRate3.200NotesMember
-38          FD2017Q4YTD_us-gaap_DebtInstrumentAxis_aapl_ThirdQuarter2017DebtIssuanceof7.0BillionMember_us-gaap_LongtermDebtTypeAxis_aapl_FloatingRateNotesDue2020Member
-39          FD2017Q4YTD_us-gaap_DebtInstrumentAxis_aapl_ThirdQuarter2017DebtIssuanceof7.0BillionMember_us-gaap_LongtermDebtTypeAxis_aapl_FloatingRateNotesDue2022Member
-40            FD2017Q4YTD_us-gaap_DebtInstrumentAxis_aapl_ThirdQuarter2017EuroDenominatedDebtIssuanceMember_us-gaap_LongtermDebtTypeAxis_aapl_FixedRate0.875NotesMember
-41            FD2017Q4YTD_us-gaap_DebtInstrumentAxis_aapl_ThirdQuarter2017EuroDenominatedDebtIssuanceMember_us-gaap_LongtermDebtTypeAxis_aapl_FixedRate1.375NotesMember
-42                      FD2017Q4YTD_us-gaap_DebtInstrumentAxis_aapl_A2013DebtIssuanceMember_us-gaap_LongtermDebtTypeAxis_aapl_FixedRateRangefrom1.000to3.850NotesMember
-43                                        FD2017Q4YTD_us-gaap_DebtInstrumentAxis_aapl_A2013DebtIssuanceMember_us-gaap_LongtermDebtTypeAxis_aapl_FloatingRateNotesMember
-44                      FD2017Q4YTD_us-gaap_DebtInstrumentAxis_aapl_A2014DebtIssuanceMember_us-gaap_LongtermDebtTypeAxis_aapl_FixedRateRangefrom2.100to4.450NotesMember
-45                                        FD2017Q4YTD_us-gaap_DebtInstrumentAxis_aapl_A2014DebtIssuanceMember_us-gaap_LongtermDebtTypeAxis_aapl_FloatingRateNotesMember
-46                      FD2017Q4YTD_us-gaap_DebtInstrumentAxis_aapl_A2015DebtIssuanceMember_us-gaap_LongtermDebtTypeAxis_aapl_FixedRateRangefrom0.350to4.375NotesMember
-47                                        FD2017Q4YTD_us-gaap_DebtInstrumentAxis_aapl_A2015DebtIssuanceMember_us-gaap_LongtermDebtTypeAxis_aapl_FloatingRateNotesMember
-48                      FD2017Q4YTD_us-gaap_DebtInstrumentAxis_aapl_A2016DebtIssuanceMember_us-gaap_LongtermDebtTypeAxis_aapl_FixedRateRangefrom1.100to4.650NotesMember
-49                                        FD2017Q4YTD_us-gaap_DebtInstrumentAxis_aapl_A2016DebtIssuanceMember_us-gaap_LongtermDebtTypeAxis_aapl_FloatingRateNotesMember
-50                      FD2017Q4YTD_us-gaap_DebtInstrumentAxis_aapl_A2013DebtIssuanceMember_us-gaap_LongtermDebtTypeAxis_aapl_FixedRateRangefrom1.000to3.850NotesMember
-   unitId         fact
-1     usd    748000000
-2     usd            0
-3     usd    748000000
-4     usd            0
-5     usd    379000000
-6     usd            0
-7     usd    379000000
-8     usd            0
-9     usd    620000000
-10    usd            0
-11    usd    620000000
-12    usd            0
-13    usd 166000000000
-14    usd 216000000000
-15    usd 252300000000
-16    usd    163000000
-17    usd     35000000
-18   &lt;NA&gt;         2024
-19   &lt;NA&gt;         2019
-20   &lt;NA&gt;         2022
-21   &lt;NA&gt;         2027
-22   &lt;NA&gt;         2047
-23   &lt;NA&gt;         2047
-24   &lt;NA&gt;         2019
-25   &lt;NA&gt;         2020
-26   &lt;NA&gt;         2022
-27   &lt;NA&gt;         2024
-28   &lt;NA&gt;         2027
-29   &lt;NA&gt;         2047
-30   &lt;NA&gt;         2019
-31   &lt;NA&gt;         2020
-32   &lt;NA&gt;         2022
-33   &lt;NA&gt;         2027
-34   &lt;NA&gt;         2020
-35   &lt;NA&gt;         2022
-36   &lt;NA&gt;         2024
-37   &lt;NA&gt;         2027
-38   &lt;NA&gt;         2020
-39   &lt;NA&gt;         2022
-40   &lt;NA&gt;         2025
-41   &lt;NA&gt;         2029
-42   &lt;NA&gt;         2043
-43   &lt;NA&gt;         2018
-44   &lt;NA&gt;         2044
-45   &lt;NA&gt;         2019
-46   &lt;NA&gt;         2045
-47   &lt;NA&gt;         2020
-48   &lt;NA&gt;         2046
-49   &lt;NA&gt;         2021
-50   &lt;NA&gt;         2018</code></pre>
+stmt_list[[3]]$fact[1:10,c(2:4)]</code></pre>
+<pre><code>                                                                                                     contextId
+1                                                                                                  FD2015Q4YTD
+2          FD2015Q4YTD_us-gaap_StatementEquityComponentsAxis_us-gaap_AccumulatedOtherComprehensiveIncomeMember
+3  FD2015Q4YTD_us-gaap_StatementEquityComponentsAxis_us-gaap_CommonStockIncludingAdditionalPaidInCapitalMember
+4                             FD2015Q4YTD_us-gaap_StatementEquityComponentsAxis_us-gaap_RetainedEarningsMember
+5                                                                                                  FD2016Q4YTD
+6          FD2016Q4YTD_us-gaap_StatementEquityComponentsAxis_us-gaap_AccumulatedOtherComprehensiveIncomeMember
+7  FD2016Q4YTD_us-gaap_StatementEquityComponentsAxis_us-gaap_CommonStockIncludingAdditionalPaidInCapitalMember
+8                             FD2016Q4YTD_us-gaap_StatementEquityComponentsAxis_us-gaap_RetainedEarningsMember
+9                                                                                                  FD2017Q4YTD
+10         FD2017Q4YTD_us-gaap_StatementEquityComponentsAxis_us-gaap_AccumulatedOtherComprehensiveIncomeMember
+   unitId      fact
+1     usd 748000000
+2     usd         0
+3     usd 748000000
+4     usd         0
+5     usd 379000000
+6     usd         0
+7     usd 379000000
+8     usd         0
+9     usd 620000000
+10    usd         0</code></pre>
 </div>
 <div id="apply-xbrl_get_statements-via-finstr-package-to-transform-xbrl-into-financial-statements" class="section level1">
 <h1>Apply XBRL_get_statements via finstr Package to transform XBRL into Financial Statements</h1>
@@ -278,9 +217,27 @@ stmt_list[[3]]$fact[1:50,c(2:4)]</code></pre>
 <pre class="r"><code># This chunk was run previously and result_list was saved for the purposes of this blog post
 
 result_list &lt;- 
-    sapply(stmt_list, function(stmt) {
+    lapply(stmt_list, function(stmt) {
       try(xbrl_get_statements(stmt))
       })</code></pre>
+<pre><code>Error : Each row of output must be identified by a unique combination of keys.
+Keys are shared for 34 rows:
+* 6, 8
+* 5, 7, 9
+* 49, 51
+* 48, 50
+* 55, 57
+* 54, 56
+* 11, 13
+* 10, 12
+* 25, 27
+* 24, 26
+* 59, 61
+* 58, 60
+* 29, 31
+* 28, 30
+* 63, 64, 66
+* 62, 65</code></pre>
 <p>As shown above, finstr’s xbrl_get_statements is unsuccessful on the first item (2019), which is the new “Extended XBRL Instance Document”, because of a problem with duplicate keys after the spreading the data.frame. It seems that finstr hasn’t been updated since 2017, so it likely has something to do with the problem. We asked for guidance on Stack Overflow <a href="https://stackoverflow.com/questions/60152621/finstr-get-xbrl-statement-error-parsing-extracted-xbrl-instance-document">Finstr Get XBRL Statement Error Parsing XBRL Instance Documents</a>, but so far no luck. Also, it fails with the pre-2008 documents as expected, which were only available as html.</p>
 </div>
 <div id="catching-errors-in-successfully-parsed-statements" class="section level1">
@@ -306,7 +263,8 @@ $ConsolidatedStatementsOfOperations
 Number of errors:  0 
 Number of elements in errors:  0 </code></pre>
 <p>Above we can see that there are six errors in the “CashAndCashEquivalentsPeriodIncreaseDecrease” element_id in the 2017 Statement of Cash Flows. We can then drill down to see what those are. In this case, it is not a mismatch between the original data and the amount calculated as a check. The check is just not there (NA). We need to do further research to fully understand this function.</p>
-<pre class="r"><code>check &lt;- check_statement(result_list[[2]]$ConsolidatedStatementsOfCashFlows, element_id = &quot;CashAndCashEquivalentsPeriodIncreaseDecrease&quot;)
+<pre class="r"><code>check &lt;- 
+  check_statement(result_list[[2]]$ConsolidatedStatementsOfCashFlows, element_id = &quot;CashAndCashEquivalentsPeriodIncreaseDecrease&quot;)
 
 # Calculated is NA
 check$calculated</code></pre>
@@ -443,7 +401,7 @@ is[, melt(.SD, id.vars = &quot;endDate&quot;, measure.vars=c(&quot;rd_sales&quot
     ylab(&quot;Amount&quot;) +
     xlab(&quot;Year&quot;) +
     theme_bw()]</code></pre>
-<p><img src="/post/2020-02-18-a-walk-though-of-accessing-financial-statements-with-xbrl-in-r-part-1_files/figure-html/unnamed-chunk-3-1.png" width="100%" /></p>
+<p><img src="/post/2020-02-18-a-walk-though-of-accessing-financial-statements-with-xbrl-in-r-part-1_files/figure-html/unnamed-chunk-1-1.png" width="100%" /></p>
 </div>
 <div id="conclusion" class="section level1">
 <h1>Conclusion</h1>

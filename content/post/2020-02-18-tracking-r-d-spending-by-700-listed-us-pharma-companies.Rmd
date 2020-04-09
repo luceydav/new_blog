@@ -5,10 +5,13 @@ date: '2020-02-18'
 slug: tracking-r-d-spending-by-700-listed-us-pharma-companies
 categories:
   - R
-  - XBRL
+  - code
 tags:
   - rstats
   - XBRL
+output:
+  html_document:
+    code_folding: true
 ---
 
 ```{r 'set-up', include=FALSE}
