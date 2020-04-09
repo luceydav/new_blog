@@ -12,42 +12,71 @@
     
     
     <item>
+<<<<<<< HEAD
       <title>pdf</title>
       <link>/tags/pdf/</link>
       <pubDate>Mon, 06 Apr 2020 00:00:00 +0000</pubDate>
       
       <guid>/tags/pdf/</guid>
+=======
+      <title>ctdata</title>
+      <link>/tags/ctdata/</link>
+      <pubDate>Mon, 06 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/ctdata/</guid>
+>>>>>>> 527a5d77148ed8052e6e35819cdb0a8e21c3eefd
       <description></description>
     </item>
     
     <item>
+<<<<<<< HEAD
       <title>pdftools</title>
       <link>/tags/pdftools/</link>
       <pubDate>Mon, 06 Apr 2020 00:00:00 +0000</pubDate>
       
       <guid>/tags/pdftools/</guid>
+=======
+      <title>pdf</title>
+      <link>/tags/pdf/</link>
+      <pubDate>Mon, 06 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/pdf/</guid>
+>>>>>>> 527a5d77148ed8052e6e35819cdb0a8e21c3eefd
       <description></description>
     </item>
     
     <item>
+<<<<<<< HEAD
       <title>tabulizer</title>
       <link>/tags/tabulizer/</link>
       <pubDate>Mon, 06 Apr 2020 00:00:00 +0000</pubDate>
       
       <guid>/tags/tabulizer/</guid>
+=======
+      <title>rstats</title>
+      <link>/tags/rstats/</link>
+      <pubDate>Mon, 06 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/rstats/</guid>
+>>>>>>> 527a5d77148ed8052e6e35819cdb0a8e21c3eefd
       <description></description>
     </item>
     
     <item>
       <title>XBRL</title>
       <link>/tags/xbrl/</link>
+<<<<<<< HEAD
       <pubDate>Mon, 06 Apr 2020 00:00:00 +0000</pubDate>
+=======
+      <pubDate>Tue, 31 Mar 2020 00:00:00 +0000</pubDate>
+>>>>>>> 527a5d77148ed8052e6e35819cdb0a8e21c3eefd
       
       <guid>/tags/xbrl/</guid>
       <description></description>
     </item>
     
     <item>
+<<<<<<< HEAD
       <title>rstats</title>
       <link>/tags/rstats/</link>
       <pubDate>Tue, 18 Feb 2020 00:00:00 +0000</pubDate>
@@ -57,6 +86,8 @@
     </item>
     
     <item>
+=======
+>>>>>>> 527a5d77148ed8052e6e35819cdb0a8e21c3eefd
       <title>charterschools</title>
       <link>/tags/charterschools/</link>
       <pubDate>Sat, 02 Nov 2019 00:00:00 +0000</pubDate>
@@ -89,15 +120,6 @@
       <pubDate>Fri, 25 Oct 2019 00:00:00 +0000</pubDate>
       
       <guid>/tags/cteconomy/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>ctdata</title>
-      <link>/tags/ctdata/</link>
-      <pubDate>Thu, 07 Mar 2019 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/ctdata/</guid>
       <description></description>
     </item>
     

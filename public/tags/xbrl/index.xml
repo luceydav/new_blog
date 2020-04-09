@@ -6,12 +6,17 @@
     <description>Recent content in XBRL on Redwall Analytics Blogsite</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
+<<<<<<< HEAD
     <lastBuildDate>Mon, 06 Apr 2020 00:00:00 +0000</lastBuildDate>
+=======
+    <lastBuildDate>Tue, 31 Mar 2020 00:00:00 +0000</lastBuildDate>
+>>>>>>> 527a5d77148ed8052e6e35819cdb0a8e21c3eefd
     
 	<atom:link href="/tags/xbrl/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
+<<<<<<< HEAD
       <title>Tabulizer and pdftools togeteher as Super-powers - Part 2</title>
       <link>/2020/04/06/tabulizer-and-pdftools-togeteher-as-super-powers-part-2/</link>
       <pubDate>Mon, 06 Apr 2020 00:00:00 +0000</pubDate>
@@ -26,6 +31,13 @@
       <pubDate>Tue, 31 Mar 2020 00:00:00 +0000</pubDate>
       
       <guid>/2020/03/31/parsing-mass-municipal-pdf-cafrs-with-tabulizer-pdftools-and-aws-textract-part-1/</guid>
+=======
+      <title>Parsing of Mass Municipal PDF CAFR&#39;s with Tabulizer, pdftools and AWS Textract - Part 1</title>
+      <link>/code_based/parsing-of-mass-municipal-pdf-cafr-s-with-the-center-for-municipal-finance/</link>
+      <pubDate>Tue, 31 Mar 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/code_based/parsing-of-mass-municipal-pdf-cafr-s-with-the-center-for-municipal-finance/</guid>
+>>>>>>> 527a5d77148ed8052e6e35819cdb0a8e21c3eefd
       <description>Introduction Redwall Analytics had the pleasure of collaborating with Marc Joffe, of Reason Foundation, in its October 2018 post Replicating Yankee Institute Risk Score Over 15 Years for 150 Connecticut towns. This involved taking a well organized public dataset from the State’s website, and analyzing it in R. When Marc called to ask if we could report on our blog site about similar analysis for 150 Massachusetts towns, as in Connecticut’s Warning Signs, we jumped at the idea.</description>
     </item>
     

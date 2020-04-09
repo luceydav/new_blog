@@ -6,12 +6,17 @@
     <description>Recent content in Posts on Redwall Analytics Blogsite</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
+<<<<<<< HEAD
     <lastBuildDate>Mon, 06 Apr 2020 00:00:00 +0000</lastBuildDate>
+=======
+    <lastBuildDate>Tue, 18 Feb 2020 00:00:00 +0000</lastBuildDate>
+>>>>>>> 527a5d77148ed8052e6e35819cdb0a8e21c3eefd
     
 	<atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
+<<<<<<< HEAD
       <title>Tabulizer and pdftools togeteher as Super-powers - Part 2</title>
       <link>/2020/04/06/tabulizer-and-pdftools-togeteher-as-super-powers-part-2/</link>
       <pubDate>Mon, 06 Apr 2020 00:00:00 +0000</pubDate>
@@ -30,6 +35,8 @@
     </item>
     
     <item>
+=======
+>>>>>>> 527a5d77148ed8052e6e35819cdb0a8e21c3eefd
       <title>A Walk Though of Accessing Financial Statements with XBRL in R - Part 1</title>
       <link>/2020/02/18/a-walk-though-of-accessing-financial-statements-with-xbrl-in-r-part-1/</link>
       <pubDate>Tue, 18 Feb 2020 00:00:00 +0000</pubDate>

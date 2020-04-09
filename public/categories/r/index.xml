@@ -12,20 +12,36 @@
     
     
     <item>
+<<<<<<< HEAD
       <title>Tabulizer and pdftools togeteher as Super-powers - Part 2</title>
       <link>/2020/04/06/tabulizer-and-pdftools-togeteher-as-super-powers-part-2/</link>
       <pubDate>Mon, 06 Apr 2020 00:00:00 +0000</pubDate>
       
       <guid>/2020/04/06/tabulizer-and-pdftools-togeteher-as-super-powers-part-2/</guid>
+=======
+      <title>Tabulizer and pdftools R Libraries as Super-powers - Part II</title>
+      <link>/code_based/tabulizer-and-pdftools-r-libraries-as-super-powers-part-ii/</link>
+      <pubDate>Mon, 06 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/code_based/tabulizer-and-pdftools-r-libraries-as-super-powers-part-ii/</guid>
+>>>>>>> 527a5d77148ed8052e6e35819cdb0a8e21c3eefd
       <description>Introduction This post will be a continuation of Parsing of Mass Municipal PDF CAFR’s with Tabulizer, pdftools and AWS Textract - Part 1 dealing with extracting data from PDFs using R. When Redwall discovered pdftools, and its pdf_data function, which maps out every word on a pdf page by x-y coordinate, we thought that was interesting, but didn’t really know how to use it.</description>
     </item>
     
     <item>
+<<<<<<< HEAD
       <title>Parsing Mass Municipal PDF CAFRs with Tabulizer, pdftools and AWS Textract - Part 1</title>
       <link>/2020/03/31/parsing-mass-municipal-pdf-cafrs-with-tabulizer-pdftools-and-aws-textract-part-1/</link>
       <pubDate>Tue, 31 Mar 2020 00:00:00 +0000</pubDate>
       
       <guid>/2020/03/31/parsing-mass-municipal-pdf-cafrs-with-tabulizer-pdftools-and-aws-textract-part-1/</guid>
+=======
+      <title>Parsing of Mass Municipal PDF CAFR&#39;s with Tabulizer, pdftools and AWS Textract - Part 1</title>
+      <link>/code_based/parsing-of-mass-municipal-pdf-cafr-s-with-the-center-for-municipal-finance/</link>
+      <pubDate>Tue, 31 Mar 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/code_based/parsing-of-mass-municipal-pdf-cafr-s-with-the-center-for-municipal-finance/</guid>
+>>>>>>> 527a5d77148ed8052e6e35819cdb0a8e21c3eefd
       <description>Introduction Redwall Analytics had the pleasure of collaborating with Marc Joffe, of Reason Foundation, in its October 2018 post Replicating Yankee Institute Risk Score Over 15 Years for 150 Connecticut towns. This involved taking a well organized public dataset from the State’s website, and analyzing it in R. When Marc called to ask if we could report on our blog site about similar analysis for 150 Massachusetts towns, as in Connecticut’s Warning Signs, we jumped at the idea.</description>
     </item>
     

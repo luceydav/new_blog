@@ -12,11 +12,19 @@
     
     
     <item>
+<<<<<<< HEAD
       <title>code</title>
       <link>/categories/code/</link>
       <pubDate>Mon, 06 Apr 2020 00:00:00 +0000</pubDate>
       
       <guid>/categories/code/</guid>
+=======
+      <title>pdftools</title>
+      <link>/categories/pdftools/</link>
+      <pubDate>Mon, 06 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/categories/pdftools/</guid>
+>>>>>>> 527a5d77148ed8052e6e35819cdb0a8e21c3eefd
       <description></description>
     </item>
     
@@ -30,9 +38,24 @@
     </item>
     
     <item>
+<<<<<<< HEAD
       <title>XBRL</title>
       <link>/categories/xbrl/</link>
       <pubDate>Tue, 18 Feb 2020 00:00:00 +0000</pubDate>
+=======
+      <title>Tabula</title>
+      <link>/categories/tabula/</link>
+      <pubDate>Mon, 06 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/categories/tabula/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>XBRL</title>
+      <link>/categories/xbrl/</link>
+      <pubDate>Mon, 06 Apr 2020 00:00:00 +0000</pubDate>
+>>>>>>> 527a5d77148ed8052e6e35819cdb0a8e21c3eefd
       
       <guid>/categories/xbrl/</guid>
       <description></description>

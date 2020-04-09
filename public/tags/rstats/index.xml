@@ -6,12 +6,28 @@
     <description>Recent content in rstats on Redwall Analytics Blogsite</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
+<<<<<<< HEAD
     <lastBuildDate>Tue, 18 Feb 2020 00:00:00 +0000</lastBuildDate>
+=======
+    <lastBuildDate>Mon, 06 Apr 2020 00:00:00 +0000</lastBuildDate>
+>>>>>>> 527a5d77148ed8052e6e35819cdb0a8e21c3eefd
     
 	<atom:link href="/tags/rstats/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
+<<<<<<< HEAD
+=======
+      <title>Tabulizer and pdftools R Libraries as Super-powers - Part II</title>
+      <link>/code_based/tabulizer-and-pdftools-r-libraries-as-super-powers-part-ii/</link>
+      <pubDate>Mon, 06 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/code_based/tabulizer-and-pdftools-r-libraries-as-super-powers-part-ii/</guid>
+      <description>Introduction This post will be a continuation of Parsing of Mass Municipal PDF CAFR’s with Tabulizer, pdftools and AWS Textract - Part 1 dealing with extracting data from PDFs using R. When Redwall discovered pdftools, and its pdf_data function, which maps out every word on a pdf page by x-y coordinate, we thought that was interesting, but didn’t really know how to use it.</description>
+    </item>
+    
+    <item>
+>>>>>>> 527a5d77148ed8052e6e35819cdb0a8e21c3eefd
       <title>A Walk Though of Accessing Financial Statements with XBRL in R - Part 1</title>
       <link>/2020/02/18/a-walk-though-of-accessing-financial-statements-with-xbrl-in-r-part-1/</link>
       <pubDate>Tue, 18 Feb 2020 00:00:00 +0000</pubDate>
