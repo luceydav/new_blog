@@ -1,6 +1,6 @@
 baseurl = "https://redwallanalytics.com"
 languageCode = "en-us"
-title = "Lithium Theme"
+title = "Redwall Analytics"
 theme = "hugo-lithium"
 googleAnalytics = ""
 disqusShortname = ""
